@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Cart — IronFuel Nutrition</title>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --black:#0d0d0d;--white:#ffffff;--accent:#c8ff00;--border:#e5e5e5;--bg:#fafafa;
+      --text:#1a1a1a;--text-muted:#888;
+      --ink:#0b0b10;--ink-soft:#13131f;--paper:#f8f7f4;--paper-warm:#f0eeea;--paper-cool:#e8e6e3;
+      --accent-light:#7c3aed;--accent-glow:rgba(91,33,182,0.18);
+      --text-secondary:#6b6b78;--text-tertiary:#9a9aa8;
+      --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--s7:48px;--s8:64px;--s9:96px;--s10:128px;
+      --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:24px;--space-6:32px;
+      --r-sm:8px;--r-md:12px;--r-lg:16px;--r-pill:999px;
+      --radius-sm:8px;--radius-md:16px;--radius-lg:24px;--radius-xl:32px;
+      --sh-sm:0 1px 3px rgba(0,0,0,.06);--sh-md:0 4px 12px rgba(0,0,0,.08);--sh-lg:0 8px 30px rgba(0,0,0,.12);
+      --shadow-sm:0 1px 2px rgba(11,11,16,0.04);--shadow-lg:0 16px 48px rgba(11,11,16,0.10);--shadow-xl:0 24px 80px rgba(11,11,16,0.14);
+      --fast:150ms ease;--base:250ms ease;
+      --duration-fast:200ms;--duration-base:400ms;
+      --ease-out-expo:cubic-bezier(0.16,1,0.3,1);--ease-out-quart:cubic-bezier(0.25,1,0.5,1);
+      --container:1520px;--nav-h:72px;
+    }
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;padding:0 var(--s5)}
+    .container{max-width:960px;margin:0 auto}
+    a{color:inherit;text-decoration:none}
+    [x-cloak]{display:none!important}
+
+    /* Navbar — no dark hero behind it, so start scrolled */
+    .navbar{position:fixed;top:var(--space-3);left:var(--space-3);right:var(--space-3);z-index:100;height:var(--nav-h);border-radius:var(--radius-xl);transition:background var(--duration-base) var(--ease-out-quart),box-shadow var(--duration-base),border-color var(--duration-base);background:rgba(250,249,247,0.85);backdrop-filter:blur(24px) saturate(1.4);border:1px solid var(--border);box-shadow:var(--shadow-sm);}
+    .navbar-inner{max-width:var(--container);margin:0 auto;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 var(--space-5)}
+    .navbar-burger{display:none;background:none;border:none;color:var(--text);cursor:pointer;padding:6px;border-radius:var(--radius-sm);transition:background var(--duration-fast)}
+    .navbar-burger:hover{background:var(--paper-cool)}
+    .navbar-logo{display:flex;flex-direction:column;line-height:1;color:var(--text);text-decoration:none;position:relative}
+    .logo-sub{font-size:8px;font-weight:700;letter-spacing:0.32em;color:var(--text-tertiary);margin-top:2px}
+    .navbar-links{display:flex;gap:var(--space-6);align-items:center}
+    .navbar-link{font-size:13.5px;font-weight:600;letter-spacing:-0.01em;color:var(--text-secondary);transition:color var(--duration-fast);position:relative;padding:4px 0;}
+    .navbar-link::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--accent);transition:width var(--duration-fast) var(--ease-out-expo);}
+    .navbar-link:hover{color:var(--text)}.navbar-link:hover::after{width:100%}
+    .navbar-link.active{color:var(--text)}.navbar-link.active::after{width:100%}
+    .navbar-actions{display:flex;align-items:center;gap:var(--space-2)}
+    .navbar-icon-btn{position:relative;background:none;border:none;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;transition:background var(--duration-fast),transform var(--duration-fast);}
+    .navbar-icon-btn:hover{background:var(--paper-cool);transform:translateY(-1px)}
+    .cart-count{position:absolute;top:2px;right:2px;background:var(--accent);color:var(--white);font-size:9px;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--paper);}
+    .search-panel{position:absolute;top:52px;right:-8px;width:340px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-xl);padding:var(--space-4);z-index:50;opacity:0;transform:translateY(8px) scale(0.98);transition:opacity var(--duration-fast),transform var(--duration-fast);pointer-events:none;}
+    .search-panel.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+    .search-input{width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:14px;background:var(--paper-warm);outline:none;transition:border-color var(--duration-fast),box-shadow var(--duration-fast);font-family:inherit;}
+    .search-input:focus{border-color:var(--accent-light);box-shadow:0 0 0 4px var(--accent-glow)}
+    .search-results{margin-top:var(--space-3);max-height:300px;overflow-y:auto}
+
+    /* Page */
+    .page-header{margin-top:calc(var(--space-3) + var(--nav-h) + var(--space-5));margin-bottom:var(--s6)}
+    .page-title{font-size:28px;font-weight:800;letter-spacing:-.02em}
+    .back-link{display:inline-flex;align-items:center;gap:var(--s2);font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:var(--s4);transition:color var(--fast)}
+    .back-link:hover{color:var(--text)}
+
+    /* Cart */
+    .cart-empty{text-align:center;padding:var(--s10) 0}
+    .cart-empty-icon{font-size:48px;margin-bottom:var(--s4);opacity:.3}
+    .cart-empty h2{font-size:20px;font-weight:700;margin-bottom:var(--s2)}
+    .cart-empty p{color:var(--text-muted);font-size:14px;margin-bottom:var(--s5)}
+    .cart-items{display:flex;flex-direction:column;gap:var(--s4);margin-bottom:var(--s6)}
+    .cart-item{display:flex;gap:var(--s4);padding:var(--s4);background:var(--white);border-radius:var(--r-md);border:1px solid var(--border);transition:box-shadow var(--fast)}
+    .cart-item:hover{box-shadow:var(--sh-sm)}
+    .cart-item-img{width:80px;height:80px;border-radius:var(--r-sm);object-fit:cover;background:var(--bg);flex-shrink:0}
+    .cart-item-info{flex:1;min-width:0}
+    .cart-item-brand{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:2px}
+    .cart-item-name{font-size:14px;font-weight:600;margin-bottom:var(--s1)}
+    .cart-item-price{font-size:15px;font-weight:800}
+    .cart-item-actions{display:flex;align-items:center;gap:var(--s3);margin-top:var(--s2)}
+    .qty-btn{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;transition:all var(--fast)}
+    .qty-btn:hover{border-color:var(--black);background:var(--black);color:var(--white)}
+    .cart-item-qty{font-size:14px;font-weight:700;min-width:20px;text-align:center}
+    .cart-item-remove{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:12px;font-weight:600;transition:color var(--fast);padding:4px 8px}
+    .cart-item-remove:hover{color:#ef4444}
+
+    /* Order form */
+    .cart-summary{background:var(--white);border:1px solid var(--border);border-radius:var(--r-md);padding:var(--s5);position:sticky;top:calc(var(--space-3) + var(--nav-h) + var(--space-3))}
+    .cart-summary h3{font-size:16px;font-weight:700;margin-bottom:var(--s4)}
+    .summary-row{display:flex;justify-content:space-between;font-size:14px;margin-bottom:var(--s2);color:var(--text-muted)}
+    .summary-row.total{font-size:18px;font-weight:800;color:var(--text);margin-top:var(--s3);padding-top:var(--s3);border-top:1px solid var(--border)}
+    .order-btn{display:block;width:100%;padding:16px;background:var(--black);color:var(--white);border:none;border-radius:var(--r-pill);font-size:14px;font-weight:700;letter-spacing:.03em;cursor:pointer;margin-top:var(--s5);transition:all var(--fast);text-transform:uppercase}
+    .order-btn:hover{background:var(--accent);color:var(--black);transform:scale(1.01)}
+    .order-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+    .order-btn.loading{pointer-events:none}
+    .order-btn .spinner{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin:0 auto}
+    .order-btn.loading .spinner{display:block}
+    .order-btn.loading .label{display:none}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .cart-layout{display:grid;grid-template-columns:1fr 360px;gap:var(--s6);align-items:start}
+
+    .form-group{margin-bottom:var(--s4)}
+    .form-group label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:var(--s2)}
+    .form-group .req{color:#ef4444}
+    .form-control{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r-md);font-size:14px;font-family:inherit;background:var(--bg);transition:border-color var(--fast),box-shadow var(--fast);outline:none}
+    .form-control:focus{border-color:var(--black);box-shadow:0 0 0 3px rgba(0,0,0,.08)}
+    .form-control.error{border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.1)}
+    .form-error{font-size:11px;color:#ef4444;margin-top:var(--s1);display:none}
+    .form-error.show{display:block}
+    select.form-control{appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)}
+    .form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--s4)}
+    textarea.form-control{resize:vertical;min-height:64px}
+
+    .delivery-toggle{display:flex;gap:var(--s2);margin-bottom:var(--s5);background:var(--bg);border-radius:var(--r-md);padding:var(--s2)}
+    .delivery-opt{flex:1;text-align:center;padding:10px;border-radius:var(--r-sm);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;transition:all var(--fast);color:var(--text-muted)}
+    .delivery-opt.active{background:var(--white);color:var(--text);box-shadow:var(--sh-sm)}
+    .delivery-opt:hover:not(.active){color:var(--text)}
+
+    /* Success */
+    .order-success{text-align:center;padding:var(--s8) 0}
+    .order-success-icon{width:64px;height:64px;border-radius:50%;background:#ecfdf5;display:flex;align-items:center;justify-content:center;margin:0 auto var(--s4)}
+    .order-success h2{font-size:22px;font-weight:800;margin-bottom:var(--s2)}
+    .order-success p{color:var(--text-muted);font-size:14px;margin-bottom:var(--s2)}
+    .order-success .order-id{font-weight:700;color:var(--text)}
+    .order-success .checkout-btn{display:inline-block;width:auto;padding:14px 40px;margin-top:var(--s5)}
+
+    /* Footer */
+    .site-footer{margin-top:var(--s10);padding:var(--s8) 0 var(--s6);border-top:1px solid var(--border)}
+    .footer-inner{text-align:center}
+    .footer-logo{margin-bottom:var(--s3)}.footer-logo .logo-main{font-size:18px;font-weight:900;letter-spacing:-.03em}.footer-logo .logo-sub{font-size:8px}
+    .footer-tagline{font-size:13px;color:var(--text-muted);margin-bottom:var(--s5)}
+    .footer-links{display:flex;justify-content:center;flex-wrap:wrap;gap:var(--s4);margin-bottom:var(--s5)}
+    .footer-links a{font-size:13px;color:var(--text-muted);text-decoration:none;transition:color var(--fast)}.footer-links a:hover{color:var(--text)}
+    .footer-links span{color:var(--border)}
+    .footer-bottom{display:flex;justify-content:center;align-items:center;gap:var(--s5);font-size:12px;color:var(--text-muted)}
+    .footer-social{display:flex;gap:var(--s4)}
+    .footer-social a{color:var(--text-muted);transition:color var(--fast)}.footer-social a:hover{color:var(--text)}
+
+    @media(max-width:900px){
+      .navbar-burger{display:block}
+      .navbar-links{display:none;position:absolute;top:calc(var(--nav-h) - 8px);left:0;right:0;background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);flex-direction:column;padding:var(--space-4);gap:var(--space-3);border:1px solid var(--border)}
+      .navbar-links.is-open{display:flex;animation:slideDown .25s var(--ease-out-quart)}
+    }
+    @media(max-width:768px){
+      .cart-layout{grid-template-columns:1fr}
+      .cart-summary{position:static}
+      .site-footer{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+      .form-row,.form-row-3{grid-template-columns:1fr}
+    }
+    @keyframes slideDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body>
+  <header class="navbar" id="navbar" x-data="{ mobileOpen: false }">
+    <div class="navbar-inner">
+      <button class="navbar-burger" @click="mobileOpen = !mobileOpen" aria-label="Menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <a href="/" class="navbar-logo"><span class="logo-main">IRONFUEL</span><span class="logo-sub">NUTRITION</span></a>
+      <nav class="navbar-links" :class="{ 'is-open': mobileOpen }">
+        <a href="/" class="navbar-link">Home</a>
+        <a href="/shop.html" class="navbar-link">Shop</a>
+        <a href="/deals.html" class="navbar-link">Offers</a>
+        <a href="/about.html" class="navbar-link">About Us</a>
+      </nav>
+      <div class="navbar-actions" x-data="{ searchOpen: false }" @keydown.escape.window="searchOpen = false">
+        <div class="search-wrap">
+          <button class="navbar-icon-btn" @click="searchOpen = !searchOpen" aria-label="Search">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+          <div class="search-panel" :class="{ open: searchOpen }" @click.outside="searchOpen = false">
+            <input type="search" placeholder="Search products..." class="search-input" hx-get="/api/search" hx-trigger="keyup changed delay:300ms" hx-target="#search-results" hx-swap="innerHTML"/>
+            <div id="search-results" class="search-results"></div>
+          </div>
+        </div>
+        <a href="/cart" class="navbar-icon-btn" aria-label="Cart">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span class="cart-count" x-text="$store.cart.count" x-show="$store.cart.count > 0" x-cloak>0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main x-data="checkoutForm()">
+    <div class="container">
+
+      <!-- Empty cart -->
+      <template x-if="$store.cart.count === 0 && !orderDone">
+        <div class="page-header">
+          <a href="/" class="back-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> Continue Shopping</a>
+          <h1 class="page-title">Your Cart</h1>
+        </div>
+        <div class="cart-empty">
+          <div class="cart-empty-icon">&#128722;</div>
+          <h2>Your cart is empty</h2>
+          <p>Looks like you haven't added anything yet.</p>
+          <a href="/shop.html" class="order-btn" style="display:inline-block;width:auto;padding:14px 40px">Browse Products</a>
+        </div>
+      </template>
+
+      <!-- Order success -->
+      <template x-if="orderDone">
+        <div class="order-success">
+          <div class="order-success-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h2>Order Placed!</h2>
+          <p>Your order <span class="order-id" x-text="'#' + orderId"></span> has been placed successfully.</p>
+          <p>We'll contact you at <span x-text="form.phone"></span> to confirm delivery.</p>
+          <a href="/shop.html" class="order-btn" style="display:inline-block;width:auto;padding:14px 40px">Continue Shopping</a>
+        </div>
+      </template>
+
+      <!-- Cart with form -->
+      <template x-if="$store.cart.count > 0 && !orderDone">
+        <div>
+          <div class="page-header">
+            <a href="/" class="back-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> Continue Shopping</a>
+            <h1 class="page-title">Checkout</h1>
+          </div>
+          <div class="cart-layout">
+            <!-- Left: Cart items -->
+            <div>
+              <div style="font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:var(--s4)">Items (<span x-text="$store.cart.count"></span>)</div>
+              <div class="cart-items">
+                <template x-for="item in $store.cart.items" :key="item.id">
+                  <div class="cart-item">
+                    <img class="cart-item-img" :src="item.image" :alt="item.name"/>
+                    <div class="cart-item-info">
+                      <p class="cart-item-brand" x-text="item.brand"></p>
+                      <p class="cart-item-name" x-text="item.name"></p>
+                      <p class="cart-item-price" x-text="item.price.toLocaleString() + ' DZD'"></p>
+                      <div class="cart-item-actions">
+                        <button class="qty-btn" @click="$store.cart.updateQty(item.id, item.qty - 1)">&minus;</button>
+                        <span class="cart-item-qty" x-text="item.qty"></span>
+                        <button class="qty-btn" @click="$store.cart.updateQty(item.id, item.qty + 1)">+</button>
+                        <button class="cart-item-remove" @click="$store.cart.remove(item.id)">Remove</button>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <!-- Right: Order form -->
+            <div class="cart-summary">
+              <h3>Delivery Details</h3>
+
+              <div class="delivery-toggle">
+                <div class="delivery-opt" :class="{ active: deliveryMethod === 'home' }" @click="deliveryMethod='home'">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:block;margin:0 auto 4px"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                  Home Delivery
+                </div>
+                <div class="delivery-opt" :class="{ active: deliveryMethod === 'desk' }" @click="deliveryMethod='desk'">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:block;margin:0 auto 4px"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  Desk Pickup
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>First Name <span class="req">*</span></label>
+                  <input type="text" class="form-control" :class="{ error: errors.firstName }" x-model="form.firstName" placeholder="Mohamed">
+                  <div class="form-error" :class="{ show: errors.firstName }">Required</div>
+                </div>
+                <div class="form-group">
+                  <label>Last Name <span class="req">*</span></label>
+                  <input type="text" class="form-control" :class="{ error: errors.lastName }" x-model="form.lastName" placeholder="Amine">
+                  <div class="form-error" :class="{ show: errors.lastName }">Required</div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Phone Number <span class="req">*</span></label>
+                <input type="tel" class="form-control" :class="{ error: errors.phone }" x-model="form.phone" placeholder="05XX XX XX XX">
+                <div class="form-error" :class="{ show: errors.phone }">Valid phone number required</div>
+              </div>
+
+              <div class="form-group" x-show="deliveryMethod === 'home'" x-transition>
+                <label>Address <span class="req">*</span></label>
+                <input type="text" class="form-control" :class="{ error: errors.address }" x-model="form.address" placeholder="Street, building, apartment...">
+                <div class="form-error" :class="{ show: errors.address }">Required for home delivery</div>
+              </div>
+
+              <div class="form-row-3">
+                <div class="form-group">
+                  <label>Wilaya <span class="req">*</span></label>
+                  <select class="form-control" :class="{ error: errors.wilaya }" x-model="form.wilaya">
+                    <option value="">Select</option>
+                    <template x-for="w in wilayas" :key="w.code">
+                      <option :value="w.code" x-text="w.code + ' - ' + w.name"></option>
+                    </template>
+                  </select>
+                  <div class="form-error" :class="{ show: errors.wilaya }">Required</div>
+                </div>
+                <div class="form-group">
+                  <label>City <span class="req">*</span></label>
+                  <input type="text" class="form-control" :class="{ error: errors.city }" x-model="form.city" placeholder="City">
+                  <div class="form-error" :class="{ show: errors.city }">Required</div>
+                </div>
+                <div class="form-group">
+                  <label>Postal Code</label>
+                  <input type="text" class="form-control" x-model="form.postalCode" placeholder="Optional">
+                </div>
+              </div>
+
+              <div class="summary-row"><span>Subtotal (<span x-text="$store.cart.count"></span> items)</span><span x-text="$store.cart.total.toLocaleString() + ' DZD'"></span></div>
+              <div class="summary-row"><span>Shipping</span><span x-text="shippingCost.toLocaleString() + ' DZD'"></span></div>
+              <div class="summary-row total"><span>Total</span><span x-text="total.toLocaleString() + ' DZD'"></span></div>
+
+              <div style="font-size:11px;color:var(--text-muted);margin-top:var(--s3);text-align:center">Payment: Cash on Delivery</div>
+
+              <button class="order-btn" :class="{ loading: ordering }" :disabled="ordering" @click="placeOrder()">
+                <span class="label">Place Order</span>
+                <span class="spinner"></span>
+              </button>
+
+              <div x-show="orderError" x-text="orderError" style="font-size:12px;color:#ef4444;text-align:center;margin-top:var(--s3)"></div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </main>
+
+  <footer class="site-footer" x-data="storeData()">
+    <div class="container footer-inner">
+      <div class="footer-logo"><span class="logo-main" x-text="info.store_name || 'IRONFUEL'"></span></div>
+      <p class="footer-tagline" x-text="info.store_description || 'Premium sports nutrition delivered across Algeria.'"></p>
+      <div class="footer-links">
+        <a href="/">Home</a><span>|</span>
+        <a href="/shop.html">Shop</a><span>|</span>
+        <a href="/deals.html">Offers</a><span>|</span>
+        <a href="/about.html">About</a>
+      </div>
+      <div class="footer-bottom">
+        <span x-text="'© ' + new Date().getFullYear() + ' ' + (info.store_name || 'IronFuel Nutrition')"></span>
+        <div class="footer-social">
+          <a x-show="info.instagram" :href="info.instagram" target="_blank" rel="noopener" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg></a>
+          <a x-show="info.tiktok" :href="info.tiktok" target="_blank" rel="noopener" aria-label="TikTok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('alpine:init',()=>{
+      Alpine.store('cart',{
+        items:JSON.parse(localStorage.getItem('ironfuel_cart')||'[]'),
+        add(item){
+          const existing=this.items.find(i=>i.id===item.id);
+          if(existing){existing.qty+=1}else{this.items.push({...item,qty:1})}
+          this.save();
+        },
+        remove(id){this.items=this.items.filter(i=>i.id!==id);this.save()},
+        updateQty(id,qty){
+          const item=this.items.find(i=>i.id===id);
+          if(!item)return;
+          if(qty<=0){this.remove(id)}else{item.qty=qty;this.save()}
+        },
+        get count(){return this.items.reduce((s,i)=>s+i.qty,0)},
+        get total(){return this.items.reduce((s,i)=>s+i.price*i.qty,0)},
+        clear(){this.items=[];this.save()},
+        save(){localStorage.setItem('ironfuel_cart',JSON.stringify(this.items))}
+      });
+
+      Alpine.data('storeData', () => ({
+        info: {},
+        async init() {
+          try {
+            const r = await fetch('/api/store-info');
+            if (r.ok) this.info = await r.json();
+          } catch (e) { console.error(e); }
+        }
+      }));
+    });
+
+    function checkoutForm() {
+      return {
+        deliveryMethod: 'home',
+        form: { firstName:'', lastName:'', phone:'', address:'', wilaya:'', city:'', postalCode:'' },
+        errors: { firstName:false, lastName:false, phone:false, address:false, wilaya:false, city:false },
+        ordering: false,
+        orderDone: false,
+        orderError: '',
+        orderId: '',
+        shippingCost: 700,
+        wilayas: [
+          { code:'01', name:'Adrar' },{ code:'02', name:'Chlef' },{ code:'03', name:'Laghouat' },
+          { code:'04', name:'Oum El Bouaghi' },{ code:'05', name:'Batna' },{ code:'06', name:'Bejaia' },
+          { code:'07', name:'Biskra' },{ code:'08', name:'Bechar' },{ code:'09', name:'Blida' },
+          { code:'10', name:'Bouira' },{ code:'11', name:'Tamanrasset' },{ code:'12', name:'Tebessa' },
+          { code:'13', name:'Tlemcen' },{ code:'14', name:'Tiaret' },{ code:'15', name:'Tizi Ouzou' },
+          { code:'16', name:'Alger' },{ code:'17', name:'Djelfa' },{ code:'18', name:'Jijel' },
+          { code:'19', name:'Setif' },{ code:'20', name:'Saida' },{ code:'21', name:'Skikda' },
+          { code:'22', name:'Sidi Bel Abbes' },{ code:'23', name:'Annaba' },{ code:'24', name:'Guelma' },
+          { code:'25', name:'Constantine' },{ code:'26', name:'Medea' },{ code:'27', name:'Mostaganem' },
+          { code:'28', name:'Msila' },{ code:'29', name:'Mascara' },{ code:'30', name:'Ouargla' },
+          { code:'31', name:'Oran' },{ code:'32', name:'El Bayadh' },{ code:'33', name:'Illizi' },
+          { code:'34', name:'Bordj Bou Arreridj' },{ code:'35', name:'Boumerdes' },
+          { code:'36', name:'El Tarf' },{ code:'37', name:'Tindouf' },{ code:'38', name:'Tissemsilt' },
+          { code:'39', name:'El Oued' },{ code:'40', name:'Khenchela' },{ code:'41', name:'Souk Ahras' },
+          { code:'42', name:'Tipaza' },{ code:'43', name:'Mila' },{ code:'44', name:'Ain Defla' },
+          { code:'45', name:'Naama' },{ code:'46', name:'Ain Temouchent' },{ code:'47', name:'Ghardaia' },
+          { code:'48', name:'Relizane' },{ code:'49', name:'El Mghair' },{ code:'50', name:'El Meniaa' },
+          { code:'51', name:'Ouled Djellal' },{ code:'52', name:'Bordj Badji Mokhtar' },
+          { code:'53', name:'Beni Abbes' },{ code:'54', name:'Timimoun' },{ code:'55', name:'Touggourt' },
+          { code:'56', name:'Djanet' },{ code:'57', name:'In Salah' },{ code:'58', name:'In Guezzam' }
+        ],
+
+        get total() {
+          return Alpine.store('cart').total + this.shippingCost;
+        },
+
+        validate() {
+          this.errors.firstName = !this.form.firstName;
+          this.errors.lastName = !this.form.lastName;
+          this.errors.phone = !this.form.phone || this.form.phone.replace(/\s/g,'').length < 9;
+          this.errors.wilaya = !this.form.wilaya;
+          this.errors.city = !this.form.city;
+          this.errors.address = this.deliveryMethod === 'home' ? !this.form.address : false;
+          return !Object.values(this.errors).some(v => v);
+        },
+
+        async placeOrder() {
+          if (!this.validate()) return;
+          this.ordering = true;
+          this.orderError = '';
+          const cart = Alpine.store('cart');
+          const items = cart.items;
+          if (!items.length) { this.orderError = 'Cart is empty.'; this.ordering = false; return }
+          try {
+            const res = await fetch('/api/orders', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                firstName: this.form.firstName,
+                lastName: this.form.lastName,
+                phone: this.form.phone,
+                address: this.deliveryMethod === 'home' ? this.form.address : 'Desk pickup - ' + this.form.city + ', Wilaya ' + this.form.wilaya,
+                wilaya: this.form.wilaya,
+                city: this.form.city,
+
+                paymentMethod: 'cod',
+                subtotal: cart.total,
+                shippingCost: this.shippingCost,
+                discount: 0,
+                total: this.total,
+                items: items.map(i => ({
+                  productId: i.id,
+                  productName: i.name,
+                  brand: i.brand || '',
+                  imageUrl: i.image || '',
+                  price: i.price,
+                  quantity: i.qty
+                }))
+              })
+            });
+            const data = await res.json();
+            if (data.success) {
+              this.orderDone = true;
+              this.orderId = data.orderId;
+              cart.clear();
+            } else {
+              this.orderError = data.message || 'Failed to place order';
+            }
+          } catch (e) {
+            this.orderError = 'Network error. Please try again.';
+          } finally {
+            this.ordering = false;
+          }
+        }
+      };
+    }
+  </script>
+  <script>
+    (function() {
+      const navbar = document.querySelector('.navbar');
+      if (navbar) {
+        const check = () => navbar.classList.toggle('scrolled', window.scrollY > 10);
+        window.addEventListener('scroll', check, { passive: true });
+        check();
+      }
+    })();
+  </script>
+</body>
+</html>

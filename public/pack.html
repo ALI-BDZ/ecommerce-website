@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+    <title>Pack — IronFuel Nutrition</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html,body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#0d0d0d;line-height:1.6;-webkit-font-smoothing:antialiased;background:#fff}
+        h1,h2,h3,h4{font-weight:800;letter-spacing:-0.03em;margin:0;line-height:1.15}
+        a{color:inherit;text-decoration:none}
+        img{max-width:100%;display:block}
+        button{font-family:inherit}
+        [x-cloak]{display:none!important}
+        :root{
+          --bg:#fff;--bg-alt:#fafafa;--bg-tert:#f3f3f5;--text:#0d0d0d;--text-muted:#8a8a8e;--border:#e8e8ed;
+          --black:#0a0a0a;--white:#fff;--accent:#7c3aed;
+          --ink:#0b0b10;--ink-soft:#13131f;--paper:#f8f7f4;--paper-warm:#f0eeea;--paper-cool:#e8e6e3;
+          --accent-light:#7c3aed;--accent-glow:rgba(91,33,182,0.18);
+          --text-secondary:#6b6b78;--text-tertiary:#9a9aa8;
+          --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--s7:48px;
+          --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:24px;--space-6:32px;
+          --r-sm:8px;--r-md:16px;--r-lg:24px;--r-pill:999px;
+          --radius-sm:8px;--radius-md:16px;--radius-lg:24px;--radius-xl:32px;
+          --sh-sm:0 1px 3px rgba(0,0,0,.06);--sh-md:0 4px 12px rgba(0,0,0,.08);--sh-lg:0 8px 30px rgba(0,0,0,.12);
+          --shadow-sm:0 1px 2px rgba(11,11,16,0.04);--shadow-lg:0 16px 48px rgba(11,11,16,0.10);--shadow-xl:0 24px 80px rgba(11,11,16,0.14);
+          --fast:150ms ease;--base:300ms ease;
+          --duration-fast:200ms;--duration-base:400ms;
+          --ease-out-expo:cubic-bezier(0.16,1,0.3,1);--ease-out-quart:cubic-bezier(0.25,1,0.5,1);
+          --container:1520px;--nav-h:72px;
+        }
+        body{padding:0 24px}
+        .container{max-width:1280px;margin:0 auto}
+        /* Navbar — no dark hero behind it, so start scrolled */
+        .navbar{position:fixed;top:var(--space-3);left:var(--space-3);right:var(--space-3);z-index:100;height:var(--nav-h);border-radius:var(--radius-xl);transition:background var(--duration-base) var(--ease-out-quart),box-shadow var(--duration-base),border-color var(--duration-base);background:rgba(250,249,247,0.85);backdrop-filter:blur(24px) saturate(1.4);border:1px solid var(--border);box-shadow:var(--shadow-sm);}
+        .navbar-inner{max-width:var(--container);margin:0 auto;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 var(--space-5)}
+        .navbar-burger{display:none;background:none;border:none;color:var(--text);cursor:pointer;padding:6px;border-radius:var(--radius-sm);transition:background var(--duration-fast)}
+        .navbar-burger:hover{background:var(--paper-cool)}
+        .navbar-logo{display:flex;flex-direction:column;line-height:1;color:var(--text);text-decoration:none;position:relative}
+        .logo-sub{font-size:8px;font-weight:700;letter-spacing:0.32em;color:var(--text-tertiary);margin-top:2px}
+        .navbar-links{display:flex;gap:var(--space-6);align-items:center}
+        .navbar-link{font-size:13.5px;font-weight:600;letter-spacing:-0.01em;color:var(--text-secondary);transition:color var(--duration-fast);position:relative;padding:4px 0;}
+        .navbar-link::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--accent);transition:width var(--duration-fast) var(--ease-out-expo);}
+        .navbar-link:hover{color:var(--text)}.navbar-link:hover::after{width:100%}
+        .navbar-link.active{color:var(--text)}.navbar-link.active::after{width:100%}
+        .navbar-actions{display:flex;align-items:center;gap:var(--space-2)}
+        .navbar-icon-btn{position:relative;background:none;border:none;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;transition:background var(--duration-fast),transform var(--duration-fast);}
+        .navbar-icon-btn:hover{background:var(--paper-cool);transform:translateY(-1px)}
+        .cart-count{position:absolute;top:2px;right:2px;background:var(--accent);color:var(--white);font-size:9px;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--paper);}
+        .search-panel{position:absolute;top:52px;right:-8px;width:340px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-xl);padding:var(--space-4);z-index:50;opacity:0;transform:translateY(8px) scale(0.98);transition:opacity var(--duration-fast),transform var(--duration-fast);pointer-events:none;}
+        .search-panel.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+        .search-input{width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:14px;background:var(--paper-warm);outline:none;transition:border-color var(--duration-fast),box-shadow var(--duration-fast);font-family:inherit;}
+        .search-input:focus{border-color:var(--accent-light);box-shadow:0 0 0 4px var(--accent-glow)}
+        .search-results{margin-top:var(--space-3);max-height:300px;overflow-y:auto}
+        .pack-layout{display:grid;grid-template-columns:1fr 1fr;gap:var(--s7);padding:calc(var(--space-3) + var(--nav-h) + var(--space-5)) 0 var(--s7)}
+        .pack-img{border-radius:var(--r-lg);overflow:hidden;background:var(--bg-alt);aspect-ratio:1;position:sticky;top:96px}
+        .pack-img img{width:100%;height:100%;object-fit:cover}
+        .pack-info{padding:var(--s4) 0}
+        .pack-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);background:var(--accent);background:rgba(124,58,237,.1);padding:4px 12px;border-radius:var(--r-pill);margin-bottom:var(--s3)}
+        .pack-title{font-size:28px;font-weight:800;margin-bottom:var(--s2)}
+        .pack-desc{font-size:14px;color:var(--text-muted);margin-bottom:var(--s5);line-height:1.7}
+        .pack-price{font-size:28px;font-weight:800;margin-bottom:var(--s5)}
+        .pack-meta{display:flex;gap:var(--s4);margin-bottom:var(--s6);flex-wrap:wrap}
+        .pack-meta-item{font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:var(--s1)}
+        .pack-meta-item svg{width:14px;height:14px}
+
+        /* Order Form */
+        .order-section{border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s5);margin-top:var(--s5)}
+        .order-title{font-size:16px;font-weight:700;margin-bottom:var(--s4);display:flex;align-items:center;gap:var(--s2)}
+        .order-title svg{color:var(--accent)}
+        .delivery-toggle{display:flex;gap:var(--s2);margin-bottom:var(--s4)}
+        .delivery-opt{flex:1;display:flex;align-items:center;gap:var(--s2);padding:var(--s3);border:1.5px solid var(--border);border-radius:var(--r-md);cursor:pointer;transition:all var(--fast);font-size:13px;font-weight:600}
+        .delivery-opt.active{border-color:var(--accent);background:rgba(124,58,237,.05);color:var(--accent)}
+        .delivery-opt .dot{width:8px;height:8px;border-radius:50%;border:2px solid var(--border);flex-shrink:0}
+        .delivery-opt.active .dot{border-color:var(--accent);background:var(--accent)}
+        .qo-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)}
+        .qo-field{display:flex;flex-direction:column;gap:4px}
+        .qo-field.full{grid-column:1/-1}
+        .qo-label{font-size:12px;font-weight:600;color:var(--text-muted)}
+        .qo-input{height:44px;padding:0 var(--s3);border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;font-family:inherit;transition:border-color var(--fast);background:var(--white);color:var(--text)}
+        .qo-input:focus{outline:none;border-color:var(--accent)}
+        .qo-input.error{border-color:#ef4444}
+        .qo-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8a8e' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+        .qo-error{font-size:11px;color:#ef4444;display:none}
+        .qo-input.error ~ .qo-error{display:block}
+        .qo-total-row{display:flex;justify-content:space-between;align-items:center;padding:var(--s3) 0;border-top:1px solid var(--border);margin-top:var(--s3)}
+        .qo-total-label{font-size:14px;font-weight:600;color:var(--text-muted)}
+        .qo-total-value{font-size:20px;font-weight:800}
+        .btn-place-order{width:100%;height:52px;display:flex;align-items:center;justify-content:center;gap:var(--s2);background:var(--accent);color:var(--white);border:none;border-radius:var(--r-pill);font-size:14px;font-weight:700;letter-spacing:.03em;cursor:pointer;transition:all var(--fast);text-transform:uppercase;margin-top:var(--s3)}
+        .btn-place-order:hover{transform:scale(1.01);box-shadow:0 10px 35px rgba(124,58,237,.2)}
+        .btn-place-order:active{transform:scale(.99)}
+        .btn-place-order:disabled{opacity:.5;cursor:not-allowed;transform:none}
+        .btn-place-text{display:flex;align-items:center;gap:var(--s2)}
+        .btn-place-price{margin-left:auto;opacity:.8;font-size:13px}
+
+        /* Footer */
+        .site-footer{border-top:1px solid var(--border);margin-top:var(--s7);padding:var(--s6) 0}
+        .footer-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+        .footer-logo .logo-main{font-size:16px;font-weight:900;letter-spacing:-.03em}
+        .footer-logo .logo-sub{font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);margin-left:4px}
+        .footer-tagline{font-size:13px;color:var(--text-muted)}
+        .footer-links{display:flex;gap:var(--s4);font-size:13px;color:var(--text-muted)}
+        .footer-links a:hover{color:var(--text)}
+
+        @media(max-width:900px){
+            .navbar-burger{display:block}
+            .navbar-links{display:none;position:absolute;top:calc(var(--nav-h) - 8px);left:0;right:0;background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);flex-direction:column;padding:var(--space-4);gap:var(--space-3);border:1px solid var(--border)}
+            .navbar-links.is-open{display:flex;animation:slideDown .25s var(--ease-out-quart)}
+        }
+        @media(max-width:768px){
+            .pack-layout{grid-template-columns:1fr;gap:var(--s5)}
+            .pack-img{position:static;aspect-ratio:4/3}
+            .pack-title{font-size:22px}
+            .qo-grid{grid-template-columns:1fr}
+        }
+        @keyframes slideDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+    </style>
+</head>
+<body>
+    <header class="navbar" id="navbar" x-data="{ mobileOpen: false }">
+        <div class="navbar-inner">
+            <button class="navbar-burger" @click="mobileOpen = !mobileOpen" aria-label="Menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+            <a href="/" class="navbar-logo"><span class="logo-main">IRONFUEL</span><span class="logo-sub">NUTRITION</span></a>
+            <nav class="navbar-links" :class="{ 'is-open': mobileOpen }">
+                <a href="/" class="navbar-link">Home</a>
+                <a href="/shop.html" class="navbar-link">Shop</a>
+                <a href="/deals.html" class="navbar-link">Offers</a>
+                <a href="/about.html" class="navbar-link">About Us</a>
+            </nav>
+            <div class="navbar-actions" x-data="{ searchOpen: false }" @keydown.escape.window="searchOpen = false">
+                <div class="search-wrap">
+                    <button class="navbar-icon-btn" @click="searchOpen = !searchOpen" aria-label="Search">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </button>
+                    <div class="search-panel" :class="{ open: searchOpen }" @click.outside="searchOpen = false">
+                        <input type="search" placeholder="Search products..." class="search-input" hx-get="/api/search" hx-trigger="keyup changed delay:300ms" hx-target="#search-results" hx-swap="innerHTML"/>
+                        <div id="search-results" class="search-results"></div>
+                    </div>
+                </div>
+                <a href="/cart" class="navbar-icon-btn" aria-label="Cart">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                    <span class="cart-count" x-text="$store.cart.count" x-show="$store.cart.count > 0" x-cloak>0</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main x-data="packPage()" x-init="init()">
+        <div class="container">
+            <!-- Loading -->
+            <div x-show="loading" style="text-align:center;padding:var(--s9) 0;color:var(--text-muted)">Loading pack...</div>
+
+            <!-- Error -->
+            <div x-show="!loading && error" style="text-align:center;padding:var(--s9) 0;color:var(--text-muted)">
+                <p x-text="error"></p>
+                <a href="/" style="display:inline-block;margin-top:var(--s4);font-size:13px;font-weight:600;color:var(--accent)">Back to Home</a>
+            </div>
+           
+            <!-- Pack Detail -->
+            <div x-show="!loading && !error && pack.id" class="pack-layout" x-cloak>
+                <div class="pack-img">
+                    <img :src="pack.image || 'https://placehold.co/600x600/f5f5f6/0d0d0d?text='+encodeURIComponent(pack.name)" :alt="pack.name"/>
+                </div>
+                <div class="pack-info">
+                    <span class="pack-badge">BUNDLE DEAL</span>
+                    <h1 class="pack-title" x-text="pack.name"></h1>
+                    <p class="pack-desc" x-text="pack.description"></p>
+                    <p class="pack-price" x-text="formatPrice(pack.price)"></p>
+
+                    <div class="pack-meta">
+                        <div class="pack-meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                            <span x-text="'Valid for ' + pack.days_valid + ' days'"></span>
+                        </div>
+                        <div class="pack-meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <span>Free delivery across Algeria</span>
+                        </div>
+                    </div>
+
+                    <!-- Order Form -->
+                    <div class="order-section" x-data="quickOrder()" x-init="initQuickOrder()">
+                        <div class="order-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            Order This Pack
+                        </div>
+
+                        <div class="delivery-toggle">
+                            <div class="delivery-opt" :class="{ active: deliveryMethod === 'desk' }" @click="deliveryMethod='desk';form.address=''">
+                                <div class="dot"></div>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                                <span>Desk Pickup</span>
+                            </div>
+                            <div class="delivery-opt" :class="{ active: deliveryMethod === 'home' }" @click="deliveryMethod='home'">
+                                <div class="dot"></div>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                                <span>Home Delivery</span>
+                            </div>
+                        </div>
+
+                        <div class="qo-grid">
+                            <div class="qo-field">
+                                <label class="qo-label">First Name</label>
+                                <input type="text" class="qo-input" :class="{ error: errors.firstName }" x-model="form.firstName" placeholder="Ahmed" @input="errors.firstName=false"/>
+                                <span class="qo-error">Required</span>
+                            </div>
+                            <div class="qo-field">
+                                <label class="qo-label">Last Name</label>
+                                <input type="text" class="qo-input" :class="{ error: errors.lastName }" x-model="form.lastName" placeholder="Benali" @input="errors.lastName=false"/>
+                                <span class="qo-error">Required</span>
+                            </div>
+                            <div class="qo-field full">
+                                <label class="qo-label">Phone</label>
+                                <input type="tel" class="qo-input" :class="{ error: errors.phone }" x-model="form.phone" placeholder="0555 12 34 56" @input="errors.phone=false"/>
+                                <span class="qo-error">Valid phone required</span>
+                            </div>
+                            <div class="qo-field">
+                                <label class="qo-label">Wilaya</label>
+                                <select class="qo-input qo-select" :class="{ error: errors.wilaya }" x-model="form.wilaya" @change="errors.wilaya=false">
+                                    <option value="">Select</option>
+                                    <template x-for="w in wilayas" :key="w.code">
+                                        <option :value="w.code" x-text="w.code + ' - ' + w.name"></option>
+                                    </template>
+                                </select>
+                                <span class="qo-error">Required</span>
+                            </div>
+                            <div class="qo-field">
+                                <label class="qo-label">City / Baladiya</label>
+                                <input type="text" class="qo-input" :class="{ error: errors.city }" x-model="form.city" placeholder="Bab Ezzouar" @input="errors.city=false"/>
+                                <span class="qo-error">Required</span>
+                            </div>
+                            <div class="qo-field full" x-show="deliveryMethod === 'home'" x-transition>
+                                <label class="qo-label">Address</label>
+                                <input type="text" class="qo-input" :class="{ error: errors.address }" x-model="form.address" placeholder="Street, building, apartment" @input="errors.address=false"/>
+                                <span class="qo-error">Required for home delivery</span>
+                            </div>
+                        </div>
+
+                        <div class="qo-total-row">
+                            <span class="qo-total-label">Total</span>
+                            <span class="qo-total-value" x-text="formatPrice(pack.price)"></span>
+                        </div>
+                        <div style="font-size:12px;color:#ef4444;margin-bottom:var(--s2)" x-show="orderError" x-text="orderError"></div>
+
+                        <button class="btn-place-order" @click="placeOrder()" :disabled="ordering">
+                            <template x-if="!ordering">
+                                <span class="btn-place-text">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                    <span>PLACE ORDER</span>
+                                    <span class="btn-place-price" x-text="formatPrice(pack.price)"></span>
+                                </span>
+                            </template>
+                            <template x-if="ordering"><span class="btn-place-text">PLACING ORDER...</span></template>
+                        </button>
+
+                        <div style="font-size:13px;color:#059669;font-weight:600;text-align:center;margin-top:var(--s3)" x-show="orderSuccess" x-text="orderSuccess"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer" x-data="storeData()">
+        <div class="footer-inner">
+            <div class="footer-logo"><span class="logo-main" x-text="info.store_name || 'IRONFUEL'"></span></div>
+            <p class="footer-tagline" x-text="info.store_description || 'Premium supplements delivered across Algeria.'"></p>
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/shop.html">Shop</a>
+                <a href="/deals.html">Offers</a>
+                <a href="/about.html">About</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function packPage(){
+            return {
+                loading:true,error:null,pack:{},
+                async init(){
+                    const params=new URLSearchParams(window.location.search);
+                    const id=params.get('id');
+                    if(!id){this.error='No pack specified';this.loading=false;return}
+                    try{
+                        const res=await fetch('/api/packs');
+                        if(!res.ok)throw new Error('Failed to load');
+                        const packs=await res.json();
+                        this.pack=packs.find(p=>p.id===id);
+                        if(!this.pack)this.error='Pack not found';
+                        else Alpine.store('packData',{data:this.pack});
+                    }catch(e){this.error='Failed to load pack'}finally{this.loading=false}
+                },
+                formatPrice(n){return Number(n).toLocaleString('en-US')+' DZD'}
+            }
+        }
+
+        function quickOrder(){
+            return {
+                deliveryMethod:'home',
+                form:{firstName:'',lastName:'',phone:'',address:'',wilaya:'',city:''},
+                errors:{firstName:false,lastName:false,phone:false,address:false,wilaya:false,city:false},
+                ordering:false,orderSuccess:'',orderError:'',
+                wilayas:[
+                    {code:'01',name:'Adrar'},{code:'02',name:'Chlef'},{code:'03',name:'Laghouat'},
+                    {code:'04',name:'Oum El Bouaghi'},{code:'05',name:'Batna'},{code:'06',name:'Bejaia'},
+                    {code:'07',name:'Biskra'},{code:'08',name:'Bechar'},{code:'09',name:'Blida'},
+                    {code:'10',name:'Bouira'},{code:'11',name:'Tamanrasset'},{code:'12',name:'Tebessa'},
+                    {code:'13',name:'Tlemcen'},{code:'14',name:'Tiaret'},{code:'15',name:'Tizi Ouzou'},
+                    {code:'16',name:'Alger'},{code:'17',name:'Djelfa'},{code:'18',name:'Jijel'},
+                    {code:'19',name:'Setif'},{code:'20',name:'Saida'},{code:'21',name:'Skikda'},
+                    {code:'22',name:'Sidi Bel Abbes'},{code:'23',name:'Annaba'},{code:'24',name:'Guelma'},
+                    {code:'25',name:'Constantine'},{code:'26',name:'Medea'},{code:'27',name:'Mostaganem'},
+                    {code:'28',name:'Msila'},{code:'29',name:'Mascara'},{code:'30',name:'Ouargla'},
+                    {code:'31',name:'Oran'},{code:'32',name:'El Bayadh'},{code:'33',name:'Illizi'},
+                    {code:'34',name:'Bordj Bou Arreridj'},{code:'35',name:'Boumerdes'},
+                    {code:'36',name:'El Tarf'},{code:'37',name:'Tindouf'},{code:'38',name:'Tissemsilt'},
+                    {code:'39',name:'El Oued'},{code:'40',name:'Khenchela'},{code:'41',name:'Souk Ahras'},
+                    {code:'42',name:'Tipaza'},{code:'43',name:'Mila'},{code:'44',name:'Ain Defla'},
+                    {code:'45',name:'Naama'},{code:'46',name:'Ain Temouchent'},{code:'47',name:'Ghardaia'},
+                    {code:'48',name:'Relizane'},{code:'49',name:'El Mghair'},{code:'50',name:'El Meniaa'},
+                    {code:'51',name:'Ouled Djellal'},{code:'52',name:'Bordj Badji Mokhtar'},
+                    {code:'53',name:'Beni Abbes'},{code:'54',name:'Timimoun'},{code:'55',name:'Touggourt'},
+                    {code:'56',name:'Djanet'},{code:'57',name:'In Salah'},{code:'58',name:'In Guezzam'}
+                ],
+                initQuickOrder(){},
+                formatPrice(n){return Number(n).toLocaleString('en-US')+' DZD'},
+                validate(){
+                    this.errors.firstName=!this.form.firstName;
+                    this.errors.lastName=!this.form.lastName;
+                    this.errors.phone=!this.form.phone||this.form.phone.replace(/\s/g,'').length<9;
+                    this.errors.wilaya=!this.form.wilaya;
+                    this.errors.city=!this.form.city;
+                    this.errors.address=this.deliveryMethod==='home'?!this.form.address:false;
+                    return !Object.values(this.errors).some(v=>v);
+                },
+                async placeOrder(){
+                    if(!this.validate())return;
+                    this.ordering=true;this.orderError='';
+                    const pack=Alpine.store('packData')?.data;
+                    if(!pack){this.orderError='Pack data not loaded.';this.ordering=false;return}
+                    try{
+                        const res=await fetch('/api/orders',{
+                            method:'POST',
+                            headers:{'Content-Type':'application/json'},
+                            body:JSON.stringify({
+                                firstName:this.form.firstName,lastName:this.form.lastName,
+                                phone:this.form.phone,
+                                address:this.deliveryMethod==='home'?this.form.address:'Desk pickup - '+this.form.city+', Wilaya '+this.form.wilaya,
+                                wilaya:this.form.wilaya,city:this.form.city,
+                                paymentMethod:'cod',subtotal:pack.price,shippingCost:700,discount:0,total:pack.price+700,
+                                items:[{productId:pack.id,productName:pack.name,brand:'Bundle',imageUrl:pack.image,price:pack.price,quantity:1}]
+                            })
+                        });
+                        const data=await res.json();
+                        if(data.success){
+                            this.orderSuccess='Order #'+data.orderId+' placed! We\'ll call you.';
+                            this.resetForm();
+                            setTimeout(()=>this.orderSuccess='',5000);
+                        }else{this.orderError=data.message||'Failed to place order'}
+                    }catch(e){this.orderError='Network error. Please try again.'}finally{this.ordering=false}
+                },
+                resetForm(){
+                    this.deliveryMethod='desk';
+                    this.form={firstName:'',lastName:'',phone:'',address:'',wilaya:'',city:''};
+                    this.errors={};this.orderError='';
+                }
+            }
+        }
+
+        document.addEventListener('alpine:init',()=>{
+            Alpine.store('cart',{
+                items:JSON.parse(localStorage.getItem('ironfuel_cart')||'[]'),
+                add(item){const e=this.items.find(i=>i.id===item.id);if(e){e.qty+=1}else{this.items.push({...item,qty:1})}this.save()},
+                remove(id){this.items=this.items.filter(i=>i.id!==id);this.save()},
+                get count(){return this.items.reduce((s,i)=>s+i.qty,0)},
+                get total(){return this.items.reduce((s,i)=>s+i.price*i.qty,0)},
+                save(){localStorage.setItem('ironfuel_cart',JSON.stringify(this.items))}
+            });
+            Alpine.store('packData',{data:null});
+
+            Alpine.data('storeData', () => ({
+                info: {},
+                async init() {
+                    try {
+                        const r = await fetch('/api/store-info');
+                        if (r.ok) this.info = await r.json();
+                    } catch (e) { console.error(e); }
+                }
+            }));
+        });
+    </script>
+    <script>
+        (function() {
+            const navbar = document.querySelector('.navbar');
+            if (navbar) {
+                const check = () => navbar.classList.toggle('scrolled', window.scrollY > 10);
+                window.addEventListener('scroll', check, { passive: true });
+                check();
+            }
+        })();
+    </script>
+</body>
+</html>

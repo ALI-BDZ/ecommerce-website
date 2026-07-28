@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title x-data x-text="($store.product?.data?.name || 'Product') + ' — IronFuel Nutrition'">Gold Standard 100% Whey — IronFuel Nutrition</title>
+    <meta name="description" content="24g of high-quality protein to support muscle recovery and growth." />
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js">
+    </script>
+    <script src="https://unpkg.com/htmx.org@2.0.4">
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+        html,
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: #0d0d0d;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            background: #fff
+        }
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin: 0;
+            line-height: 1.15
+        }
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+        img {
+            max-width: 100%;
+            display: block
+        }
+        button {
+            font-family: inherit
+        }
+        [x-cloak] {
+            display: none !important
+        }
+        :root {
+            --bg: #fff;
+            --bg-alt: #fafafa;
+            --bg-tert: #f3f3f5;
+            --text: #0d0d0d;
+            --text-muted: #8a8a8e;
+            --text-subtle: #b0b0b4;
+            --border: #e8e8ed;
+            --black: #0a0a0a;
+            --white: #fff;
+            --accent: #7c3aed;
+            --accent-soft: #f5f3ff;
+            --accent-subtle: #ede9fe;
+            --ink: #0b0b10;
+            --ink-soft: #13131f;
+            --paper: #f8f7f4;
+            --paper-warm: #f0eeea;
+            --paper-cool: #e8e6e3;
+            --accent-light: #7c3aed;
+            --accent-glow: rgba(91,33,182,0.18);
+            --text-secondary: #6b6b78;
+            --text-tertiary: #9a9aa8;
+            --s1: 4px;
+            --s2: 8px;
+            --s3: 12px;
+            --s4: 16px;
+            --s5: 24px;
+            --s6: 32px;
+            --s7: 48px;
+            --s8: 64px;
+            --s9: 96px;
+            --s10: 120px;
+            --s11: 160px;
+            --r-sm: 8px;
+            --r-md: 16px;
+            --r-lg: 24px;
+            --r-xl: 32px;
+            --r-pill: 999px;
+            --sh-sm: 0 1px 3px rgba(0, 0, 0, .04);
+            --sh-md: 0 4px 16px rgba(0, 0, 0, .06);
+            --sh-lg: 0 10px 35px rgba(0, 0, 0, .06);
+            --sh-xl: 0 20px 60px rgba(0, 0, 0, .08);
+            --container: 1520px;
+            --pad: 24px;
+            --nav-h: 72px;
+            --fast: 150ms ease;
+            --base: 300ms ease;
+            --slow: 500ms ease;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 24px;
+            --space-6: 32px;
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --shadow-sm: 0 1px 2px rgba(11,11,16,0.04);
+            --shadow-lg: 0 16px 48px rgba(11,11,16,0.10);
+            --shadow-xl: 0 24px 80px rgba(11,11,16,0.14);
+            --duration-fast: 200ms;
+            --duration-base: 400ms;
+            --ease-out-expo: cubic-bezier(0.16,1,0.3,1);
+            --ease-out-quart: cubic-bezier(0.25,1,0.5,1)
+        }
+        body {
+            padding: 0 var(--pad)
+        }
+        .container {
+            max-width: var(--container);
+            margin: 0 auto;
+            padding: 0
+        }
+        /* Navbar — no dark hero behind it, so start scrolled */
+        .navbar{position:fixed;top:var(--space-3);left:var(--space-3);right:var(--space-3);z-index:100;height:var(--nav-h);border-radius:var(--radius-xl);transition:background var(--duration-base) var(--ease-out-quart),box-shadow var(--duration-base),border-color var(--duration-base);background:rgba(250,249,247,0.85);backdrop-filter:blur(24px) saturate(1.4);border:1px solid var(--border);box-shadow:var(--shadow-sm);}
+        .navbar-inner{max-width:var(--container);margin:0 auto;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 var(--space-5)}
+        .navbar-burger{display:none;background:none;border:none;color:var(--text);cursor:pointer;padding:6px;border-radius:var(--radius-sm);transition:background var(--duration-fast)}
+        .navbar-burger:hover{background:var(--paper-cool)}
+        .navbar-logo{display:flex;flex-direction:column;line-height:1;color:var(--text);text-decoration:none;position:relative}
+        .logo-sub{font-size:8px;font-weight:700;letter-spacing:0.32em;color:var(--text-tertiary);margin-top:2px}
+        .navbar-links{display:flex;gap:var(--space-6);align-items:center}
+        .navbar-link{font-size:13.5px;font-weight:600;letter-spacing:-0.01em;color:var(--text-secondary);transition:color var(--duration-fast);position:relative;padding:4px 0;}
+        .navbar-link::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--accent);transition:width var(--duration-fast) var(--ease-out-expo);}
+        .navbar-link:hover{color:var(--text)}.navbar-link:hover::after{width:100%}
+        .navbar-link.active{color:var(--text)}.navbar-link.active::after{width:100%}
+        .navbar-actions{display:flex;align-items:center;gap:var(--space-2)}
+        .navbar-icon-btn{position:relative;background:none;border:none;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;transition:background var(--duration-fast),transform var(--duration-fast);}
+        .navbar-icon-btn:hover{background:var(--paper-cool);transform:translateY(-1px)}
+        .cart-count{position:absolute;top:2px;right:2px;background:var(--accent);color:var(--white);font-size:9px;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--paper);}
+        .search-panel{position:absolute;top:52px;right:-8px;width:340px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-xl);padding:var(--space-4);z-index:50;opacity:0;transform:translateY(8px) scale(0.98);transition:opacity var(--duration-fast),transform var(--duration-fast);pointer-events:none;}
+        .search-panel.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+        .search-input{width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:14px;background:var(--paper-warm);outline:none;transition:border-color var(--duration-fast),box-shadow var(--duration-fast);font-family:inherit;}
+        .search-input:focus{border-color:var(--accent-light);box-shadow:0 0 0 4px var(--accent-glow)}
+        .search-results{margin-top:var(--space-3);max-height:300px;overflow-y:auto}
+        .breadcrumb {
+            padding-top: calc(var(--space-3) + var(--nav-h) + var(--s5));
+            padding-bottom: var(--s5)
+        }
+        .breadcrumb-list {
+            display: flex;
+            align-items: center;
+            gap: var(--s2);
+            list-style: none;
+            font-size: 13px;
+            color: var(--text-muted);
+            flex-wrap: wrap
+        }
+        .breadcrumb-list li+li::before {
+            content: '\203A';
+            margin-right: var(--s2);
+            color: var(--text-subtle)
+        }
+        .breadcrumb-list a {
+            transition: color var(--fast)
+        }
+        .breadcrumb-list a:hover {
+            color: var(--text)
+        }
+        .breadcrumb-list .current {
+            color: var(--text);
+            font-weight: 600
+        }
+        .product-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--s8);
+            align-items: start;
+            padding-bottom: var(--s10)
+        }
+        .gallery {
+            position: sticky;
+            top: calc(var(--nav-h) + var(--s6));
+            background: var(--bg-alt);
+            border-radius: var(--r-lg);
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden
+        }
+        .gallery img {
+            max-width: 85%;
+            max-height: 85%;
+            object-fit: contain;
+            transition: opacity var(--base)
+        }
+        .product-info {
+            padding: var(--s4) 0
+        }
+        .product-badge {
+            display: inline-block;
+            background: var(--black);
+            color: var(--white);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .06em;
+            padding: 5px 14px;
+            border-radius: var(--r-pill);
+            text-transform: uppercase;
+            margin-bottom: var(--s4)
+        }
+        .product-title {
+            font-size: clamp(28px, 3vw, 40px);
+            font-weight: 800;
+            letter-spacing: -.03em;
+            line-height: 1.1;
+            margin-bottom: var(--s3)
+        }
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: var(--s2);
+            margin-bottom: var(--s2)
+        }
+        .stars {
+            display: flex;
+            gap: 2px;
+            color: #f59e0b;
+            font-size: 16px
+        }
+        .stars .star-empty {
+            color: #d1d5db
+        }
+        .rating-num {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text)
+        }
+        .rating-count {
+            font-size: 14px;
+            color: var(--accent);
+            font-weight: 600;
+            cursor: pointer
+        }
+        .rating-count:hover {
+            text-decoration: underline
+        }
+        .user-rating {
+            display: flex;
+            align-items: center;
+            gap: var(--s3);
+            margin-bottom: var(--s4);
+            padding: var(--s3) var(--s4);
+            background: var(--bg-alt);
+            border-radius: var(--r-md);
+            border: 1px solid var(--border);
+            flex-wrap: wrap
+        }
+        .star-btn {
+            cursor: pointer;
+            display: inline-flex;
+            line-height: 0;
+            transition: transform var(--fast);
+            background: none;
+            border: none;
+            padding: 2px
+        }
+        .star-btn:hover {
+            transform: scale(1.2)
+        }
+        .star-btn:focus-visible {
+            outline: 2px solid var(--accent);
+            border-radius: 4px
+        }
+        .star-btn svg {
+            pointer-events: none;
+            display: block
+        }
+        .rating-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: nowrap
+        }
+        .rating-thanks {
+            font-size: 12px;
+            font-weight: 700;
+            color: #059669;
+            animation: fadeUp .3s ease
+        }
+        .product-category {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: var(--s4)
+        }
+        .product-desc {
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: var(--s6);
+            max-width: 480px
+        }
+        .macro-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--s3);
+            padding: var(--s5) 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            margin-bottom: var(--s6)
+        }
+        .macro-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-align: center
+        }
+        .macro-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--text-muted)
+        }
+        .macro-value {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: -.02em
+        }
+        .macro-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .04em
+        }
+        .product-price {
+            margin-bottom: var(--s5)
+        }
+        .price-main {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -.02em
+        }
+        .price-tax {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px
+        }
+        .variant-section {
+            margin-bottom: var(--s5)
+        }
+        .variant-label {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: var(--s3)
+        }
+        .variant-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--s2)
+        }
+        .variant-btn {
+            padding: 10px 20px;
+            border-radius: var(--r-pill);
+            border: 1.5px solid var(--border);
+            background: var(--white);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--fast);
+            color: var(--text)
+        }
+        .variant-btn:hover {
+            border-color: var(--text-subtle)
+        }
+        .variant-btn.active {
+            border-color: var(--black);
+            background: var(--black);
+            color: var(--white)
+        }
+        .quantity-row {
+            display: flex;
+            align-items: center;
+            gap: var(--s4);
+            margin-bottom: var(--s6)
+        }
+        .quantity-label {
+            font-size: 14px;
+            font-weight: 700
+        }
+        .quantity-stepper {
+            display: flex;
+            align-items: center;
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-pill);
+            overflow: hidden
+        }
+        .qty-btn {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+            transition: background var(--fast)
+        }
+        .qty-btn:hover {
+            background: var(--bg-tert)
+        }
+        .qty-btn:disabled {
+            opacity: .3;
+            cursor: not-allowed
+        }
+        .qty-value {
+            width: 48px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 700;
+            border-left: 1px solid var(--border);
+            border-right: 1px solid var(--border);
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+        .accordion {
+            border-top: 1px solid var(--border)
+        }
+        .accordion-item {
+            border-bottom: 1px solid var(--border)
+        }
+        .accordion-trigger {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--s5) 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: .02em;
+            color: var(--text);
+            text-align: left
+        }
+        .accordion-trigger:hover {
+            color: var(--accent)
+        }
+        .accordion-icon {
+            width: 20px;
+            height: 20px;
+            transition: transform var(--base);
+            flex-shrink: 0
+        }
+        .accordion-item.open .accordion-icon {
+            transform: rotate(45deg)
+        }
+        .accordion-body {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height var(--base)
+        }
+        .accordion-item.open .accordion-body {
+            max-height: 600px;
+            padding-bottom: var(--s5)
+        }
+        .accordion-content {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.8
+        }
+        .accordion-content ul {
+            padding-left: var(--s5);
+            margin: var(--s3) 0
+        }
+        .accordion-content li {
+            margin-bottom: var(--s1)
+        }
+        .accordion-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--s3) 0;
+            font-size: 13px
+        }
+        .accordion-content th,
+        .accordion-content td {
+            padding: var(--s2) var(--s3);
+            text-align: left;
+            border-bottom: 1px solid var(--border)
+        }
+        .accordion-content th {
+            font-weight: 700;
+            color: var(--text)
+        }
+        .accordion-content td {
+            color: var(--text-muted)
+        }
+        .related-section {
+            padding: var(--s10) 0;
+            border-top: 1px solid var(--border)
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--s6)
+        }
+        .section-title {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -.02em
+        }
+        .view-all {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: color var(--fast)
+        }
+        .view-all:hover {
+            color: var(--text)
+        }
+        .related-track {
+            display: flex;
+            flex-direction: column;
+            gap: var(--s5)
+        }
+        .related-track .product-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            display: flex;
+            gap: var(--s6);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all var(--base)
+        }
+        .related-track .product-card:hover {
+            box-shadow: var(--sh-xl);
+            transform: translateY(-3px)
+        }
+        .related-track .product-img-wrap {
+            width: 280px;
+            flex-shrink: 0;
+            background: var(--bg-alt);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--s6);
+            overflow: hidden;
+            aspect-ratio: 1
+        }
+        .related-track .product-img-wrap img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform var(--base)
+        }
+        .related-track .product-card:hover .product-img-wrap img {
+            transform: scale(1.05)
+        }
+        .related-track .product-body {
+            padding: var(--s5) var(--s5) var(--s5) 0;
+            display: flex;
+            flex-direction: column;
+            gap: var(--s2);
+            flex: 1;
+            justify-content: center
+        }
+        .related-track .product-brand {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: .08em
+        }
+        .related-track .product-name {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1.3
+        }
+        .related-track .card-rating {
+            display: flex;
+            align-items: center;
+            gap: var(--s1);
+            font-size: 14px;
+            color: var(--text-muted)
+        }
+        .related-track .card-cart-btn {
+            align-self: flex-start;
+            margin-top: var(--s2);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: var(--black);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--fast);
+            flex-shrink: 0
+        }
+        .related-track .card-cart-btn:hover {
+            background: var(--accent);
+            transform: scale(1.1);
+            box-shadow: var(--sh-md)
+        }
+        .related-track .card-cart-btn.added {
+            background: #22c55e
+        }
+        .site-footer {
+            margin-top: var(--s10);
+            padding: var(--s8) 0 var(--s6);
+            border-top: 1px solid var(--border)
+        }
+        .footer-inner {
+            text-align: center
+        }
+        .footer-logo {
+            margin-bottom: var(--s3)
+        }
+        .footer-logo .logo-main {
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: -0.03em
+        }
+        .footer-logo .logo-sub {
+            font-size: 8px
+        }
+        .footer-tagline {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: var(--s5)
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: var(--s4);
+            margin-bottom: var(--s5)
+        }
+        .footer-links a {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color var(--fast)
+        }
+        .footer-links a:hover {
+            color: var(--text)
+        }
+        .footer-links span {
+            color: var(--border)
+        }
+        .footer-bottom {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: var(--s5);
+            font-size: 12px;
+            color: var(--text-muted)
+        }
+        .footer-social {
+            display: flex;
+            gap: var(--s4)
+        }
+        .footer-social a {
+            color: var(--text-muted);
+            transition: color var(--fast)
+        }
+        .footer-social a:hover {
+            color: var(--text)
+        }
+        .sticky-bar {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, .95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            padding: var(--s3) var(--s4) env(safe-area-inset-bottom);
+            z-index: 90
+        }
+        .sticky-bar-inner {
+            display: flex;
+            align-items: center;
+            gap: var(--s3)
+        }
+        .sticky-price {
+            font-size: 18px;
+            font-weight: 800;
+            white-space: nowrap
+        }
+        .sticky-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--s2);
+            height: 48px;
+            background: var(--black);
+            color: var(--white);
+            border: none;
+            border-radius: var(--r-pill);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: .03em;
+            cursor: pointer;
+            text-transform: uppercase
+        }
+        .sticky-btn.added {
+            background: #22c55e
+        }
+        .quick-order-section {
+            border-top: 1px solid var(--border);
+            padding-top: var(--s6);
+            margin-top: var(--s6)
+        }
+        .quick-order-title {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -.02em;
+            margin-bottom: var(--s5);
+            display: flex;
+            align-items: center;
+            gap: var(--s3);
+            color: var(--text)
+        }
+        .quick-order-title .bolt {
+            color: var(--accent)
+        }
+        .delivery-toggle {
+            display: flex;
+            gap: var(--s2);
+            margin-bottom: var(--s5)
+        }
+        .delivery-opt {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: var(--s2);
+            padding: var(--s3) var(--s4);
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-md);
+            cursor: pointer;
+            transition: all var(--fast);
+            background: var(--white);
+            font-size: 12px;
+            font-weight: 600
+        }
+        .delivery-opt:hover {
+            border-color: var(--text-subtle)
+        }
+        .delivery-opt.active {
+            border-color: var(--accent);
+            background: var(--accent-soft)
+        }
+        .delivery-opt .dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all var(--fast)
+        }
+        .delivery-opt.active .dot {
+            border-color: var(--accent)
+        }
+        .delivery-opt.active .dot::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent)
+        }
+        .delivery-opt-icon {
+            width: 18px;
+            height: 18px;
+            color: var(--text-muted);
+            flex-shrink: 0
+        }
+        .delivery-opt.active .delivery-opt-icon {
+            color: var(--accent)
+        }
+        .qo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--s3)
+        }
+        .qo-grid .full {
+            grid-column: 1/-1
+        }
+        .qo-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px
+        }
+        .qo-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: .04em
+        }
+        .qo-input {
+            height: 44px;
+            padding: 0 var(--s3);
+            border-radius: var(--r-md);
+            border: 1.5px solid var(--border);
+            font-size: 13px;
+            font-family: inherit;
+            background: var(--white);
+            outline: none;
+            transition: all var(--fast)
+        }
+        .qo-input::placeholder {
+            color: var(--text-subtle)
+        }
+        .qo-input:focus {
+            border-color: var(--accent)
+        }
+        .qo-input.error {
+            border-color: #ef4444
+        }
+        .qo-select {
+            appearance: none;
+            background: var(--white) url("data:image/svg+xml,%3Csvg width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%238a8a8e' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 12px center;
+            cursor: pointer;
+            transition: all var(--fast);
+            border-radius: var(--r-lg);
+            padding: 0 var(--s4);
+            font-weight: 600;
+            letter-spacing: 0.01em
+        }
+        .qo-select:hover {
+            border-color: var(--accent);
+            box-shadow: 0 2px 12px rgba(91,33,182,0.1);
+            background-image: url("data:image/svg+xml,%3Csvg width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%235b21b6' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")
+        }
+        .qo-select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 2px 20px rgba(91,33,182,0.18);
+            border-radius: var(--r-lg)
+        }
+        .qo-select option {
+            padding: 14px 16px;
+            background: var(--white);
+            color: var(--text);
+            font-weight: 500
+        }
+        .qo-select option:hover,
+        .qo-select option:checked {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: var(--white)
+        }
+        .qo-field:has(.qo-select) .qo-label {
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            color: var(--accent)
+        }
+        .qo-error {
+            font-size: 11px;
+            color: #ef4444;
+            display: none
+        }
+        .qo-input.error+.qo-error {
+            display: block
+        }
+
+        /* ─── Custom Wilaya Dropdown ───────────────────────────────────── */
+        .wilaya-dropdown {
+            position: relative
+        }
+        .wilaya-trigger {
+            display: flex;
+            align-items: center;
+            gap: var(--s3);
+            height: 44px;
+            padding: 0 var(--s3);
+            border-radius: var(--r-lg);
+            border: 1.5px solid var(--border);
+            background: var(--white);
+            cursor: pointer;
+            transition: all var(--fast);
+            font-size: 13px;
+            font-family: inherit
+        }
+        .wilaya-trigger:hover {
+            border-color: var(--accent);
+            box-shadow: 0 2px 12px rgba(91,33,182,0.08)
+        }
+        .wilaya-trigger.open {
+            border-color: var(--accent);
+            border-radius: var(--r-lg) var(--r-lg) 0 0;
+            box-shadow: 0 2px 16px rgba(91,33,182,0.12)
+        }
+        .wilaya-trigger.error {
+            border-color: #ef4444
+        }
+        .wilaya-trigger .code-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 26px;
+            padding: 0 var(--s2);
+            border-radius: var(--r-sm);
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .04em
+        }
+        .wilaya-trigger .placeholder {
+            color: var(--text-subtle);
+            font-weight: 500
+        }
+        .wilaya-trigger .selected-name {
+            flex: 1;
+            font-weight: 600;
+            color: var(--text);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap
+        }
+        .wilaya-trigger .arrow {
+            transition: transform var(--fast);
+            color: var(--text-muted);
+            flex-shrink: 0
+        }
+        .wilaya-trigger.open .arrow {
+            transform: rotate(180deg)
+        }
+        .wilaya-panel {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: var(--white);
+            border: 1.5px solid var(--accent);
+            border-top: none;
+            border-radius: 0 0 var(--r-lg) var(--r-lg);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+            opacity: 0;
+            transform: translateY(-6px);
+            pointer-events: none;
+            transition: all var(--fast)
+        }
+        .wilaya-panel.open {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto
+        }
+        .wilaya-search {
+            padding: var(--s3);
+            border-bottom: 1px solid var(--border)
+        }
+        .wilaya-search input {
+            width: 100%;
+            height: 38px;
+            padding: 0 var(--s3);
+            border-radius: var(--r-md);
+            border: 1.5px solid var(--border);
+            font-size: 13px;
+            font-family: inherit;
+            background: var(--bg-alt);
+            outline: none;
+            transition: border-color var(--fast)
+        }
+        .wilaya-search input:focus {
+            border-color: var(--accent)
+        }
+        .wilaya-search input::placeholder {
+            color: var(--text-subtle)
+        }
+        .wilaya-list {
+            max-height: 240px;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent
+        }
+        .wilaya-list::-webkit-scrollbar {
+            width: 6px
+        }
+        .wilaya-list::-webkit-scrollbar-track {
+            background: transparent
+        }
+        .wilaya-list::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px
+        }
+        .wilaya-option {
+            display: flex;
+            align-items: center;
+            gap: var(--s3);
+            padding: var(--s3) var(--s4);
+            cursor: pointer;
+            transition: all var(--fast);
+            border-bottom: 1px solid rgba(0,0,0,0.03)
+        }
+        .wilaya-option:last-child {
+            border-bottom: none
+        }
+        .wilaya-option:hover {
+            background: linear-gradient(135deg, rgba(91,33,182,0.06) 0%, rgba(91,33,182,0.02) 100%)
+        }
+        .wilaya-option.active {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: var(--white)
+        }
+        .wilaya-option .opt-code {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 28px;
+            padding: 0 var(--s2);
+            border-radius: var(--r-sm);
+            background: rgba(91,33,182,0.08);
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .04em;
+            transition: all var(--fast)
+        }
+        .wilaya-option.active .opt-code {
+            background: rgba(255,255,255,0.2);
+            color: var(--white)
+        }
+        .wilaya-option .opt-name {
+            font-size: 13px;
+            font-weight: 600;
+            flex: 1
+        }
+        .wilaya-option .opt-check {
+            opacity: 0;
+            transition: opacity var(--fast)
+        }
+        .wilaya-option.active .opt-check {
+            opacity: 1
+        }
+        .wilaya-empty {
+            padding: var(--s6) var(--s4);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px
+        }
+
+        .qo-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--s4) 0;
+            border-top: 1px solid var(--border);
+            margin-top: var(--s2)
+        }
+        .qo-total-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted)
+        }
+        .qo-total-value {
+            font-size: 20px;
+            font-weight: 800
+        }
+        .qo-actions {
+            display: flex;
+            gap: var(--s3);
+            margin-top: var(--s4);
+            border: none;
+            outline: none
+        }
+        .btn-cart-save {
+            flex: 1;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--s2);
+            background: transparent;
+            color: var(--text);
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-pill);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .04em;
+            cursor: pointer;
+            transition: all var(--fast);
+            text-transform: uppercase;
+            flex-shrink: 0;
+            text-decoration: none;
+            outline: none;
+            box-shadow: none
+        }
+        .btn-cart-save:hover {
+            border-color: var(--black);
+            background: var(--bg-tert)
+        }
+        .btn-cart-save.added {
+            border-color: #22c55e;
+            color: #22c55e;
+            background: #f0fdf4
+        }
+        .btn-place-order {
+            flex: 2;
+            height: 52px;
+            background: var(--accent);
+            color: var(--white);
+            border: none;
+            border-radius: var(--r-pill);
+            cursor: pointer;
+            transition: all var(--fast);
+            padding: 0 16px;
+            text-decoration: none;
+            outline: none;
+            box-shadow: none
+        }
+        .btn-place-order:hover {
+            transform: scale(1.01);
+            box-shadow: var(--sh-lg)
+        }
+        .btn-place-order:active {
+            transform: scale(.99)
+        }
+        .btn-place-order:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+            transform: none
+        }
+        .btn-place-text {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%
+        }
+        .btn-place-price {
+            margin-left: auto;
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: -.01em;
+            white-space: nowrap
+        }
+        .btn-place-label {
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            white-space: nowrap
+        }
+        .quick-order-title {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -.02em;
+            margin-bottom: var(--s5);
+            display: flex;
+            align-items: center;
+            gap: var(--s3);
+            color: var(--text)
+        }
+        .quick-order-title .bolt {
+            color: var(--accent)
+        }
+        @media(max-width:480px) {
+            .delivery-toggle {
+                flex-direction: column
+            }
+            .qo-grid {
+                grid-template-columns: 1fr
+            }
+            .qo-actions {
+                flex-direction: column
+            }
+            .btn-cart-save,
+            .btn-place-order {
+                width: 100%;
+                flex: none
+            }
+        }
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px)
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-12px)
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+        .anim-fade-up {
+            animation: fadeUp .7s ease both
+        }
+        .anim-stagger-1 {
+            animation-delay: .1s
+        }
+        .anim-stagger-2 {
+            animation-delay: .2s
+        }
+        @media(max-width:1024px) {
+            .product-layout {
+                gap: var(--s6)
+            }
+            .gallery-thumbs {
+                display: none
+            }
+            .gallery {
+                flex-direction: column
+            }
+            .gallery-main {
+                aspect-ratio: 4/3
+            }
+            .macro-stats {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+        @media(max-width:900px) {
+            body {
+                padding: 0 var(--s4)
+            }
+            .navbar-burger{display:block}
+            .navbar-links{display:none;position:absolute;top:calc(var(--nav-h) - 8px);left:0;right:0;background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);flex-direction:column;padding:var(--space-4);gap:var(--space-3);border:1px solid var(--border)}
+            .navbar-links.is-open{display:flex;animation:slideDown .25s var(--ease-out-quart)}
+            .product-layout {
+                grid-template-columns: 1fr;
+                gap: var(--s5)
+            }
+            .gallery {
+                position: static
+            }
+            .gallery-thumbs {
+                display: flex;
+                flex-direction: row;
+                overflow-x: auto;
+                gap: var(--s2);
+                scrollbar-width: none
+            }
+            .gallery-thumbs::-webkit-scrollbar {
+                display: none
+            }
+            .gallery-thumb {
+                width: 60px;
+                height: 60px;
+                flex-shrink: 0
+            }
+            .gallery-main {
+                aspect-ratio: 1
+            }
+            .qo-actions {
+                flex-direction: column
+            }
+            .btn-cart-save,
+            .btn-place-order {
+                width: 100%;
+                flex: none
+            }
+            .btn-place-text {
+                gap: 6px
+            }
+            .btn-place-price {
+                margin-left: auto;
+                font-size: 14px
+            }
+            .btn-place-label {
+                font-size: 12px
+            }
+            .btn-place-text svg {
+                width: 14px;
+                height: 14px
+            }
+            .site-footer {
+                padding-bottom: calc(72px + env(safe-area-inset-bottom))
+            }
+            .section-title {
+                font-size: 24px
+            }
+            .related-track {
+                gap: var(--s4)
+            }
+            .related-track .product-card {
+                flex-direction: column
+            }
+            .related-track .product-img-wrap {
+                width: 100%;
+                aspect-ratio: 16/9;
+                padding: var(--s5)
+            }
+            .related-track .product-body {
+                padding: var(--s4)
+            }
+        }
+        @media(max-width:480px) {
+            .product-title {
+                font-size: 24px
+            }
+            .macro-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: var(--s2)
+            }
+            .variant-btn {
+                padding: 8px 14px;
+                font-size: 12px
+            }
+            .quantity-row {
+                flex-wrap: wrap
+            }
+            .add-to-cart-row {
+                flex-direction: column
+            }
+            .user-rating {
+                gap: var(--s2)
+            }
+            .rating-label {
+                font-size: 11px
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar" id="navbar" x-data="{ mobileOpen: false }">
+        <div class="navbar-inner">
+            <button class="navbar-burger" @click="mobileOpen = !mobileOpen" aria-label="Menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <a href="/" class="navbar-logo"><span class="logo-main">IRONFUEL</span><span class="logo-sub">NUTRITION</span></a>
+            <nav class="navbar-links" :class="{ 'is-open': mobileOpen }">
+                <a href="/" class="navbar-link">Home</a>
+                <a href="/shop.html" class="navbar-link">Shop</a>
+                <a href="/deals.html" class="navbar-link">Offers</a>
+                <a href="/about.html" class="navbar-link">About Us</a>
+            </nav>
+            <div class="navbar-actions" x-data="{ searchOpen: false }" @keydown.escape.window="searchOpen = false">
+                <div class="search-wrap">
+                    <button class="navbar-icon-btn" @click="searchOpen = !searchOpen" aria-label="Search">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="7"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                    </button>
+                    <div class="search-panel" :class="{ open: searchOpen }" @click.outside="searchOpen = false">
+                        <input type="search" placeholder="Search products..." class="search-input" hx-get="/api/search" hx-trigger="keyup changed delay:300ms" hx-target="#search-results" hx-swap="innerHTML"/>
+                        <div id="search-results" class="search-results"></div>
+                    </div>
+                </div>
+                <a href="/cart" class="navbar-icon-btn" aria-label="Cart">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"/>
+                        <circle cx="20" cy="21" r="1"/>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                    </svg>
+                    <span class="cart-count" x-text="$store.cart.count" x-show="$store.cart.count > 0" x-cloak>0</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol class="breadcrumb-list container">
+                <li><a href="/">Home</a></li>
+                <li><a href="/shop.html">Shop</a></li>
+                <li><span class="current" aria-current="page" x-data x-text="$store.product?.data?.name || 'Loading…'">Gold Standard 100% Whey</span></li>
+            </ol>
+        </nav>
+
+        <div class="container" x-data="productPage()" x-init="init()">
+            <div x-show="loading" style="text-align:center;padding:var(--s10) 0;color:var(--text-muted);font-size:14px">Loading…</div>
+            <div x-show="error" style="text-align:center;padding:var(--s10) 0;color:#ef4444;font-size:14px" x-text="error"></div>
+
+            <template x-if="!loading && !error && product.id">
+                <div>
+                    <div class="product-layout">
+                        <!-- Gallery Column -->
+                        <div>
+                            <div class="gallery anim-fade-up">
+                                <img :src="product.image || 'https://placehold.co/600x600/f5f5f6/0d0d0d?text=Product'" :alt="product.name" @error="$el.src='https://placehold.co/600x600/f5f5f6/0d0d0d?text='+encodeURIComponent(product.name)" />
+                            </div>
+                        </div>
+
+                        <!-- Product Info -->
+                        <div class="product-info anim-fade-up anim-stagger-1">
+                            <span class="product-category" x-text="product.category"></span>
+                            <h1 class="product-title" x-text="product.name"></h1>
+
+                            <!-- ★ Product Rating Display (read-only average) -->
+                            <div class="product-rating">
+                                <div class="stars" aria-label="Average rating">
+                                    <template x-for="i in 5" :key="i">
+                                        <span style="display:inline-flex;line-height:0">
+                                            <svg viewBox="0 0 24 24" stroke="#f59e0b" stroke-width="2" style="width:18px;height:18px">
+                                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" :fill="i <= Math.floor(product.rating) ? '#f59e0b' : 'none'" />
+                                            </svg>
+                                        </span>
+                                    </template>
+                                </div>
+                                <span class="rating-num" x-text="Number(product.rating).toFixed(1)"></span>
+                                <span class="rating-count" x-text="'(' + product.reviewCount + ' reviews)'"></span>
+                            </div>
+
+                            <!-- ★ User Rating (interactive) – fully Alpine-powered, no duplication -->
+                            <div class="user-rating">
+                                <span class="rating-label">Rate this product</span>
+                                <div class="stars" style="gap:2px">
+                                    <template x-for="star in 5" :key="star">
+                                        <button class="star-btn" @click="setUserRating(star)" @mouseenter="hoverStar = star" @mouseleave="hoverStar = 0" :aria-label="'Rate ' + star + ' out of 5 stars'" :title="star + ' stars'">
+                                            <svg viewBox="0 0 24 24" stroke="#f59e0b" stroke-width="2" style="width:28px;height:28px;pointer-events:none;transition:fill 0.15s ease">
+                                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                                                :fill="star <= (hoverStar || userRating) ? '#f59e0b' : 'none'" />
+                                            </svg>
+                                        </button>
+                                    </template>
+                                </div>
+                                <span class="rating-thanks" x-show="ratingThanks" x-text="ratingThanks"></span>
+                            </div>
+
+                            <p class="product-brand" x-text="product.brand"></p>
+                            <p class="product-desc" x-text="product.description"></p>
+
+                            <div class="product-price">
+                                <p class="price-main" x-text="formatPrice(product.price)"></p>
+                                <p class="price-tax">Tax included.</p>
+                            </div>
+
+                            <div class="quantity-row">
+                                <span class="quantity-label">Quantity</span>
+                                <div class="quantity-stepper">
+                                    <button class="qty-btn" @click="decrement()" :disabled="quantity <= 1">&minus;</button>
+                                    <span class="qty-value" x-text="quantity"></span>
+                                    <button class="qty-btn" @click="increment()">+</button>
+                                </div>
+                            </div>
+
+                            <!-- Quick Order -->
+                            <div class="quick-order-section" x-data="quickOrder()" x-init="initQuickOrder()">
+                                <div class="quick-order-title">
+                                    <svg class="bolt" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                                    </svg>
+                                    Order Now — <span x-text="formatPrice(currentPrice * quantity)"></span>
+                                </div>
+
+                                <div>
+                                    <div class="delivery-toggle">
+                                        <div class="delivery-opt" :class="{ active: deliveryMethod === 'desk' }" @click="deliveryMethod='desk';form.address=''">
+                                            <div class="dot"></div>
+                                            <svg class="delivery-opt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                <circle cx="12" cy="12" r="10"/>
+                                                <path d="M12 6v6l4 2"/>
+                                            </svg>
+                                            <span>Desk Delivery</span>
+                                        </div>
+                                        <div class="delivery-opt" :class="{ active: deliveryMethod === 'home' }" @click="deliveryMethod='home'">
+                                            <div class="dot"></div>
+                                            <svg class="delivery-opt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                                            </svg>
+                                            <span>Home Delivery</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="qo-grid">
+                                        <div class="qo-field">
+                                            <label class="qo-label">First Name</label>
+                                            <input type="text" class="qo-input" :class="{ error: errors.firstName }" x-model="form.firstName" placeholder="Ahmed" @input="errors.firstName=false" />
+                                            <span class="qo-error">Required</span>
+                                        </div>
+                                        <div class="qo-field">
+                                            <label class="qo-label">Last Name</label>
+                                            <input type="text" class="qo-input" :class="{ error: errors.lastName }" x-model="form.lastName" placeholder="Benali" @input="errors.lastName=false" />
+                                            <span class="qo-error">Required</span>
+                                        </div>
+                                        <div class="qo-field full">
+                                            <label class="qo-label">Phone</label>
+                                            <input type="tel" class="qo-input" :class="{ error: errors.phone }" x-model="form.phone" placeholder="0555 12 34 56" @input="errors.phone=false" />
+                                            <span class="qo-error">Valid phone required</span>
+                                        </div>
+                                        <div class="qo-field">
+                                            <label class="qo-label">Wilaya</label>
+                                            <div class="wilaya-dropdown" x-data="{ open: false, search: '' }" @click.away="open=false" @keydown.escape.window="open=false">
+                                                <div class="wilaya-trigger" :class="{ open, error: errors.wilaya }" @click="open=!open">
+                                                    <template x-if="form.wilaya">
+                                                        <span class="code-badge" x-text="form.wilaya"></span>
+                                                    </template>
+                                                    <span class="selected-name" x-text="form.wilaya ? wilayas.find(w => w.code === form.wilaya)?.name : ''"></span>
+                                                    <template x-if="!form.wilaya">
+                                                        <span class="placeholder">Select your wilaya</span>
+                                                    </template>
+                                                    <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                                                </div>
+                                                <div class="wilaya-panel" :class="{ open }">
+                                                    <div class="wilaya-search">
+                                                        <input type="text" placeholder="Search wilaya..." x-model="search" @input="" x-ref="wilayaSearch" x-effect="if(open) $nextTick(() => $refs.wilayaSearch.focus())" />
+                                                    </div>
+                                                    <div class="wilaya-list">
+                                                        <template x-for="w in wilayas.filter(w => !search || w.name.toLowerCase().includes(search.toLowerCase()) || w.code.includes(search))" :key="w.code">
+                                                            <div class="wilaya-option" :class="{ active: form.wilaya === w.code }" @click="form.wilaya = w.code; errors.wilaya = false; open = false; search = ''">
+                                                                <span class="opt-code" x-text="w.code"></span>
+                                                                <span class="opt-name" x-text="w.name"></span>
+                                                                <svg class="opt-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                                                            </div>
+                                                        </template>
+                                                        <div class="wilaya-empty" x-show="wilayas.filter(w => !search || w.name.toLowerCase().includes(search.toLowerCase()) || w.code.includes(search)).length === 0">
+                                                            No wilaya found
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <span class="qo-error">Required</span>
+                                        </div>
+                                        <div class="qo-field">
+                                            <label class="qo-label">City / Baladiya</label>
+                                            <input type="text" class="qo-input" :class="{ error: errors.city }" x-model="form.city" placeholder="Bab Ezzouar" @input="errors.city=false" />
+                                            <span class="qo-error">Required</span>
+                                        </div>
+                                        <div class="qo-field full" x-show="deliveryMethod === 'home'" x-transition>
+                                            <label class="qo-label">Address</label>
+                                            <input type="text" class="qo-input" :class="{ error: errors.address }" x-model="form.address" placeholder="Street, building, apartment" @input="errors.address=false" />
+                                            <span class="qo-error">Required for home delivery</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="qo-total-row">
+                                        <span class="qo-total-label">Total</span>
+                                        <span class="qo-total-value" x-text="formatPrice(currentPrice * (orderQty || 1))"></span>
+                                    </div>
+                                    <div style="font-size:12px;color:#ef4444;margin-bottom:var(--s2)" x-show="orderError" x-text="orderError"></div>
+
+                                    <div class="qo-actions">
+                                        <button class="btn-cart-save" :class="{ added: cartAdded }" @click="$store.cart.add({id:product.id,name:product.name,brand:product.brand,price:product.price,image:product.image});cartAdded=true;setTimeout(()=>cartAdded=false,1500)">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                                <path d="M5 7H2v12a3 3 0 003 3h14"/>
+                                                <path d="M9 5V3a2 2 0 012-2h2a2 2 0 012 2v2"/>
+                                            </svg>
+                                            <span x-text="cartAdded ? 'SAVED TO CART' : 'SAVE TO CART'"></span>
+                                        </button>
+                                        <button class="btn-place-order" @click="placeQuickOrder()" :disabled="ordering">
+                                            <template x-if="!ordering">
+                                                <span class="btn-place-text">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                                                    </svg>
+                                                    <span class="btn-place-label">Order Now</span>
+                                                    <span class="btn-place-price" x-text="formatPrice(currentPrice * (orderQty || 1))"></span>
+                                                </span>
+                                            </template>
+                                            <template x-if="ordering"><span class="btn-place-text">PLACING ORDER…</span></template>
+                                        </button>
+                                    </div>
+
+                                    <div style="font-size:13px;color:#059669;font-weight:600;text-align:center;margin-top:var(--s3);animation:fadeUp .3s ease" x-show="orderSuccess" x-text="orderSuccess"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Related -->
+                    <section class="related-section">
+                        <div class="section-header">
+                            <h2 class="section-title">You may also like</h2>
+                        </div>
+                        <div class="related-track">
+                            <template x-for="p in relatedProducts" :key="p.id">
+                                <div class="product-card" x-data="{ added: false }" @click="window.location.href='/product.html?slug='+p.slug">
+                                    <div class="product-img-wrap"><img :src="p.image" :alt="p.name" /></div>
+                                    <div class="product-body">
+                                        <p class="product-brand" x-text="p.brand"></p>
+                                        <p class="product-name" x-text="p.name"></p>
+                                        <div class="card-rating">
+                                            <template x-for="s in 5" :key="s">
+                                                <span style="display:inline-flex;line-height:0">
+                                                    <svg viewBox="0 0 24 24" :fill="s <= Math.floor(p.rating) ? '#f59e0b' : 'none'" stroke="#f59e0b" stroke-width="2" style="width:14px;height:14px">
+                                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                                    </svg>
+                                                </span>
+                                            </template>
+                                            <span x-text="'(' + p.reviews + ')'"></span>
+                                        </div>
+                                        <div style="display:flex;align-items:center;gap:var(--s4);margin-top:var(--s2)">
+                                            <span style="font-size:22px;font-weight:800" x-text="formatPrice(p.price)"></span>
+                                            <button class="card-cart-btn" :class="{ added }" @click.stop="$store.cart.add({id:p.id,name:p.name,brand:p.brand,price:p.price,image:p.image});added=true;setTimeout(()=>added=false,1200)">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <circle cx="9" cy="21" r="1"/>
+                                                    <circle cx="20" cy="21" r="1"/>
+                                                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </section>
+                </div>
+            </template>
+        </div>
+
+    <!-- Sticky Bar -->
+    <div class="sticky-bar" x-show="$store.product?.data" x-data="{ cartAdded: false }">
+        <div class="sticky-bar-inner">
+            <span class="sticky-price" x-text="$store.product?.data ? Number($store.product.data.price).toLocaleString('en-US')+' DZD' : ''"></span>
+            <button class="sticky-btn" :class="{ added: cartAdded }" @click="if($store.product?.data){$store.cart.add({id:$store.product.data.id,name:$store.product.data.name,brand:$store.product.data.brand,price:$store.product.data.price,image:$store.product.data.image});cartAdded=true;setTimeout(()=>cartAdded=false,1500)}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1"/>
+                    <circle cx="20" cy="21" r="1"/>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+                <span x-text="cartAdded ? 'SAVED' : 'Save to Cart'"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer" x-data="storeData()">
+        <div class="container footer-inner">
+            <div class="footer-logo"><span class="logo-main" x-text="info.store_name || 'IRONFUEL'"></span></div>
+            <p class="footer-tagline" x-text="info.store_description || 'Premium sports nutrition delivered across Algeria.'"></p>
+            <div class="footer-links">
+                <a href="/">Home</a><span>|</span>
+                <a href="/shop.html">Shop</a><span>|</span>
+                <a href="/deals.html">Offers</a><span>|</span>
+                <a href="/about.html">About</a>
+            </div>
+            <div class="footer-bottom">
+                <span x-text="'© ' + new Date().getFullYear() + ' ' + (info.store_name || 'IronFuel Nutrition')"></span>
+                <div class="footer-social">
+                    <a x-show="info.instagram" :href="info.instagram" target="_blank" rel="noopener" aria-label="Instagram">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="2" width="20" height="20" rx="5"/>
+                            <circle cx="12" cy="12" r="5"/>
+                            <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/>
+                        </svg>
+                    </a>
+                    <a x-show="info.tiktok" :href="info.tiktok" target="_blank" rel="noopener" aria-label="TikTok">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            // Cart store
+            Alpine.store('cart', {
+                items: JSON.parse(localStorage.getItem('ironfuel_cart') || '[]'),
+                add(item) {
+                    const existing = this.items.find(i => i.id === item.id);
+                    if (existing) { existing.qty += 1 } else { this.items.push({ ...item, qty: 1 }) }
+                    this.save();
+                },
+                remove(id) { this.items = this.items.filter(i => i.id !== id);
+                    this.save() },
+                updateQty(id, qty) {
+                    const item = this.items.find(i => i.id === id);
+                    if (!item) return;
+                    if (qty <= 0) { this.remove(id) } else { item.qty = qty;
+                        this.save() }
+                },
+                get count() { return this.items.reduce((s, i) => s + i.qty, 0) },
+                get total() { return this.items.reduce((s, i) => s + i.price * i.qty, 0) },
+                save() { localStorage.setItem('ironfuel_cart', JSON.stringify(this.items)) }
+            });
+
+            // Product store (shared across components)
+            Alpine.store('product', {
+                data: null
+            });
+
+            Alpine.data('storeData', () => ({
+                info: {},
+                async init() {
+                    try {
+                        const r = await fetch('/api/store-info');
+                        if (r.ok) this.info = await r.json();
+                    } catch (e) { console.error(e); }
+                }
+            }));
+        });
+
+        // ─── Product Page Alpine Component ──────────────────────────────────────
+        function productPage() {
+            return {
+                loading: true,
+                error: null,
+                quantity: 1,
+                activeAccordion: null,
+                cartAdded: false,
+
+                product: {},
+                relatedProducts: [],
+                // ── User rating state ──
+                userRating: 0, // 0 = not rated yet
+                hoverStar: 0,
+                ratingThanks: '',
+
+                async init() {
+                    const params = new URLSearchParams(window.location.search);
+                    const slug = params.get('slug');
+                    if (!slug) { this.error = 'No product specified';
+                        this.loading = false; return }
+                    try {
+                        const res = await fetch('/api/products/' + encodeURIComponent(slug));
+                        if (!res.ok) throw new Error('Product not found');
+                        const data = await res.json();
+                        this.product = data;
+                        this.relatedProducts = data.related || [];
+                        // Store in global store for sticky bar
+                        Alpine.store('product', { data: this.product });
+                    } catch (e) { this.error = e.message;
+                        this.product = null } finally { this.loading = false }
+                },
+
+                // ── User rating ──
+                setUserRating(star) {
+                    if (this.userRating === star) {
+                        // Click same star → toggle off (0 = unrated)
+                        this.userRating = 0;
+                        this.ratingThanks = '';
+                    } else {
+                        this.userRating = star;
+                        this.ratingThanks = 'Thanks for rating! ⭐';
+                        // Auto-dismiss after 3s
+                        clearTimeout(this._thanksTimer);
+                        this._thanksTimer = setTimeout(() => {
+                            this.ratingThanks = '';
+                        }, 3000);
+                    }
+                },
+
+                formatPrice(n) { return Number(n).toLocaleString('en-US') + ' DZD' },
+                increment() { this.quantity++ },
+                decrement() { if (this.quantity > 1) this.quantity-- },
+
+                get currentPrice() { return this.product.price || 0 }
+            }
+        }
+
+        // ─── Quick Order Component ──────────────────────────────────────────────
+        function quickOrder() {
+            return {
+                deliveryMethod: 'home',
+                form: { firstName: '', lastName: '', phone: '', address: '', wilaya: '', city: '' },
+                errors: { firstName: false, lastName: false, phone: false, address: false, wilaya: false, city: false },
+                orderQty: 1,
+                cartAdded: false,
+                ordering: false,
+                orderSuccess: '',
+                orderError: '',
+                wilayas: [
+                    { code: '01', name: 'Adrar' }, { code: '02', name: 'Chlef' }, { code: '03', name: 'Laghouat' },
+                    { code: '04', name: 'Oum El Bouaghi' }, { code: '05', name: 'Batna' }, { code: '06', name: 'Bejaia' },
+                    { code: '07', name: 'Biskra' }, { code: '08', name: 'Bechar' }, { code: '09', name: 'Blida' },
+                    { code: '10', name: 'Bouira' }, { code: '11', name: 'Tamanrasset' }, { code: '12', name: 'Tebessa' },
+                    { code: '13', name: 'Tlemcen' }, { code: '14', name: 'Tiaret' }, { code: '15', name: 'Tizi Ouzou' },
+                    { code: '16', name: 'Alger' }, { code: '17', name: 'Djelfa' }, { code: '18', name: 'Jijel' },
+                    { code: '19', name: 'Setif' }, { code: '20', name: 'Saida' }, { code: '21', name: 'Skikda' },
+                    { code: '22', name: 'Sidi Bel Abbes' }, { code: '23', name: 'Annaba' }, { code: '24', name: 'Guelma' },
+                    { code: '25', name: 'Constantine' }, { code: '26', name: 'Medea' }, { code: '27', name: 'Mostaganem' },
+                    { code: '28', name: 'Msila' }, { code: '29', name: 'Mascara' }, { code: '30', name: 'Ouargla' },
+                    { code: '31', name: 'Oran' }, { code: '32', name: 'El Bayadh' }, { code: '33', name: 'Illizi' },
+                    { code: '34', name: 'Bordj Bou Arreridj' }, { code: '35', name: 'Boumerdes' },
+                    { code: '36', name: 'El Tarf' }, { code: '37', name: 'Tindouf' }, { code: '38', name: 'Tissemsilt' },
+                    { code: '39', name: 'El Oued' }, { code: '40', name: 'Khenchela' }, { code: '41', name: 'Souk Ahras' },
+                    { code: '42', name: 'Tipaza' }, { code: '43', name: 'Mila' }, { code: '44', name: 'Ain Defla' },
+                    { code: '45', name: 'Naama' }, { code: '46', name: 'Ain Temouchent' }, { code: '47', name: 'Ghardaia' },
+                    { code: '48', name: 'Relizane' }, { code: '49', name: 'El Mghair' }, { code: '50', name: 'El Meniaa' },
+                    { code: '51', name: 'Ouled Djellal' }, { code: '52', name: 'Bordj Badji Mokhtar' },
+                    { code: '53', name: 'Beni Abbes' }, { code: '54', name: 'Timimoun' }, { code: '55', name: 'Touggourt' },
+                    { code: '56', name: 'Djanet' }, { code: '57', name: 'In Salah' }, { code: '58', name: 'In Guezzam' }
+                ],
+
+                initQuickOrder() {
+                    // Try to grab quantity from productPage component
+                    const pageEl = document.querySelector('[x-data="productPage()"]');
+                    if (pageEl && pageEl._x_dataStack) {
+                        const data = pageEl._x_dataStack.find(d => d.quantity !== undefined);
+                        if (data) this.orderQty = data.quantity || 1;
+                    }
+                },
+
+                get currentPrice() {
+                    const store = Alpine.store('product');
+                    return store?.data?.price || 0;
+                },
+
+                formatPrice(n) { return Number(n).toLocaleString('en-US') + ' DZD' },
+
+                validate() {
+                    this.errors.firstName = !this.form.firstName;
+                    this.errors.lastName = !this.form.lastName;
+                    this.errors.phone = !this.form.phone || this.form.phone.replace(/\s/g, '').length < 9;
+                    this.errors.wilaya = !this.form.wilaya;
+                    this.errors.city = !this.form.city;
+                    this.errors.address = this.deliveryMethod === 'home' ? !this.form.address : false;
+                    return !Object.values(this.errors).some(v => v);
+                },
+
+                async placeQuickOrder() {
+                    if (!this.validate()) return;
+                    this.ordering = true;
+                    this.orderError = '';
+                    const store = Alpine.store('product');
+                    const product = store?.data;
+                    const qty = this.orderQty || 1;
+                    if (!product) { this.orderError = 'Product data not loaded.';
+                        this.ordering = false; return }
+                    try {
+                        const res = await fetch('/api/orders', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                firstName: this.form.firstName,
+                                lastName: this.form.lastName,
+                                phone: this.form.phone,
+                                address: this.deliveryMethod === 'home' ? this.form.address :
+                                    'Desk pickup - ' + this.form.city + ', Wilaya ' + this.form.wilaya,
+                                wilaya: this.form.wilaya,
+                                city: this.form.city,
+            
+                                paymentMethod: 'cod',
+                                subtotal: product.price,
+                                shippingCost: 700,
+                                discount: 0,
+                                total: (product.price * qty) + 700,
+                                items: [{ productId: product.id, productName: product.name, brand: product.brand,
+                                    imageUrl: product.image, price: product.price, quantity: qty }]
+                            })
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            this.orderSuccess = 'Order #' + data.orderId + ' placed! We\'ll call you.';
+                            this.resetForm();
+                            setTimeout(() => this.orderSuccess = '', 5000);
+                        } else { this.orderError = data.message ||
+                                'Failed to place order' }
+                    } catch (e) { this.orderError = 'Network error. Please try again.' } finally { this.ordering =
+                            false }
+                },
+
+                resetForm() {
+                    this.deliveryMethod = 'desk';
+                    this.form = { firstName: '', lastName: '', phone: '', address: '', wilaya: '', city: '' };
+                    this.errors = {};
+                    this.orderError = '';
+                }
+            }
+        }
+    </script>
+    <script>
+        (function() {
+            const navbar = document.querySelector('.navbar');
+            if (navbar) {
+                const check = () => navbar.classList.toggle('scrolled', window.scrollY > 10);
+                window.addEventListener('scroll', check, { passive: true });
+                check();
+            }
+        })();
+    </script>
+
+</body>
+</html>

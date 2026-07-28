@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About Us — IronFuel Nutrition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root{--ink:#0b0b10;--ink-soft:#13131f;--paper:#f8f7f4;--paper-warm:#f0eeea;--paper-cool:#e8e6e3;--accent:#5b21b6;--accent-light:#7c3aed;--accent-glow:rgba(91,33,182,0.18);--white:#fff;--text:#f8f7f4;--text-secondary:rgba(255,255,255,0.55);--text-tertiary:rgba(255,255,255,0.35);--border:rgba(255,255,255,0.08);--space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:24px;--space-6:32px;--space-7:48px;--space-8:64px;--space-9:96px;--space-10:128px;--radius-sm:8px;--radius-md:16px;--radius-lg:24px;--radius-xl:32px;--radius-pill:999px;--shadow-sm:0 1px 2px rgba(0,0,0,0.2);--shadow-lg:0 16px 48px rgba(0,0,0,0.3);--shadow-xl:0 24px 80px rgba(0,0,0,0.45);--container:1520px;--nav-h:72px;--duration-fast:200ms;--duration-base:400ms;--ease-out-expo:cubic-bezier(0.16,1,0.3,1);--ease-out-quart:cubic-bezier(0.25,1,0.5,1)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);background:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    a{color:inherit;text-decoration:none}img{max-width:100%;display:block}
+    [x-cloak]{display:none!important}
+
+    .navbar{position:fixed;top:var(--space-3);left:var(--space-3);right:var(--space-3);z-index:100;height:var(--nav-h);border-radius:var(--radius-xl);transition:background var(--duration-base) var(--ease-out-quart),box-shadow var(--duration-base),border-color var(--duration-base);background:rgba(250,249,247,0);border:1px solid transparent;}
+    .navbar.scrolled{background:rgba(250,249,247,0.85);backdrop-filter:blur(24px) saturate(1.4);border-color:rgba(11,11,16,0.06);box-shadow:0 1px 2px rgba(11,11,16,0.04);}
+    .navbar-inner{max-width:var(--container);margin:0 auto;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 var(--space-5)}
+    .navbar-burger{display:none;background:none;border:none;color:#fff;cursor:pointer;padding:6px;border-radius:var(--radius-sm);transition:background var(--duration-fast)}
+    .navbar-burger:hover{background:rgba(255,255,255,0.12)}
+    .navbar.scrolled .navbar-burger{color:var(--text)}.navbar.scrolled .navbar-burger:hover{background:var(--paper-cool)}
+    .navbar-logo{display:flex;flex-direction:column;line-height:1;color:#fff;text-decoration:none;position:relative}
+    .logo-sub{font-size:8px;font-weight:700;letter-spacing:0.32em;color:rgba(255,255,255,0.5);margin-top:2px}
+    .navbar.scrolled .navbar-logo{color:var(--text)}.navbar.scrolled .logo-sub{color:var(--text-tertiary)}
+    .navbar-links{display:flex;gap:var(--space-6);align-items:center}
+    .navbar-link{font-size:13.5px;font-weight:600;letter-spacing:-0.01em;color:#fff;transition:color var(--duration-fast);position:relative;padding:4px 0;}
+    .navbar-link::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--accent);transition:width var(--duration-fast) var(--ease-out-expo);}
+    .navbar-link:hover{color:#fff}.navbar-link:hover::after{width:100%}
+    .navbar-link.active{color:#fff}.navbar-link.active::after{width:100%}
+    .navbar.scrolled .navbar-link{color:var(--text-secondary)}.navbar.scrolled .navbar-link:hover{color:var(--text)}
+    .navbar-actions{display:flex;align-items:center;gap:var(--space-2)}
+    .navbar-icon-btn{position:relative;background:none;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;transition:background var(--duration-fast),transform var(--duration-fast);}
+    .navbar-icon-btn:hover{background:rgba(255,255,255,0.12);transform:translateY(-1px)}
+    .navbar.scrolled .navbar-icon-btn{color:var(--text)}.navbar.scrolled .navbar-icon-btn:hover{background:var(--paper-cool)}
+    .cart-count{position:absolute;top:2px;right:2px;background:var(--accent);color:var(--white);font-size:9px;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--paper);}
+    .search-panel{position:absolute;top:52px;right:-8px;width:340px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-xl);padding:var(--space-4);z-index:50;opacity:0;transform:translateY(8px) scale(0.98);transition:opacity var(--duration-fast),transform var(--duration-fast);pointer-events:none;}
+    .search-panel.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+    .search-input{width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:14px;background:var(--paper-warm);outline:none;transition:border-color var(--duration-fast),box-shadow var(--duration-fast);font-family:inherit;}
+    .search-input:focus{border-color:var(--accent-light);box-shadow:0 0 0 4px var(--accent-glow)}
+    .search-results{margin-top:var(--space-3);max-height:300px;overflow-y:auto}
+
+    /* ─── ABOUT PAGE ─── */
+    .about-page{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden}
+    .about-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+    .about-bg-orb{position:absolute;border-radius:50%;filter:blur(120px);opacity:0.4}
+    .about-bg-orb:nth-child(1){width:600px;height:600px;background:var(--accent);top:-10%;left:-5%;animation:orbFloat1 20s ease-in-out infinite}
+    .about-bg-orb:nth-child(2){width:500px;height:500px;background:#ff6b35;bottom:-15%;right:-5%;opacity:0.2;animation:orbFloat2 25s ease-in-out infinite}
+    .about-bg-orb:nth-child(3){width:400px;height:400px;background:var(--accent-light);top:40%;left:50%;opacity:0.1;animation:orbFloat3 18s ease-in-out infinite}
+    @keyframes orbFloat1{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,30px)}}
+    @keyframes orbFloat2{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,-40px)}}
+    @keyframes orbFloat3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(20px,-20px) scale(1.1)}}
+    .about-vignette{position:absolute;inset:0;background:radial-gradient(ellipse 70% 70% at 50% 50%,transparent 30%,rgba(11,11,16,0.6) 100%)}
+    .about-grain{position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E")}
+
+    .about-inner{position:relative;z-index:3;max-width:var(--container);margin:0 auto;width:100%;padding:110px 64px 48px;display:grid;grid-template-columns:42% 58%;gap:var(--space-9);align-items:center}
+    .about-text{display:flex;flex-direction:column;gap:0;justify-content:center}
+    .about-eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-light);opacity:0;transform:translateY(20px);animation:fadeUp 0.6s var(--ease-out-expo) 0.1s forwards}
+    .about-eyebrow::before{content:'';width:28px;height:2px;background:var(--accent-light)}
+    .about-brand{opacity:0;transform:translateY(20px);animation:fadeUp 0.6s var(--ease-out-expo) 0.2s forwards;margin-top:12px}
+    .about-brand h1{font-size:clamp(44px,5.5vw,64px);font-weight:900;letter-spacing:-0.04em;line-height:1;color:var(--white)}
+    .about-brand h1 span{display:block;font-weight:300;color:rgba(255,255,255,0.4);font-size:0.55em;letter-spacing:-0.02em}
+    .about-statement{font-size:clamp(17px,1.8vw,22px);font-weight:500;color:rgba(255,255,255,0.7);line-height:1.5;margin-top:14px;opacity:0;transform:translateY(20px);animation:fadeUp 0.6s var(--ease-out-expo) 0.3s forwards}
+    .about-desc{font-size:15px;color:var(--text-secondary);line-height:1.8;max-width:460px;margin-top:10px;opacity:0;transform:translateY(20px);animation:fadeUp 0.6s var(--ease-out-expo) 0.4s forwards}
+    .about-divider{width:48px;height:1px;background:rgba(255,255,255,0.1);margin:18px 0;opacity:0;animation:fadeIn 0.6s var(--ease-out-expo) 0.5s forwards}
+    .about-rows{display:flex;flex-direction:column;gap:10px;opacity:0;transform:translateY(20px);animation:fadeUp 0.6s var(--ease-out-expo) 0.55s forwards}
+    .about-row{display:flex;align-items:center;gap:var(--space-3);font-size:14px;color:var(--text-secondary);font-weight:500}
+    .about-row-icon{width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .about-row-icon svg{width:16px;height:16px;color:var(--accent-light)}
+    .about-row span{color:rgba(255,255,255,0.7);font-weight:500}
+    .about-divider2{width:48px;height:1px;background:rgba(255,255,255,0.1);margin:16px 0;opacity:0;animation:fadeIn 0.6s var(--ease-out-expo) 0.6s forwards}
+    .about-socials{display:flex;gap:var(--space-3);opacity:0;transform:translateY(20px);animation:fadeUp 0.6s var(--ease-out-expo) 0.65s forwards}
+    .about-social{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:var(--radius-pill);background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);font-size:13px;font-weight:600;transition:all 0.3s var(--ease-out-expo)}
+    .about-social svg{width:16px;height:16px}
+    .about-social:hover{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.18);color:var(--white);transform:translateY(-2px);box-shadow:0 4px 20px rgba(91,33,182,0.2)}
+
+    .about-visual{position:relative;opacity:0;transform:translateY(30px);animation:fadeUp 0.8s var(--ease-out-expo) 0.4s forwards}
+    .about-showcase{position:relative;perspective:1000px}
+    .about-glass{position:relative;border-radius:28px;padding:20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(10px);box-shadow:0 30px 80px rgba(0,0,0,0.5),0 0 120px rgba(91,33,182,0.08),inset 0 1px 0 rgba(255,255,255,0.06);transition:transform 0.4s var(--ease-out-expo);max-height:72vh}
+    .about-glow{position:absolute;inset:-40px;border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(91,33,182,0.2),transparent 70%);filter:blur(60px);pointer-events:none;animation:glowPulse 4s ease-in-out infinite}
+    @keyframes glowPulse{0%,100%{opacity:0.5;transform:scale(1)}50%{opacity:0.8;transform:scale(1.05)}}
+    .about-img-wrap{position:relative;border-radius:20px;overflow:hidden;aspect-ratio:5/4;max-height:68vh}
+    .about-img-wrap img{width:100%;height:100%;object-fit:cover;animation:imgFloat 6s ease-in-out infinite}
+    @keyframes imgFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .about-img-shine{position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.08) 0%,transparent 50%);pointer-events:none}
+    .about-reflection{position:absolute;bottom:-2px;left:10%;right:10%;height:60px;background:linear-gradient(to bottom,rgba(91,33,182,0.06),transparent);filter:blur(8px);border-radius:0 0 20px 20px}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+    @media(max-width:1024px){
+      .about-inner{grid-template-columns:1fr;gap:var(--space-8);text-align:center;padding:100px 24px 40px}
+      .about-eyebrow{justify-content:center}.about-rows{align-items:center}.about-socials{justify-content:center}
+      .about-desc{margin:0 auto}.about-divider,.about-divider2{margin:var(--space-4) auto}
+      .about-visual{order:-1}.about-img-wrap{aspect-ratio:16/10;max-height:320px}
+    }
+    @media(max-width:900px){
+      .navbar-burger{display:block}
+      .navbar-links{display:none;position:absolute;top:calc(var(--nav-h) - 8px);left:0;right:0;background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);flex-direction:column;padding:var(--space-4);gap:var(--space-3);border:1px solid rgba(11,11,16,0.06)}
+      .navbar-links.is-open{display:flex;animation:slideDown .25s var(--ease-out-quart)}
+    }
+    @media(max-width:640px){.about-inner{gap:var(--space-5);padding:90px 16px 32px}.about-glass{padding:12px}.about-showcase{margin:0 -20px}}
+    @keyframes slideDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body>
+  <header class="navbar" id="navbar" x-data="{ mobileOpen: false }">
+    <div class="navbar-inner">
+      <button class="navbar-burger" @click="mobileOpen = !mobileOpen" aria-label="Menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <a href="/" class="navbar-logo"><span class="logo-main">IRONFUEL</span><span class="logo-sub">NUTRITION</span></a>
+      <nav class="navbar-links" :class="{ 'is-open': mobileOpen }">
+        <a href="/" class="navbar-link">Home</a>
+        <a href="/shop.html" class="navbar-link">Shop</a>
+        <a href="/deals.html" class="navbar-link">Offers</a>
+        <a href="/about.html" class="navbar-link active">About Us</a>
+      </nav>
+      <div class="navbar-actions" x-data="{ searchOpen: false }" @keydown.escape.window="searchOpen = false">
+        <div class="search-wrap">
+          <button class="navbar-icon-btn" @click="searchOpen = !searchOpen" aria-label="Search">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+          <div class="search-panel" :class="{ open: searchOpen }" @click.outside="searchOpen = false">
+            <input type="search" placeholder="Search products..." class="search-input"/>
+            <div id="search-results" class="search-results"></div>
+          </div>
+        </div>
+        <a href="/cart" class="navbar-icon-btn" aria-label="Cart">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span class="cart-count" x-text="$store.cart.count" x-show="$store.cart.count > 0" x-cloak>0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="about-page" x-data="aboutData()" @mousemove="handleMouse($event)">
+      <div class="about-bg">
+        <div class="about-bg-orb"></div>
+        <div class="about-bg-orb"></div>
+        <div class="about-bg-orb"></div>
+      </div>
+      <div class="about-vignette"></div>
+      <div class="about-grain"></div>
+
+      <div class="about-inner">
+        <div class="about-text">
+          <p class="about-eyebrow">Our Story</p>
+
+          <div class="about-brand">
+            <h1>
+              <span x-text="info.store_name || 'IRONFUEL'"></span>
+              <span>Nutrition</span>
+            </h1>
+          </div>
+
+
+          <p class="about-desc" x-text="info.store_description || 'Official supplements. Fast delivery across Algeria. Trusted by athletes, coaches, and everyday warriors since 2023.'"></p>
+
+          <div class="about-divider"></div>
+
+          <div class="about-rows">
+            <div class="about-row" x-show="info.owner_name">
+              <div class="about-row-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <span x-text="info.owner_name"></span>
+            </div>
+            <div class="about-row" x-show="info.phone">
+              <div class="about-row-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              </div>
+              <span x-text="info.phone"></span>
+            </div>
+            <div class="about-row" x-show="info.location">
+              <div class="about-row-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <span x-text="info.location"></span>
+            </div>
+          </div>
+
+          <div class="about-divider2"></div>
+
+          <div class="about-socials">
+            <a class="about-social" x-show="info.instagram" :href="info.instagram" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+              Instagram
+            </a>
+            <a class="about-social" x-show="info.tiktok" :href="info.tiktok" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+              TikTok
+            </a>
+            <a class="about-social" x-show="info.location_link" :href="info.location_link" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              My Location
+            </a>
+          </div>
+        </div>
+
+        <div class="about-visual" x-ref="visual">
+          <div class="about-showcase" x-ref="showcase">
+            <div class="about-glow"></div>
+            <div class="about-glass">
+              <div class="about-img-wrap">
+                <template x-if="info.images && info.images.length > 0">
+                  <img :src="info.images[0]" alt="Store" loading="lazy"/>
+                </template>
+                <div class="about-img-shine"></div>
+              </div>
+            </div>
+            <div class="about-reflection"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('aboutData', () => ({
+        info: {},
+        async init() {
+          try {
+            const r = await fetch('/api/store-info');
+            if (r.ok) this.info = await r.json();
+          } catch (e) { console.error(e); }
+        },
+        handleMouse(e) {
+          const showcase = this.$refs.showcase;
+          if (!showcase) return;
+          const rect = showcase.getBoundingClientRect();
+          const x = (e.clientX - rect.left - rect.width / 2) / rect.width;
+          const y = (e.clientY - rect.top - rect.height / 2) / rect.height;
+          showcase.style.transform = `translate(${x * 8}px, ${y * 8}px)`;
+        }
+      }));
+    });
+  </script>
+  <script>
+    (function() {
+      const navbar = document.querySelector('.navbar');
+      if (navbar) {
+        const check = () => navbar.classList.toggle('scrolled', window.scrollY > 10);
+        window.addEventListener('scroll', check, { passive: true });
+        check();
+      }
+    })();
+  </script>
+</body>
+</html>

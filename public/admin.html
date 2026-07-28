@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin — Ecommerce</title>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    button{font-family:inherit}
+    html,body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#0d0d0d;line-height:1.6;-webkit-font-smoothing:antialiased;background:#f4f4f6;height:100%}
+    :root{
+      --bg:#f4f4f6;--bg-card:#fff;--bg-alt:#f0f0f2;
+      --text:#0d0d0d;--text-muted:#8a8a8e;--text-subtle:#b0b0b4;
+      --border:#e8e8ed;--border-light:#f0f0f2;
+      --accent:#7c3aed;--accent-soft:#f5f3ff;
+      --green:#10b981;--green-soft:#ecfdf5;--red:#ef4444;--red-soft:#fef2f2;--orange:#f59e0b;--orange-soft:#fffbeb;--blue:#3b82f6;--blue-soft:#eff6ff;
+      --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--s7:48px;
+      --r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:24px;
+      --sh-sm:0 1px 3px rgba(0,0,0,.04);--sh-md:0 4px 16px rgba(0,0,0,.06);--sh-lg:0 8px 30px rgba(0,0,0,.08);
+      --fast:150ms ease;--base:300ms ease;
+      --sidebar-w:240px;--nav-h:64px;
+    }
+    [x-cloak]{display:none!important}
+    body{overflow:hidden}
+
+    .app{display:flex;height:100vh}
+
+    .sidebar{width:var(--sidebar-w);background:linear-gradient(180deg,#0c0c14 0%,#0a0a12 100%);display:flex;flex-direction:column;flex-shrink:0;position:relative;z-index:10}
+    .sidebar-brand{display:flex;align-items:center;gap:var(--s3);padding:var(--s5) var(--s5);border-bottom:1px solid rgba(255,255,255,.05)}
+    .sidebar-brand .brand-icon{width:32px;height:32px;background:linear-gradient(135deg,#a78bfa,#7c3aed);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center}
+    .sidebar-brand .brand-icon svg{width:16px;height:16px;color:#fff}
+    .sidebar-brand span{font-size:15px;font-weight:800;letter-spacing:-.03em;color:#fff}
+    .sidebar-nav{flex:1;padding:var(--s3);display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+    .sidebar-nav::-webkit-scrollbar{width:3px}
+    .sidebar-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:4px}
+    .nav-item{display:flex;align-items:center;gap:var(--s3);padding:10px 14px;border-radius:var(--r-md);font-size:13px;font-weight:500;color:rgba(255,255,255,.35);cursor:pointer;transition:all var(--fast);border:none;background:none;font-family:inherit;text-align:left;width:100%}
+    .nav-item:hover{color:rgba(255,255,255,.65);background:rgba(255,255,255,.04)}
+    .nav-item.active{color:#fff;background:rgba(167,139,250,.12);box-shadow:inset 2px 0 0 #a78bfa}
+    .nav-item svg{width:18px;height:18px;flex-shrink:0}
+    .nav-item .nav-badge{margin-left:auto;background:#ef4444;color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:999px;min-width:18px;text-align:center}
+    .sidebar-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.15);padding:var(--s4) var(--s4) var(--s1);margin-top:var(--s2)}
+    .sidebar-footer{padding:var(--s3);margin-top:auto;border-top:1px solid rgba(255,255,255,.05)}
+    .nav-item.logout{color:rgba(255,255,255,.25)}
+    .nav-item.logout:hover{color:#f87171;background:rgba(248,113,113,.08)}
+
+    .main{flex:1;display:flex;flex-direction:column;min-width:0}
+    .content{flex:1;overflow-y:auto;padding:var(--s6);padding-top:var(--s5)}
+    .content::-webkit-scrollbar{width:5px}
+    .content::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes barGrow{from{opacity:0;transform:scaleY(0)}to{opacity:1;transform:scaleY(1)}}
+
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s5)}
+    .page-header{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s4) var(--s5);display:flex;align-items:center;justify-content:space-between;gap:var(--s3);margin-bottom:var(--s5);box-shadow:var(--sh-sm)}
+    .topbar h1{font-size:20px;font-weight:700;letter-spacing:-.03em}
+    .topbar p{font-size:13px;color:var(--text-muted);margin-top:2px}
+    .topbar-right{display:flex;align-items:center;gap:var(--s3);position:relative}
+    .notif-btn{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:none;background:var(--bg-card);cursor:pointer;color:var(--text-muted);transition:all var(--fast);position:relative;box-shadow:var(--sh-sm)}
+    .notif-btn:hover{background:var(--accent-soft);color:var(--accent)}
+    .notif-dot{position:absolute;top:8px;right:8px;width:7px;height:7px;background:var(--red);border-radius:50%;border:2px solid var(--bg-card)}
+    .notif-dropdown{position:absolute;top:calc(100% + 8px);right:0;width:360px;background:var(--bg-card);border-radius:var(--r-lg);box-shadow:var(--sh-lg);border:1px solid var(--border);z-index:100;display:none;max-height:400px;overflow-y:auto}
+    .notif-dropdown.open{display:block;animation:dropIn .2s ease}
+    @keyframes dropIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+    .notif-header{padding:var(--s3) var(--s4);border-bottom:1px solid var(--border);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);display:flex;align-items:center;justify-content:space-between}
+    .notif-item{padding:var(--s3) var(--s4);display:flex;gap:var(--s3);align-items:flex-start;transition:background var(--fast);cursor:pointer;border-bottom:1px solid var(--border-light)}
+    .notif-item:last-child{border-bottom:none}
+    .notif-item:hover{background:var(--bg-alt)}
+    .notif-item.unread{background:var(--accent-soft)}
+    .notif-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:700}
+    .notif-body{flex:1;min-width:0}
+    .notif-title{font-size:13px;font-weight:600;color:var(--text)}
+    .notif-time{font-size:11px;color:var(--text-muted);margin-top:2px}
+
+    .welcome{background:linear-gradient(135deg,#0c0c14,#1a1a2e);border-radius:var(--r-xl);padding:var(--s5) var(--s6);margin-bottom:var(--s5);position:relative;overflow:hidden}
+    .welcome::before{content:'';position:absolute;top:-50%;right:-20%;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.12),transparent 70%)}
+    .welcome::after{content:'';position:absolute;bottom:-40%;left:30%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.08),transparent 70%)}
+    .welcome h2{font-size:18px;font-weight:700;color:#fff;position:relative;z-index:1}
+    .welcome p{font-size:12px;color:rgba(255,255,255,.5);margin-top:2px;position:relative;z-index:1}
+    .welcome-stats{display:flex;gap:var(--s6);margin-top:var(--s4);position:relative;z-index:1}
+    .welcome-stat{text-align:center}
+    .welcome-stat .val{font-size:22px;font-weight:800;color:#a78bfa;letter-spacing:-.03em}
+    .welcome-stat .lbl{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px}
+
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s3);margin-bottom:var(--s4)}
+    .kpi-card{background:var(--bg-card);border-radius:var(--r-lg);padding:var(--s5);border:1px solid var(--border);transition:all var(--fast);position:relative;overflow:hidden}
+    .kpi-card:hover{box-shadow:var(--sh-md);transform:translateY(-2px)}
+    .kpi-card .kpi-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:var(--s3)}
+    .kpi-card .kpi-icon{width:40px;height:40px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .kpi-card .kpi-icon svg{width:18px;height:18px}
+    .kpi-card .kpi-trend{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px}
+    .kpi-card .kpi-trend.up{background:var(--green-soft);color:#059669}
+    .kpi-card .kpi-trend.down{background:var(--red-soft);color:#dc2626}
+    .kpi-card .kpi-label{font-size:12px;font-weight:500;color:var(--text-muted)}
+    .kpi-card .kpi-value{font-size:24px;font-weight:800;letter-spacing:-.03em;margin-top:var(--s1)}
+    .kpi-card .kpi-sub{font-size:12px;color:var(--text-muted);margin-top:var(--s1)}
+
+    .row{display:grid;grid-template-columns:2fr 1fr;gap:var(--s4);margin-bottom:var(--s5)}
+    .card{background:var(--bg-card);border-radius:var(--r-lg);border:1px solid var(--border);overflow:hidden}
+    .card-header{display:flex;align-items:center;justify-content:space-between;padding:var(--s4) var(--s5);border-bottom:1px solid var(--border)}
+    .card-header h3{font-size:14px;font-weight:700}
+    .card-header a{font-size:12px;font-weight:600;color:var(--accent);text-decoration:none;transition:opacity var(--fast);cursor:pointer}
+    .card-header a:hover{opacity:.7}
+    .card-body{padding:var(--s5)}
+    .card-body.no-pad{padding:0}
+
+    .table-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{text-align:left;padding:var(--s3) var(--s5);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);border-bottom:1px solid var(--border);background:var(--bg-alt)}
+    td{padding:var(--s3) var(--s5);border-bottom:1px solid var(--border-light);vertical-align:middle}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:var(--bg-alt)}
+
+    .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;text-transform:capitalize}
+    .badge-pending{background:var(--orange-soft);color:#d97706}
+    .badge-confirmed{background:var(--blue-soft);color:#2563eb}
+    .badge-processing{background:var(--blue-soft);color:#2563eb}
+    .badge-shipped{background:var(--accent-soft);color:var(--accent)}
+    .badge-delivered{background:var(--green-soft);color:#059669}
+    .badge-cancelled{background:var(--red-soft);color:#dc2626}
+    .badge-active{background:var(--green-soft);color:#059669}
+    .badge-inactive{background:var(--red-soft);color:#dc2626}
+
+    .rev-chart-wrap{display:flex;height:200px;gap:6px;padding:0}
+    .rev-yaxis{display:flex;flex-direction:column;justify-content:space-between;width:44px;flex-shrink:0;padding:0}
+    .rev-yaxis span{font-size:9px;font-weight:600;color:var(--text-muted);text-align:right;line-height:1}
+    .rev-bars-wrap{flex:1;position:relative;display:flex;align-items:flex-end;gap:2px;padding-bottom:20px}
+    .rev-gridlines{position:absolute;top:0;left:0;right:0;bottom:20px;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none}
+    .rev-gridlines .gl{width:100%;border-bottom:1px solid var(--border-light);height:0}
+    .rev-bars-wrap .bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;position:relative;z-index:1;animation:barGrow .6s cubic-bezier(.16,1,.3,1) both}
+    .rev-bars-wrap .bar{width:100%;max-width:28px;border-radius:3px 3px 0 0;min-height:2px;transition:height .6s cubic-bezier(.16,1,.3,1);position:relative;cursor:pointer}
+    .rev-bars-wrap .bar.has-value{background:linear-gradient(180deg,#7c3aed,#6d28d9)}
+    .rev-bars-wrap .bar.zero{background:var(--border);opacity:.5}
+    .rev-bars-wrap .bar:hover{opacity:.85;filter:brightness(1.1)}
+    .rev-bars-wrap .bar-label{font-size:8px;color:var(--text-muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:32px;text-align:center;position:absolute;bottom:-18px}
+    .chart-tooltip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#0c0c14;color:#fff;font-size:11px;font-weight:600;padding:4px 8px;border-radius:6px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s;margin-bottom:4px;z-index:10}
+    .bar:hover .chart-tooltip{opacity:1}
+
+    .status-donut{display:flex;flex-direction:column;gap:var(--s3)}
+    .status-row{display:flex;align-items:center;gap:var(--s3)}
+    .status-row .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    .status-row .lbl{flex:1;font-size:13px;color:var(--text-muted)}
+    .status-row .val{font-size:13px;font-weight:700}
+    .status-row .bar-bg{flex:1;height:6px;background:var(--bg-alt);border-radius:999px;overflow:hidden}
+    .status-row .bar-fill{height:100%;border-radius:999px;transition:width .8s ease}
+
+    .alert-item{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) 0;border-bottom:1px solid var(--border-light)}
+    .alert-item:last-child{border-bottom:none}
+    .alert-item .alert-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;font-weight:700}
+    .alert-item .alert-body{flex:1}
+    .alert-item .alert-body .title{font-size:13px;font-weight:600}
+    .alert-item .alert-body .desc{font-size:12px;color:var(--text-muted);margin-top:1px}
+
+    .filters{display:flex;align-items:center;gap:var(--s2);flex-wrap:wrap}
+
+    .filter-control{display:flex;align-items:center;gap:var(--s2);padding:0 var(--s4);height:38px;border-radius:999px;border:1px solid var(--border);background:var(--bg-card);transition:all var(--fast);cursor:pointer;position:relative}
+    .filter-control:focus-within,.filter-control:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,58,237,.1);outline:none}
+    .filter-control:hover{border-color:var(--text-subtle)}
+    .filter-control input{border:none;background:none;outline:none;font-size:13px;font-family:inherit;color:var(--text);width:180px;line-height:1}
+    .filter-control input::placeholder{color:var(--text-subtle)}
+    .filter-control .search-icon{width:16px;height:16px;color:var(--text-muted);flex-shrink:0;display:block}
+    .filter-control .arrow{display:flex;align-items:center;transition:transform .25s cubic-bezier(.16,1,.3,1);color:var(--text-muted);flex-shrink:0}
+    .filter-control .arrow.open{transform:rotate(180deg)}
+    .filter-control .status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:block}
+    .filter-control .sep{width:1px;height:20px;background:var(--border);flex-shrink:0}
+
+    .dropdown-menu{position:absolute;top:calc(100% + 8px);left:0;min-width:210px;background:var(--bg-card);border-radius:var(--r-md);box-shadow:0 12px 48px rgba(0,0,0,.14),0 0 0 1px rgba(0,0,0,.04);z-index:200;padding:var(--s1);display:none;overflow:hidden;transform-origin:top left}
+    .dropdown-menu.open{display:block;animation:dropReveal .25s cubic-bezier(.16,1,.3,1) both}
+    @keyframes dropReveal{from{opacity:0;transform:translateY(-8px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+    .dropdown-option{display:flex;align-items:center;gap:var(--s2);padding:10px 12px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:var(--text);cursor:pointer;transition:background .12s;border:none;background:none;font-family:inherit;width:100%;text-align:left}
+    .dropdown-option:hover{background:var(--bg-alt)}
+    .dropdown-option.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+    .dropdown-option .opt-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:block}
+    .dropdown-option .opt-label{flex:1}
+    .dropdown-option .opt-check{color:var(--accent);opacity:0;transition:opacity .15s}
+    .dropdown-option.active .opt-check{opacity:1}
+    .dropdown-divider{height:1px;background:var(--border-light);margin:var(--s1) 0}
+
+    .pagination{display:flex;align-items:center;justify-content:center;gap:var(--s2);padding:var(--s4)}
+    .page-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--bg-card);cursor:pointer;font-size:12px;font-weight:600;color:var(--text-muted);transition:all var(--fast);font-family:inherit}
+    .page-btn:hover{border-color:var(--accent);color:var(--accent)}
+    .page-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+    .page-btn:disabled{opacity:.3;cursor:default;pointer-events:none}
+    .page-info{font-size:12px;color:var(--text-muted);margin:0 var(--s1)}
+
+    .empty-state{text-align:center;padding:var(--s8) var(--s5);color:var(--text-muted)}
+
+    .slideover{position:fixed;inset:0;z-index:1000;display:none}
+    .slideover.open{display:block}
+    .slideover .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.5);animation:fadeIn .2s}
+    .slideover .panel{position:absolute;top:0;right:0;bottom:0;width:640px;max-width:100vw;background:var(--bg);box-shadow:-8px 0 40px rgba(0,0,0,.1);display:flex;flex-direction:column;animation:panelSlide .3s cubic-bezier(.16,1,.3,1)}
+    @keyframes panelSlide{from{transform:translateX(100%)}to{transform:translateX(0)}}
+    .slideover .panel-header{display:flex;align-items:center;justify-content:space-between;padding:var(--s5);border-bottom:1px solid var(--border);flex-shrink:0}
+    .slideover .panel-header h2{font-size:16px;font-weight:700}
+    .slideover .panel-close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:none;background:var(--bg-alt);cursor:pointer;color:var(--text-muted);transition:all var(--fast)}
+    .slideover .panel-close:hover{background:var(--red-soft);color:var(--red)}
+    .slideover .panel-body{flex:1;overflow-y:auto;padding:var(--s5)}
+    .slideover .panel-footer{display:flex;align-items:center;justify-content:flex-end;gap:var(--s3);padding:var(--s4) var(--s5);border-top:1px solid var(--border);flex-shrink:0}
+    .slideover .panel-body::-webkit-scrollbar{width:5px}
+    .slideover .panel-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)}
+    .form-grid .full{grid-column:1/-1}
+    .form-block{margin-bottom:var(--s4)}.form-block label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:var(--s1)}
+    .form-block .field{width:100%;height:40px;padding:0 var(--s3);border-radius:var(--r-md);border:1px solid var(--border);font-size:13px;font-family:inherit;background:var(--bg-alt);color:var(--text);outline:none;transition:all var(--fast)}
+    .form-block .field:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,58,237,.1);background:var(--bg-card)}
+    .form-block textarea.field{height:auto;padding:var(--s3);resize:vertical;min-height:80px;line-height:1.5}
+    .form-block .field-sm{height:36px;font-size:12px}
+    .form-block select.field{cursor:pointer}
+    .field-dropdown{position:relative}
+    .field-dropdown .trigger{width:100%;height:40px;padding:0 var(--s3);border-radius:var(--r-md);border:1px solid var(--border);font-size:13px;font-family:inherit;background:var(--bg-alt);color:var(--text);outline:none;transition:all var(--fast);cursor:pointer;display:flex;align-items:center;gap:var(--s2);-webkit-appearance:none;appearance:none}
+    .field-dropdown .trigger:hover{border-color:var(--text-subtle)}
+    .field-dropdown .trigger:focus,.field-dropdown.open .trigger{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,58,237,.1);background:var(--bg-card)}
+    .field-dropdown .trigger .val{flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .field-dropdown .trigger .placeholder{color:var(--text-subtle)}
+    .field-dropdown .trigger .arrow{display:flex;align-items:center;transition:transform .25s cubic-bezier(.16,1,.3,1);color:var(--text-muted);flex-shrink:0}
+    .field-dropdown.open .trigger .arrow{transform:rotate(180deg)}
+    .field-dropdown .menu{position:absolute;top:calc(100% + 4px);left:0;right:0;min-width:0;background:var(--bg-card);border-radius:var(--r-md);box-shadow:0 12px 48px rgba(0,0,0,.14),0 0 0 1px rgba(0,0,0,.04);z-index:300;padding:var(--s1);display:none;max-height:240px;overflow-y:auto;transform-origin:top center}
+    .field-dropdown.open .menu{display:block;animation:dropReveal .2s cubic-bezier(.16,1,.3,1) both}
+    .field-dropdown .menu .search{padding:var(--s1);position:sticky;top:0;background:var(--bg-card);z-index:1}
+    .field-dropdown .menu .search input{width:100%;height:34px;padding:0 var(--s3);border-radius:var(--r-sm);border:1px solid var(--border);font-size:12px;font-family:inherit;background:var(--bg-alt);color:var(--text);outline:none;transition:all var(--fast)}
+    .field-dropdown .menu .search input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(124,58,237,.1)}
+    .field-dropdown .opt{display:flex;align-items:center;gap:var(--s2);padding:9px 12px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:var(--text);cursor:pointer;transition:background .12s;border:none;background:none;font-family:inherit;width:100%;text-align:left}
+    .field-dropdown .opt:hover{background:var(--bg-alt)}
+    .field-dropdown .opt.selected{background:var(--accent-soft);color:var(--accent);font-weight:600}
+    .field-dropdown .opt .check{color:var(--accent);margin-left:auto;opacity:0;transition:opacity .15s;display:flex}
+    .field-dropdown .opt.selected .check{opacity:1}
+    .field-dropdown .opt .opt-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .field-dropdown .opt-empty{padding:var(--s5);text-align:center;color:var(--text-muted);font-size:12px}
+    .field-dropdown .divider{height:1px;background:var(--border-light);margin:var(--s1) 0}
+    .field-dropdown .opt-add{display:flex;align-items:center;gap:var(--s2);padding:9px 12px;border-radius:var(--r-sm);font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;transition:background .12s;border:none;background:none;font-family:inherit;width:100%;text-align:left}
+    .field-dropdown .opt-add:hover{background:var(--accent-soft)}
+
+    .row{display:grid;grid-template-columns:2fr 1fr;gap:var(--s4);margin-bottom:var(--s5)}
+    .toggle{position:relative;width:36px;height:20px;background:var(--border);border-radius:999px;cursor:pointer;transition:all var(--fast);flex-shrink:0;border:none;padding:0}
+    .toggle.active{background:var(--accent)}.toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:all var(--fast);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+    .toggle.active::after{left:18px}
+    .form-row{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s2);padding:8px var(--s3);background:var(--bg-alt);border-radius:var(--r-md);border:1px solid var(--border-light)}
+    .form-row .toggle-label{font-size:13px;font-weight:600;color:var(--text);flex-shrink:0;min-width:100px}
+    .form-row .toggle-desc{font-size:11px;color:var(--text-muted);text-align:right}
+
+    .upload-zone{border:2px dashed var(--border);border-radius:var(--r-md);padding:var(--s6);text-align:center;cursor:pointer;transition:all var(--fast);background:var(--bg-alt)}
+    .upload-zone:hover,.upload-zone.dragover{border-color:var(--accent);background:var(--accent-soft)}
+    .upload-zone svg{width:32px;height:32px;color:var(--text-muted);margin-bottom:var(--s2)}
+    .upload-zone p{font-size:13px;color:var(--text-muted)}
+    .upload-preview{display:flex;gap:var(--s2);flex-wrap:wrap;margin-top:var(--s3)}
+    .upload-preview .thumb{width:72px;height:72px;border-radius:var(--r-md);overflow:hidden;position:relative;border:1px solid var(--border)}
+    .upload-preview .thumb img{width:100%;height:100%;object-fit:cover}
+    .upload-preview .thumb .remove{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;border:none;background:rgba(0,0,0,.6);color:#fff;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity var(--fast)}
+    .upload-preview .thumb:hover .remove{opacity:1}
+    .upload-progress{height:3px;background:var(--bg-alt);border-radius:999px;margin-top:var(--s2);overflow:hidden;display:none}
+    .upload-progress .bar{height:100%;background:var(--accent);border-radius:999px;transition:width .3s;width:0}
+
+    .btn-primary{height:38px;padding:0 var(--s5);border-radius:999px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all var(--fast);display:inline-flex;align-items:center;gap:var(--s2)}
+    .btn-primary:hover{opacity:.9}
+    .btn-primary.loading .btn-text{opacity:.5}
+    .btn-primary .spinner{display:none;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+    .btn-primary.loading .spinner{display:inline-block}
+    .btn-icon{display:inline-flex;align-items:center;justify-content:center;border:none;background:var(--bg-alt);color:var(--text-muted);cursor:pointer;border-radius:var(--r-sm);transition:all var(--fast);font-family:inherit}
+    .btn-icon:hover{background:var(--border);color:var(--text)}
+    .upload-zone-sm{display:inline-flex;align-items:center;justify-content:center;padding:0 var(--s4);height:38px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--bg-alt);cursor:pointer;font-size:12px;color:var(--text-muted);transition:all var(--fast);font-family:inherit}
+    .upload-zone-sm:hover{background:var(--border);color:var(--text)}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .btn-secondary{height:38px;padding:0 var(--s5);border-radius:999px;border:1px solid var(--border);background:var(--bg-card);color:var(--text);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all var(--fast)}
+    .btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+    .empty-state svg{width:48px;height:48px;margin-bottom:var(--s4);opacity:.3}
+    .empty-state p{font-size:14px}
+
+    .bs-item{display:flex;align-items:center;gap:var(--s3);padding:var(--s2) 0}
+    .bs-rank{width:22px;height:22px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .bs-body{flex:1;min-width:0}
+    .bs-name{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .bs-bar-bg{height:4px;background:var(--bg-alt);border-radius:4px;margin-top:4px;overflow:hidden}
+    .bs-bar-fill{height:100%;border-radius:4px;background:var(--accent);transition:width .8s cubic-bezier(.16,1,.3,1)}
+    .bs-val{font-size:12px;font-weight:700;white-space:nowrap;color:var(--text-muted);text-align:right;min-width:70px}
+
+    .cat-row{display:flex;align-items:center;gap:var(--s2);padding:var(--s1) 0}
+    .cat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .cat-name{font-size:12px;font-weight:500;width:80px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .cat-bar-bg{flex:1;height:6px;background:var(--bg-alt);border-radius:4px;overflow:hidden}
+    .cat-bar-fill{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.16,1,.3,1)}
+    .cat-pct{font-size:11px;font-weight:600;min-width:36px;text-align:right;color:var(--text-muted)}
+    .cat-val{font-size:11px;font-weight:700;min-width:28px;text-align:right}
+
+    .cust-row{display:flex;align-items:center;gap:var(--s3);padding:var(--s2) 0;border-bottom:1px solid var(--border-light)}
+    .cust-row:last-child{border-bottom:none}
+    .cust-rank{width:20px;font-size:11px;font-weight:700;color:var(--text-muted);text-align:center}
+    .cust-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+    .cust-info{flex:1;min-width:0}
+    .cust-name{font-size:12px;font-weight:600}
+    .cust-phone{font-size:11px;color:var(--text-muted)}
+    .cust-val{text-align:right;font-size:12px;font-weight:700}
+    .cust-sub{font-size:10px;color:var(--text-muted)}
+    .cust-risk{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-left:var(--s2)}
+
+    .row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--s4);margin-bottom:var(--s6)}
+    @media(max-width:1100px){.row-3{grid-template-columns:1fr 1fr}}
+    @media(max-width:768px){.row-3{grid-template-columns:1fr}}
+
+    .kpi-more{display:grid;grid-template-columns:repeat(6,1fr);gap:var(--s3);margin-bottom:var(--s5)}
+    .kpi-mini{background:var(--bg-card);border-radius:var(--r-md);padding:var(--s4);border:1px solid var(--border);text-align:center}
+    .kpi-mini .lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted)}
+    .kpi-mini .val{font-size:18px;font-weight:800;letter-spacing:-.03em;margin-top:var(--s1)}
+    .kpi-mini .sub{font-size:10px;color:var(--text-muted);margin-top:2px}
+
+    .accordion-toggle{display:flex;align-items:center;gap:var(--s2);cursor:pointer;background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;padding:var(--s3) var(--s5);width:100%;text-align:left;color:var(--text);transition:background var(--fast)}
+    .accordion-toggle:hover{background:var(--bg-alt)}
+    .accordion-toggle svg{width:14px;height:14px;transition:transform .25s cubic-bezier(.16,1,.3,1);color:var(--text-muted)}
+    .accordion-toggle.open svg{transform:rotate(90deg)}
+    .accordion-body{padding:0 var(--s5) var(--s4)}
+    .insight-item{display:flex;align-items:center;gap:var(--s3);padding:var(--s2) 0;font-size:13px;color:var(--text)}
+    .insight-icon{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:700}
+    @media(max-width:1100px){
+      .kpi-grid{grid-template-columns:repeat(2,1fr)}
+      .row{grid-template-columns:1fr}
+    }
+    .mobile-menu-btn{display:none;width:38px;height:38px;align-items:center;justify-content:center;border-radius:var(--r-md);border:1px solid var(--border);background:var(--bg-card);cursor:pointer;color:var(--text-muted);transition:all var(--fast);flex-shrink:0}
+    .mobile-menu-btn:hover{color:var(--accent);border-color:var(--accent)}
+    .sidebar-backdrop{display:none}
+
+    .prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--s4)}
+    .prod-card{background:var(--bg-card);border-radius:var(--r-lg);border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:all var(--fast);display:flex;flex-direction:column}
+    .prod-card:hover{box-shadow:var(--sh-md);transform:translateY(-2px)}
+    .prod-card-img{width:100%;aspect-ratio:4/3;object-fit:contain;background:var(--bg-alt);padding:var(--s2)}
+    .prod-card-body{padding:var(--s4);display:flex;flex-direction:column;flex:1}
+    .prod-card-name{font-size:14px;font-weight:700;margin-bottom:2px}
+    .prod-card-sku{font-size:11px;color:var(--text-muted);margin-bottom:var(--s2)}
+    .prod-card-meta{display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+    .prod-card-price{font-size:16px;font-weight:800}
+    .prod-card-stock{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px}
+    .prod-card-stock.ok{background:var(--green-soft);color:#059669}
+    .prod-card-stock.low{background:var(--orange-soft);color:#d97706}
+    .prod-card-stock.out{background:var(--red-soft);color:#dc2626}
+    .prod-card-brand{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted)}
+    .pack-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--s4)}
+    .pack-card{background:var(--bg-card);border-radius:var(--r-lg);border:1px solid var(--border);overflow:hidden;transition:all var(--fast);display:flex;flex-direction:column}
+    .pack-card:hover{box-shadow:var(--sh-md);transform:translateY(-2px)}
+    .pack-card-img{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--bg-alt)}
+    .pack-card-body{padding:var(--s4);display:flex;flex-direction:column;flex:1}
+    .pack-card-name{font-size:14px;font-weight:700;margin-bottom:2px}
+    .pack-card-desc{font-size:12px;color:var(--text-muted);margin-bottom:var(--s2);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .pack-card-meta{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:var(--s2);border-top:1px solid var(--border)}
+    .pack-card-price{font-size:16px;font-weight:800}
+    .pack-card-days{font-size:11px;color:var(--text-muted)}
+    .pack-card-actions{display:flex;gap:var(--s1);padding:var(--s2) var(--s4) var(--s4)}
+
+    /* ── Product Workspace ── */
+    .pw-sticky{position:sticky;top:0;z-index:20;background:rgba(244,244,246,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);margin:calc(var(--s6)*-1);margin-bottom:0;padding:var(--s4) var(--s6);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);animation:fadeIn .3s}
+    .pw-sticky-left{display:flex;align-items:center;gap:var(--s3)}
+    .pw-sticky-right{display:flex;align-items:center;gap:var(--s3)}
+    .pw-back{display:inline-flex;align-items:center;gap:var(--s2);font-size:13px;font-weight:600;color:var(--text-muted);cursor:pointer;border:none;background:none;font-family:inherit;transition:color var(--fast);padding:6px 10px;border-radius:var(--r-sm)}
+    .pw-back:hover{color:var(--text);background:var(--bg-alt)}
+    .pw-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+    .pw-badge-published{background:var(--green-soft);color:#059669}
+    .pw-badge-draft{background:var(--orange-soft);color:#d97706}
+    .pw-badge-archived{background:var(--red-soft);color:#dc2626}
+    .pw-badge-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+    .pw-id{font-size:11px;color:var(--text-subtle);font-weight:500}
+    .pw-body{display:grid;grid-template-columns:1fr 340px;gap:var(--s5);padding-top:var(--s5);animation:fadeIn .3s}
+    .pw-main{min-width:0;display:flex;flex-direction:column;gap:var(--s4)}
+    .pw-sidebar{display:flex;flex-direction:column;gap:var(--s4)}
+    .pw-card{background:var(--bg-card);border-radius:var(--r-lg);border:1px solid var(--border);overflow:hidden}
+    .pw-card-head{display:flex;align-items:center;justify-content:space-between;padding:var(--s4) var(--s5);border-bottom:1px solid var(--border-light)}
+    .pw-card-head h3{font-size:13px;font-weight:700;color:var(--text);letter-spacing:-.01em}
+    .pw-card-head .pw-card-hint{font-size:11px;color:var(--text-muted);font-weight:400}
+    .pw-card-body{padding:var(--s5)}
+    .pw-fld{margin-bottom:var(--s4)}
+    .pw-fld:last-child{margin-bottom:0}
+    .pw-fld label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:6px}
+    .pw-inp{width:100%;height:40px;padding:0 var(--s3);border-radius:var(--r-md);border:1px solid var(--border);font-size:13px;font-family:inherit;background:var(--bg-alt);color:var(--text);outline:none;transition:all var(--fast)}
+    .pw-inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,58,237,.1);background:var(--bg-card)}
+    .pw-inp-sm{height:36px;font-size:12px}
+    .pw-textarea{min-height:100px;padding:var(--s3);resize:vertical;line-height:1.5}
+    .pw-price-display{font-size:28px;font-weight:800;letter-spacing:-.03em;color:var(--text)}
+    .pw-price-compare{font-size:13px;color:var(--text-muted);text-decoration:line-through;margin-left:var(--s2)}
+    .pw-margin{font-size:12px;font-weight:600;color:var(--green);margin-top:var(--s1)}
+    .pw-stock-row{display:flex;align-items:center;gap:var(--s3)}
+    .pw-stock-num{font-size:24px;font-weight:800;letter-spacing:-.03em}
+    .pw-stock-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em}
+    .pw-stock-bar{height:4px;background:var(--bg-alt);border-radius:999px;overflow:hidden;margin-top:var(--s2)}
+    .pw-stock-fill{height:100%;border-radius:999px;transition:width .6s ease}
+    .pw-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)}
+    .pw-stat{background:var(--bg-alt);border-radius:var(--r-md);padding:var(--s3);text-align:center}
+    .pw-stat .v{font-size:16px;font-weight:800;letter-spacing:-.02em}
+    .pw-stat .l{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+    .pw-img-main{position:relative;border-radius:var(--r-lg);overflow:hidden;aspect-ratio:1;cursor:pointer;border:2px dashed var(--border);transition:all var(--fast);background:var(--bg-alt)}
+    .pw-img-main:hover{border-color:var(--accent);background:var(--accent-soft)}
+    .pw-img-main img{width:100%;height:100%;object-fit:cover}
+    .pw-img-overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;opacity:0;transition:opacity var(--fast)}
+    .pw-img-main:hover .pw-img-overlay{opacity:1}
+    .pw-img-overlay svg{width:28px;height:28px;margin-bottom:var(--s2)}
+    .pw-img-overlay span{font-size:12px;font-weight:600}
+    .pw-gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s2)}
+    .pw-gallery-add{aspect-ratio:1;border:2px dashed var(--border);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all var(--fast);color:var(--text-muted);background:var(--bg-alt)}
+    .pw-gallery-add:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+    .pw-toggle-row{display:flex;align-items:center;gap:var(--s3);padding:10px 0;border-bottom:1px solid var(--border-light)}
+    .pw-toggle-row:last-child{border-bottom:none}
+    .pw-toggle-row .lbl{font-size:13px;font-weight:500;flex:1}
+    .pw-section-row{display:flex;align-items:center;gap:var(--s3);padding:10px 0;border-bottom:1px solid var(--border-light)}
+    .pw-section-row:last-child{border-bottom:none}
+    .pw-section-row .lbl{font-size:13px;font-weight:500;flex:1}
+    .pw-section-row .desc{font-size:11px;color:var(--text-muted)}
+    .pw-section-status{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 8px;border-radius:999px}
+    .pw-section-status.on{background:var(--green-soft);color:#059669}
+    .pw-section-status.off{background:var(--bg-alt);color:var(--text-muted)}
+    .pw-dropzone{border:2px dashed var(--border);border-radius:var(--r-lg);padding:var(--s6);text-align:center;cursor:pointer;transition:all var(--fast);background:var(--bg-alt)}
+    .pw-dropzone:hover,.pw-dropzone.dragover{border-color:var(--accent);background:var(--accent-soft)}
+    .pw-dropzone p{font-size:13px;color:var(--text-muted)}
+    .pw-thumb{position:relative;border-radius:var(--r-md);overflow:hidden;border:1px solid var(--border)}
+    .pw-thumb img{width:100%;aspect-ratio:1;object-fit:cover}
+    .pw-thumb .rm{position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;border:none;background:rgba(0,0,0,.6);color:#fff;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity var(--fast)}
+    .pw-thumb:hover .rm{opacity:1}
+    .pw-unsaved{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:var(--s3) var(--s6);display:none;align-items:center;justify-content:space-between;animation:slideUp .3s ease}
+    .pw-unsaved.show{display:flex}
+    @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+    .pw-unsaved .msg{font-size:13px;font-weight:600;color:var(--text)}
+    .pw-unsaved .actions{display:flex;gap:var(--s2)}
+    .pw-health{display:flex;flex-direction:column;gap:var(--s2)}
+    .pw-health-row{display:flex;align-items:center;gap:var(--s3);font-size:12px}
+    .pw-health-row .icon{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+    .pw-health-row .icon.ok{background:var(--green-soft);color:#059669}
+    .pw-health-row .icon.miss{background:var(--red-soft);color:#dc2626}
+    .pw-health-row .label{flex:1;color:var(--text-muted)}
+    .pw-health-row .score{font-weight:700}
+    .pw-score-bar{height:6px;background:var(--bg-alt);border-radius:999px;overflow:hidden;margin-top:var(--s2)}
+    .pw-score-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),#a78bfa);transition:width .8s ease}
+    .pw-detail-input{display:none}
+    @media(max-width:1100px){
+      .pw-body{grid-template-columns:1fr}
+      .pw-sidebar{order:-1}
+    }
+    @media(max-width:768px){
+      .mobile-menu-btn{display:flex}
+      .sidebar{display:flex;position:fixed;top:0;left:0;bottom:0;z-index:500;transform:translateX(-100%);transition:transform .3s cubic-bezier(.16,1,.3,1)}
+      .sidebar.mobile-open{transform:translateX(0)}
+      .sidebar-backdrop{display:block;position:fixed;inset:0;z-index:499;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .3s ease}
+      .sidebar-backdrop.open{opacity:1;pointer-events:auto}
+      .page-header{border-radius:var(--r-md);padding:var(--s3) var(--s4)}
+      .content{padding:var(--s3)}
+      .pw-sticky{padding:var(--s3) var(--s4);margin:calc(var(--s3)*-1);margin-bottom:0}
+      .kpi-grid{grid-template-columns:1fr 1fr}
+      .welcome{padding:var(--s5)}
+      .welcome-stats{flex-wrap:wrap;gap:var(--s4)}
+      .pw-body{grid-template-columns:1fr}
+    }
+
+    /* Toast */
+    .toast-container{position:fixed;top:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+    .toast{pointer-events:auto;display:flex;align-items:center;gap:10px;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;color:#fff;box-shadow:0 8px 30px rgba(0,0,0,.15);animation:toastIn .3s ease;max-width:360px}
+    .toast.success{background:#059669}
+    .toast.error{background:#dc2626}
+    .toast.info{background:#2563eb}
+    .toast.leaving{animation:toastOut .25s ease forwards}
+    @keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes toastOut{to{opacity:0;transform:translateX(40px)}}
+    .toast-close{margin-left:auto;background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:16px;padding:0;line-height:1}
+    .toast-close:hover{color:#fff}
+
+    /* Confirm modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998;display:flex;align-items:center;justify-content:center;animation:fadeIn .15s ease}
+    .modal-box{background:#fff;border-radius:16px;padding:28px;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:modalIn .2s ease}
+    .modal-box h3{font-size:16px;font-weight:700;margin-bottom:8px}
+    .modal-box p{font-size:13px;color:var(--text-muted);margin-bottom:20px}
+    .modal-actions{display:flex;gap:8px;justify-content:flex-end}
+    .modal-actions button{height:36px;padding:0 20px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all var(--fast)}
+    .modal-cancel{background:var(--bg-alt);color:var(--text);border:1px solid var(--border)!important}
+    .modal-cancel:hover{background:var(--border)}
+    .modal-confirm{background:#dc2626;color:#fff}
+    .modal-confirm:hover{opacity:.9}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+  </style>
+</head>
+<body>
+<div class="toast-container" id="toasts"></div>
+<div class="modal-overlay" id="confirmModal" style="display:none" x-data="{ show:false, title:'', message:'', onConfirm:null }" x-show="show" x-transition @click.self="show=false">
+  <div class="modal-box">
+    <h3 x-text="title"></h3>
+    <p x-text="message"></p>
+    <div class="modal-actions">
+      <button class="modal-cancel" @click="show=false">Cancel</button>
+      <button class="modal-confirm" @click="if(onConfirm)onConfirm();show=false">Delete</button>
+    </div>
+  </div>
+</div>
+<div class="app" x-data="adminApp()" x-init="init()">
+  <aside class="sidebar" :class="{ 'mobile-open': sidebarOpen }">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <span>Ecommerce</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-label">Main</div>
+      <template x-for="item in navItems" :key="item.id">
+        <button class="nav-item" :class="{ active: page === item.id }" @click="switchPage(item.id)">
+          <span x-html="item.icon"></span>
+          <span x-text="item.label"></span>
+          <span class="nav-badge" x-show="item.badge" x-text="item.badge" x-cloak></span>
+        </button>
+      </template>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="nav-item logout" @click="logout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Logout
+      </button>
+    </div>
+  </aside>
+
+  <div class="sidebar-backdrop" :class="{ open: sidebarOpen }" @click="sidebarOpen=false"></div>
+
+  <div class="main">
+    <div class="content">
+      <div class="page-header">
+        <div>
+          <h1 x-text="page==='dashboard'?'Dashboard':page==='orders'?'Orders':page==='products'&&prodDetail?detailForm.name||'Product':page==='products'?'Products':page==='customers'?'Customers':page==='store'?'My Store':page==='packs'?'Packs':''"></h1>
+          <p x-text="page==='dashboard'?todayStr:page==='orders'?'Manage and track all customer orders':page==='products'&&prodDetail?'Product workspace — edit and manage':page==='products'?'Browse and manage your product catalog':page==='customers'?'View and manage your customer base':page==='store'?'Manage your store info and branding':page==='packs'?'Create and manage product bundles':''"></p>
+        </div>
+        <div class="topbar-right" x-data="{ notifOpen: false }">
+          <button class="mobile-menu-btn" @click="sidebarOpen=!sidebarOpen" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <button class="notif-btn" @click="notifOpen = !notifOpen; if(notifOpen) loadNotifs()" @click.outside="notifOpen = false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="notif-dot" x-show="unreadCount > 0" x-cloak></span>
+          </button>
+          <div class="notif-dropdown" :class="{ open: notifOpen }">
+            <div class="notif-header"><span>Notifications</span><span style="font-size:11px;font-weight:400;text-transform:none" x-text="unreadCount + ' unread'"></span></div>
+            <template x-for="n in notifications" :key="n.id">
+              <div class="notif-item" :class="{ unread: !n.is_read }">
+                <div class="notif-icon" :style="'background:' + (n.type==='low_stock'?'rgba(245,158,11,.15)':n.type==='cancelled'?'rgba(239,68,68,.15)':'rgba(59,130,246,.15)') + ';color:' + (n.type==='low_stock'?'#d97706':n.type==='cancelled'?'#dc2626':'#2563eb')" x-text="n.type==='low_stock'?'!':n.type==='cancelled'?'x':'i'"></div>
+                <div class="notif-body">
+                  <div class="notif-title" x-text="n.title"></div>
+                  <div class="notif-time" x-text="n.created_at ? new Date(n.created_at).toLocaleDateString() : ''"></div>
+                </div>
+              </div>
+            </template>
+            <div x-show="notifications.length === 0" style="padding:var(--s7);text-align:center;color:var(--text-muted);font-size:13px">No notifications yet</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== DASHBOARD ===== -->
+      <template x-if="page === 'dashboard'"><div id="page-dashboard">
+        <div class="welcome">
+          <h2 x-text="'Good ' + timeOfDay + ', Admin'"></h2>
+          <p>Here's what's happening with your store today.</p>
+            <div class="welcome-stats">
+              <div class="welcome-stat"><div class="val" style="color:#10b981" x-text="'DA ' + (kpiData.revenueToday || 0).toLocaleString()"></div><div class="lbl">Revenue <br/>today</div></div>
+              <div class="welcome-stat"><div class="val" style="color:#f59e0b" x-text="kpiData.pendingOrders || 0"></div><div class="lbl">Pending <br/>orders</div></div>
+              <div class="welcome-stat"><div class="val" style="color:#ef4444" x-text="kpiData.lowStockCount || 0"></div><div class="lbl">Low stock <br/>alerts</div></div>
+              <div class="welcome-stat"><div class="val" style="color:#8b5cf6" x-text="kpiData.totalCustomers || 0"></div><div class="lbl">Total <br/>customers</div></div>
+            </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <div class="kpi-icon" style="background:var(--green-soft);color:#059669"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+              <span class="kpi-trend" :class="kpiData.revChange>=0?'up':'down'" x-text="(kpiData.revChange>=0?'\u2191 ':'\u2193 ')+Math.abs(kpiData.revChange||0).toFixed(1)+'%'"></span>
+            </div>
+            <div class="kpi-label">Total Revenue</div>
+            <div class="kpi-value" x-text="'DA ' + (kpiData.totalRevenue || 0).toLocaleString()"></div>
+            <div class="kpi-sub">Lifetime earnings</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <div class="kpi-icon" style="background:var(--blue-soft);color:#2563eb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+              <span class="kpi-trend" :class="kpiData.ordChange>=0?'up':'down'" x-show="kpiData.totalOrders > 0" x-text="(kpiData.ordChange>=0?'\u2191 ':'\u2193 ')+Math.abs(kpiData.ordChange||0).toFixed(1)+'%'"></span>
+            </div>
+            <div class="kpi-label">Total Orders</div>
+            <div class="kpi-value" x-text="(kpiData.totalOrders || 0).toLocaleString()"></div>
+            <div class="kpi-sub" x-text="(kpiData.pendingOrders || 0) + ' pending'"></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <div class="kpi-icon" style="background:var(--accent-soft);color:var(--accent)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+              <span class="kpi-trend up">&uarr; All time</span>
+            </div>
+            <div class="kpi-label">Customers</div>
+            <div class="kpi-value" x-text="(kpiData.totalCustomers || 0).toLocaleString()"></div>
+            <div class="kpi-sub">Total registered</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <div class="kpi-icon" style="background:var(--orange-soft);color:#d97706"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+              <span class="kpi-trend" :class="(kpiData.lowStockCount || 0) > 5 ? 'down' : 'up'" x-text="(kpiData.lowStockCount || 0) > 5 ? '\u2193 Needs attention' : '\u2191 All good'"></span>
+            </div>
+            <div class="kpi-label">Active Products</div>
+            <div class="kpi-value" x-text="(kpiData.activeProducts || 0).toLocaleString()"></div>
+            <div class="kpi-sub" x-text="(kpiData.lowStockCount || 0) + ' low stock'"></div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="card">
+            <div class="card-header">
+              <h3>Revenue Trend</h3>
+              <a @click="loadDashboard">Refresh</a>
+            </div>
+            <div class="card-body">
+              <div class="rev-chart-wrap" id="rev-chart"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>Order Status</h3>
+            </div>
+            <div class="card-body">
+              <div class="status-donut" id="status-dist"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kpi-more">
+          <div class="kpi-mini"><div class="lbl">Today</div><div class="val" style="color:#10b981" x-text="'DA '+ (kpiData.revenueToday||0).toLocaleString()"></div><div class="sub">Revenue today</div></div>
+          <div class="kpi-mini"><div class="lbl">This Week</div><div class="val" style="color:#3b82f6" x-text="'DA '+ (kpiData.revenueWeek||0).toLocaleString()"></div><div class="sub">Weekly revenue</div></div>
+          <div class="kpi-mini"><div class="lbl">AOV</div><div class="val" x-text="'DA '+ (kpiData.aov||0).toLocaleString()"></div><div class="sub">Avg order value</div></div>
+          <div class="kpi-mini"><div class="lbl">Daily Avg</div><div class="val" x-text="'DA '+ (kpiData.dailyAvg||0).toLocaleString()"></div><div class="sub">30-day daily avg</div></div>
+          <div class="kpi-mini"><div class="lbl">Delivered</div><div class="val" style="color:#10b981" x-text="kpiData.deliveredOrders||0"></div><div class="sub" x-text="(kpiData.cancelledOrders||0)+' cancelled'"></div></div>
+          <div class="kpi-mini"><div class="lbl">Returned</div><div class="val" style="color:#ef4444" x-text="kpiData.returnedOrders||0"></div><div class="sub">Total returns</div></div>
+        </div>
+
+        <div class="row" x-show="alerts.length>0||kpiData.pendingOrders>0||(kpiData.lowStockCount||0)>0" x-cloak>
+          <div class="card">
+            <div class="card-header"><h3>Today's Insights</h3></div>
+            <div class="card-body" style="padding:var(--s3) var(--s5)">
+              <template x-if="(kpiData.revenueToday||0)>0">
+                <div class="insight-item"><span class="insight-icon" style="background:var(--green-soft);color:#059669">&#10003;</span><span>Revenue today: <strong x-text="'DA '+(kpiData.revenueToday||0).toLocaleString()"></strong></span></div>
+              </template>
+              <template x-if="(kpiData.pendingOrders||0)>0">
+                <div class="insight-item"><span class="insight-icon" style="background:var(--orange-soft);color:#d97706">!</span><span><strong x-text="kpiData.pendingOrders"></strong> pending order<template x-if="kpiData.pendingOrders>1">s</template> need attention</span></div>
+              </template>
+              <template x-if="(kpiData.lowStockCount||0)>0">
+                <div class="insight-item"><span class="insight-icon" style="background:var(--red-soft);color:#dc2626">&#9888;</span><span><strong x-text="kpiData.lowStockCount"></strong> product<template x-if="kpiData.lowStockCount>1">s</template> need restocking</span></div>
+              </template>
+              <template x-if="(kpiData.deliveredOrders||0)>0">
+                <div class="insight-item"><span class="insight-icon" style="background:var(--green-soft);color:#059669">&#10003;</span><span><strong x-text="kpiData.deliveredOrders"></strong> order<template x-if="kpiData.deliveredOrders>1">s</template> delivered</span></div>
+              </template>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Quick Actions</h3></div>
+            <div class="card-body">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)">
+                <button style="display:flex;flex-direction:column;align-items:center;gap:var(--s2);padding:var(--s4);border:1px solid var(--border);border-radius:var(--r-md);background:none;cursor:pointer;transition:all var(--fast);font-family:inherit" @click="page='orders'">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  <span style="font-size:12px;font-weight:600">View Orders</span>
+                </button>
+                <button style="display:flex;flex-direction:column;align-items:center;gap:var(--s2);padding:var(--s4);border:1px solid var(--border);border-radius:var(--r-md);background:none;cursor:pointer;transition:all var(--fast);font-family:inherit" @click="page='products'">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#059669"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                  <span style="font-size:12px;font-weight:600">Manage Products</span>
+                </button>
+                <button style="display:flex;flex-direction:column;align-items:center;gap:var(--s2);padding:var(--s4);border:1px solid var(--border);border-radius:var(--r-md);background:none;cursor:pointer;transition:all var(--fast);font-family:inherit" @click="loadDashboard">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#2563eb"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <span style="font-size:12px;font-weight:600">Refresh Data</span>
+                </button>
+                <button style="display:flex;flex-direction:column;align-items:center;gap:var(--s2);padding:var(--s4);border:1px solid var(--border);border-radius:var(--r-md);background:none;cursor:pointer;transition:all var(--fast);font-family:inherit" @click="page='customers'">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#d97706"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                  <span style="font-size:12px;font-weight:600">View Customers</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="card">
+            <div class="card-header"><h3>Best Sellers by Quantity</h3></div>
+            <div class="card-body" id="bs-byQuantity"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Best Sellers by Revenue</h3></div>
+            <div class="card-body" id="bs-byRevenue"></div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="card">
+            <div class="card-header"><h3>Sales by Category</h3></div>
+            <div class="card-body" id="cat-chart"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Top Customers</h3></div>
+            <div class="card-body" style="padding:var(--s3) var(--s5)">
+              <template x-for="(c,i) in topCustomers.slice(0,7)" :key="c.id">
+                <div class="cust-row">
+                  <div class="cust-rank" x-text="i+1"></div>
+                  <div class="cust-avatar" x-text="(c.first_name||'?')[0]+(c.last_name||'?')[0]"></div>
+                  <div class="cust-info">
+                    <div class="cust-name" x-text="c.first_name+' '+c.last_name"></div>
+                    <div class="cust-phone" x-text="c.phone||'No phone'"></div>
+                  </div>
+                  <div>
+                    <div class="cust-val" x-text="'DA '+ (c.lifetime||0).toLocaleString()"></div>
+                    <div class="cust-sub" x-text="(c.orders||0)+' orders'"></div>
+                  </div>
+                </div>
+              </template>
+              <div x-show="topCustomers.length===0" style="padding:var(--s5);text-align:center;color:var(--text-muted);font-size:13px">No customer data yet</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="card">
+            <div class="card-header" @click="unsoldOpen=!unsoldOpen" style="cursor:pointer">
+              <h3>Unsold Products <span style="font-size:11px;font-weight:400;color:var(--text-muted)" x-text="'('+unsold.neverSold.length+' never sold'+(unsold.stale.length?', '+unsold.stale.length+' stale':'')+')'"></span></h3>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" :class="{ open: unsoldOpen }" style="transition:transform .25s;color:var(--text-muted)"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+            <div class="accordion-body" x-show="unsoldOpen" x-cloak>
+              <div x-show="unsold.neverSold.length===0&&unsold.stale.length===0" style="padding:var(--s3);text-align:center;color:var(--text-muted);font-size:13px">All products have been sold</div>
+              <template x-if="unsold.neverSold.length>0">
+                <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:var(--s2);margin-top:var(--s2)">Never Sold</div>
+                <div style="max-height:160px;overflow-y:auto">
+                  <table style="font-size:12px"><thead><tr><th>Name</th><th>SKU</th><th>Price</th><th>Stock</th></tr></thead>
+                    <tbody><template x-for="p in unsold.neverSold" :key="p.id">
+                      <tr><td x-text="p.name"></td><td style="color:var(--text-muted)" x-text="p.sku||'-'"></td><td x-text="'DA '+p.price.toLocaleString()"></td><td x-text="p.stock"></td></tr>
+                    </template></tbody>
+                  </table>
+                </div></div>
+              </template>
+              <template x-if="unsold.stale.length>0">
+                <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:var(--s2);margin-top:var(--s3)">Not Sold in 30 Days</div>
+                <div style="max-height:160px;overflow-y:auto">
+                  <table style="font-size:12px"><thead><tr><th>Name</th><th>SKU</th><th>Price</th><th>Stock</th></tr></thead>
+                    <tbody><template x-for="p in unsold.stale" :key="p.id">
+                      <tr><td x-text="p.name"></td><td style="color:var(--text-muted)" x-text="p.sku||'-'"></td><td x-text="'DA '+p.price.toLocaleString()"></td><td x-text="p.stock"></td></tr>
+                    </template></tbody>
+                  </table>
+                </div></div>
+              </template>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>COD Reliability</h3></div>
+            <div class="card-body" style="padding:var(--s3) var(--s5)">
+              <template x-for="c in codReliability.slice(0,7)" :key="c.id">
+                <div class="cust-row">
+                  <div class="cust-avatar" style="background:var(--red-soft);color:#dc2626" x-text="(c.first_name||'?')[0]+(c.last_name||'?')[0]"></div>
+                  <div class="cust-info">
+                    <div class="cust-name" x-text="c.first_name+' '+c.last_name"></div>
+                    <div class="cust-phone" x-text="c.phone||''"></div>
+                  </div>
+                  <div>
+                    <div class="cust-val" style="color:#ef4444" x-text="c.failed+'/'+c.total"></div>
+                    <div class="cust-sub" x-text="c.rate.toFixed(0)+'% failure'"></div>
+                  </div>
+                  <span class="cust-risk" :style="'background:'+(c.rate>50?'#ef4444':c.rate>25?'#f59e0b':'#10b981')" :title="c.rate.toFixed(0)+'% fail rate'"></span>
+                </div>
+              </template>
+              <div x-show="codReliability.length===0" style="padding:var(--s5);text-align:center;color:var(--text-muted);font-size:13px">No delivery issues recorded</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h3>Recent Orders</h3><a @click="page='orders'">View All</a></div>
+          <div class="table-wrap">
+            <table><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody id="recent-orders-body"></tbody></table>
+          </div>
+        </div>
+      </div></template>
+
+      <!-- ===== ORDERS ===== -->
+      <template x-if="page === 'orders'"><div id="page-orders">
+        
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)">
+          <div class="filters">
+            <div class="filter-control" style="cursor:text">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" placeholder="Search orders..." x-model="orderSearch" @input.debounce.500ms="loadOrders()"/>
+            </div>
+            <div style="position:relative" x-data="{ open: false }" @click.outside="open = false" @keydown.escape="open = false">
+              <button class="filter-control" @click="open = !open" type="button">
+                <span class="status-dot" :style="'background:' + (orderStatus ? statusColors[orderStatus] : '#8a8a8e')"></span>
+                <span style="font-size:13px;font-weight:500" x-text="orderStatus ? orderStatus.charAt(0).toUpperCase() + orderStatus.slice(1) : 'All status'"></span>
+                <span class="arrow" :class="{ open }">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                </span>
+              </button>
+              <div class="dropdown-menu" :class="{ open }">
+                <button class="dropdown-option" :class="{ active: !orderStatus }" @click="orderStatus = ''; open = false; loadOrders()" type="button">
+                  <span class="opt-dot" style="background:#8a8a8e"></span>
+                  <span class="opt-label">All status</span>
+                  <span class="opt-check">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  </span>
+                </button>
+                <div class="dropdown-divider"></div>
+                <template x-for="s in statusList" :key="s.val">
+                  <button class="dropdown-option" :class="{ active: orderStatus === s.val }" @click="orderStatus = s.val; open = false; loadOrders()" type="button">
+                    <span class="opt-dot" :style="'background:' + s.color"></span>
+                    <span class="opt-label" x-text="s.label"></span>
+                    <span class="opt-check">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    </span>
+                  </button>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table><thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody id="orders-body"></tbody></table>
+          </div>
+          <div class="pagination" id="orders-pages"></div>
+        </div>
+      </div></template>
+
+      <!-- ===== PRODUCTS ===== -->
+      <template x-if="page === 'products' && !prodDetail"><div id="page-products">
+        
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)">
+          <div class="filter-control" style="cursor:text">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Search products..." x-model="prodSearch" @input.debounce.500ms="loadProducts()"/>
+          </div>
+          <button class="btn-primary" style="width:auto;height:38px;padding:0 var(--s5);font-size:13px;text-transform:none;letter-spacing:0" @click="openProductForm()">+ New Product</button>
+        </div>
+        <div x-show="!prodLoading" class="prod-grid" id="products-grid"></div>
+        <div x-show="prodLoading" style="text-align:center;padding:var(--s8);color:var(--text-muted);font-size:14px">Loading...</div>
+        <div class="pagination" id="products-pages"></div>
+      </div></template>
+
+      <!-- ===== PRODUCT DETAIL ===== -->
+      <template x-if="page === 'products' && prodDetail"><div id="page-product-detail">
+        <div class="pw-sticky">
+          <div class="pw-sticky-left">
+            <button class="pw-back" @click="prodDetail=null;loadProducts()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+              Back
+            </button>
+            <div style="width:1px;height:20px;background:var(--border)"></div>
+            <span class="pw-badge" :class="detailForm.isActive?'pw-badge-published':'pw-badge-draft'">
+              <span class="pw-badge-dot"></span>
+              <span x-text="detailForm.isActive?'Published':'Draft'"></span>
+            </span>
+            <span class="pw-id" x-text="'#'+detailForm.id"></span>
+          </div>
+          <div class="pw-sticky-right">
+            <button class="btn-secondary" style="height:34px;padding:0 var(--s4);font-size:12px" @click="prodDetail=null;loadProducts()">Discard</button>
+            <button class="btn-primary" style="height:34px;padding:0 var(--s5);font-size:12px" :class="{ loading: saving }" @click="saveProductDetail()">
+              <span class="spinner"></span>
+              <span class="btn-text" x-text="saving?'Saving...':'Save Changes'"></span>
+            </button>
+            <span x-show="savedMsg" style="font-size:12px;color:#059669;font-weight:600" x-text="savedMsg"></span>
+          </div>
+        </div>
+
+        <div class="pw-body">
+          <!-- MAIN COLUMN -->
+          <div class="pw-main">
+            <!-- General Information -->
+            <div class="pw-card">
+              <div class="pw-card-head"><h3>General Information</h3><span class="pw-card-hint">Click any field to edit</span></div>
+              <div class="pw-card-body">
+                <div class="pw-fld">
+                  <label>Product Name</label>
+                  <input class="pw-inp" type="text" x-model="detailForm.name" placeholder="e.g. Gold Standard Whey"/>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)">
+                  <div class="pw-fld">
+                    <label>Brand</label>
+                    <input class="pw-inp" type="text" x-model="detailForm.brandName" placeholder="Brand name"/>
+                  </div>
+                  <div class="pw-fld">
+                    <label>SKU</label>
+                    <input class="pw-inp" type="text" x-model="detailForm.sku" placeholder="e.g. ON-WHEY-5LB"/>
+                  </div>
+                </div>
+                <div class="pw-fld">
+                  <label>Description</label>
+                  <textarea class="pw-inp pw-textarea" x-model="detailForm.description" placeholder="Product description..."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Description Sections -->
+            <div class="pw-card">
+              <div class="pw-card-head"><h3>Content Sections</h3></div>
+              <div class="pw-card-body" style="padding:var(--s3) var(--s5)">
+                <div class="pw-section-row">
+                  <div>
+                    <span class="lbl">Ingredients</span>
+                    <span class="desc">Nutritional ingredients list</span>
+                  </div>
+                  <span class="pw-section-status" :class="detailForm.showIngredients?'on':'off'" x-text="detailForm.showIngredients?'ON':'OFF'"></span>
+                  <button class="toggle" :class="{ active: detailForm.showIngredients }" @click="detailForm.showIngredients=!detailForm.showIngredients" type="button"></button>
+                </div>
+                <div class="pw-section-row">
+                  <div>
+                    <span class="lbl">How To Use</span>
+                    <span class="desc">Usage instructions</span>
+                  </div>
+                  <span class="pw-section-status" :class="detailForm.showHowToUse?'on':'off'" x-text="detailForm.showHowToUse?'ON':'OFF'"></span>
+                  <button class="toggle" :class="{ active: detailForm.showHowToUse }" @click="detailForm.showHowToUse=!detailForm.showHowToUse" type="button"></button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ingredients (conditional) -->
+            <div class="pw-card" x-show="detailForm.showIngredients" x-cloak>
+              <div class="pw-card-head"><h3>Ingredients</h3><span class="pw-card-hint">One per line</span></div>
+              <div class="pw-card-body">
+                <div class="pw-fld">
+                  <textarea class="pw-inp pw-textarea" x-model="detailForm.ingredients" placeholder="Whey Protein Isolate&#10;Creatine Monohydrate&#10;BCAAs"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- How To Use (conditional) -->
+            <div class="pw-card" x-show="detailForm.showHowToUse" x-cloak>
+              <div class="pw-card-head"><h3>How To Use</h3><span class="pw-card-hint">One step per line</span></div>
+              <div class="pw-card-body">
+                <div class="pw-fld">
+                  <textarea class="pw-inp pw-textarea" x-model="detailForm.howToUse" placeholder="Mix 1 scoop with 300ml water&#10;Shake well&#10;Consume post-workout"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SIDEBAR -->
+          <div class="pw-sidebar">
+            <!-- Image -->
+            <div class="pw-card">
+              <div class="pw-card-head"><h3>Product Image</h3></div>
+              <div class="pw-card-body">
+                <div class="pw-img-main" @click="$refs.detailImgInput.click()">
+                  <img :src="detailImg || 'https://placehold.co/600x600/f5f5f6/0d0d0d?text=Product'" :alt="detailForm.name"/>
+                  <div class="pw-img-overlay">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <span>Replace Image</span>
+                  </div>
+                  <input type="file" accept="image/*" x-ref="detailImgInput" @change="changeDetailImage($event)" class="pw-detail-input"/>
+                </div>
+                <div class="pw-gallery" style="margin-top:var(--s3)" x-show="detailImg">
+                  <div class="pw-thumb"><img :src="detailImg" alt=""/></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pricing -->
+            <div class="pw-card">
+              <div class="pw-card-head"><h3>Pricing</h3></div>
+              <div class="pw-card-body">
+                <div class="pw-fld">
+                  <label>Selling Price</label>
+                  <input class="pw-inp" type="number" x-model="detailForm.price" placeholder="9900"/>
+                </div>
+                <div class="pw-fld">
+                  <label>Compare-at Price</label>
+                  <input class="pw-inp pw-inp-sm" type="number" x-model="detailForm.comparePrice" placeholder="12000"/>
+                </div>
+                <div class="pw-fld" x-show="detailForm.comparePrice > 0">
+                  <div class="pw-margin" x-text="'DA '+((detailForm.comparePrice||0)-(detailForm.price||0)).toLocaleString()+' savings'"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Inventory -->
+            <div class="pw-card">
+              <div class="pw-card-head"><h3>Inventory</h3></div>
+              <div class="pw-card-body">
+                <div class="pw-stock-row">
+                  <div class="pw-stock-num" :style="'color:'+(detailForm.stock===0?'var(--red)':detailForm.stock<=5?'var(--orange)':'var(--green)')" x-text="detailForm.stock"></div>
+                  <div><div class="pw-stock-label">Units in stock</div></div>
+                </div>
+                <div class="pw-stock-bar" style="margin-top:var(--s2)">
+                  <div class="pw-stock-fill" :style="'width:'+Math.min(100,(detailForm.stock/50)*100)+'%;background:'+(detailForm.stock===0?'var(--red)':detailForm.stock<=5?'var(--orange)':'var(--green)')"></div>
+                </div>
+                <div class="pw-fld" style="margin-top:var(--s4)">
+                  <label>Stock Quantity</label>
+                  <input class="pw-inp" type="number" x-model="detailForm.stock" placeholder="50"/>
+                </div>
+                <div class="pw-fld">
+                  <label>Low Stock Alert</label>
+                  <input class="pw-inp pw-inp-sm" type="number" x-model="detailForm.lowStock" placeholder="5"/>
+                </div>
+              </div>
+            </div>
+
+            <!-- Product Health -->
+            <div class="pw-card">
+              <div class="pw-card-head"><h3>Product Health</h3></div>
+              <div class="pw-card-body">
+                <div class="pw-health">
+                  <div class="pw-health-row">
+                    <span class="icon" :class="detailImg?'ok':'miss'" x-text="detailImg?'&#10003;':'&#10007;'"></span>
+                    <span class="label">Image</span>
+                  </div>
+                  <div class="pw-health-row">
+                    <span class="icon" :class="detailForm.description?'ok':'miss'" x-text="detailForm.description?'&#10003;':'&#10007;'"></span>
+                    <span class="label">Description</span>
+                  </div>
+                  <div class="pw-health-row">
+                    <span class="icon" :class="detailForm.sku?'ok':'miss'" x-text="detailForm.sku?'&#10003;':'&#10007;'"></span>
+                    <span class="label">SKU</span>
+                  </div>
+                  <div class="pw-health-row">
+                    <span class="icon" :class="detailForm.price>0?'ok':'miss'" x-text="detailForm.price>0?'&#10003;':'&#10007;'"></span>
+                    <span class="label">Price</span>
+                  </div>
+                  <div class="pw-health-row">
+                    <span class="icon" :class="detailForm.stock>0?'ok':'miss'" x-text="detailForm.stock>0?'&#10003;':'&#10007;'"></span>
+                    <span class="label">In Stock</span>
+                  </div>
+                </div>
+                <div class="pw-score-bar" style="margin-top:var(--s3)">
+                  <div class="pw-score-fill" :style="'width:'+Math.round((([detailImg,detailForm.description,detailForm.sku,detailForm.price>0,detailForm.stock>0].filter(Boolean).length)/5)*100)+'%'"></div>
+                </div>
+                <div style="text-align:right;font-size:11px;font-weight:700;color:var(--accent);margin-top:4px" x-text="Math.round((([detailImg,detailForm.description,detailForm.sku,detailForm.price>0,detailForm.stock>0].filter(Boolean).length)/5)*100)+'% Complete'"></div>
+              </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="pw-card">
+              <div class="pw-card-head"><h3>Quick Stats</h3></div>
+              <div class="pw-card-body">
+                <div class="pw-stat-grid">
+                  <div class="pw-stat"><div class="v" x-text="detailForm.stock*detailForm.price>0?'DA '+Number(detailForm.stock*detailForm.price).toLocaleString():'--'"></div><div class="l">Inventory Value</div></div>
+                  <div class="pw-stat"><div class="v" x-text="detailForm.weight?detailForm.weight+'g':'--'"></div><div class="l">Weight</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Unsaved changes bar -->
+        <div class="pw-unsaved" :class="{ show: hasUnsaved }">
+          <span class="msg">Unsaved changes</span>
+          <div class="actions">
+            <button class="btn-secondary" style="height:32px;padding:0 var(--s4);font-size:12px" @click="revertProductDetail()">Discard</button>
+            <button class="btn-primary" style="height:32px;padding:0 var(--s4);font-size:12px" @click="saveProductDetail()">Save</button>
+          </div>
+        </div>
+      </div></template>
+
+      <!-- ===== MY STORE ===== -->
+      <template x-if="page === 'store'"><div id="page-store">
+        <div class="card" style="max-width:640px">
+          <div class="card-body">
+            <div class="form-block"><label>Store Name</label><input class="field" x-model="storeInfo.store_name" placeholder="IronFuel Nutrition"/></div>
+            <div class="form-block"><label>Store Description</label><textarea class="field" x-model="storeInfo.store_description" placeholder="Trusted Performance. Real Results. Official supplements. Fast delivery across Algeria." rows="3" style="resize:vertical;min-height:80px"></textarea></div>
+            <div class="form-block"><label>Owner Name</label><input class="field" x-model="storeInfo.owner_name" placeholder="Your name"/></div>
+            <div class="form-block"><label>Phone</label><input class="field" x-model="storeInfo.phone" placeholder="+213 555 123 456"/></div>
+            <div class="form-block"><label>Location</label><input class="field" x-model="storeInfo.location" placeholder="Algiers, Algeria"/></div>
+            <div class="form-block"><label>Google Maps Link</label><input class="field" x-model="storeInfo.location_link" placeholder="https://maps.google.com/..."/></div>
+            <div class="form-grid">
+              <div class="form-block"><label>Instagram URL</label><input class="field" x-model="storeInfo.instagram" placeholder="https://instagram.com/ironfuel_dz"/></div>
+              <div class="form-block"><label>TikTok URL</label><input class="field" x-model="storeInfo.tiktok" placeholder="https://tiktok.com/@ironfuel_dz"/></div>
+            </div>
+            <div class="form-block full" style="margin-top:var(--s4)"><label>Store Images</label></div>
+            <div class="upload-zone" x-ref="storeDropzone" @click="$refs.storeFileInput.click()" @dragover.prevent="dragover=true" @dragleave="dragover=false" @drop.prevent="handleStoreDrop($event)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <p>Drop images here or click to upload</p>
+              <div class="upload-progress" :style="{ display: storeUploading ? 'block' : 'none' }"><div class="bar" :style="{ width: storeUploadProgress + '%' }"></div></div>
+            </div>
+            <input type="file" accept="image/*" multiple x-ref="storeFileInput" @change="handleStoreFiles($event.target.files)" style="display:none"/>
+            <div class="upload-preview">
+              <template x-for="(url, i) in storeInfo.images" :key="i">
+                <div class="thumb"><img :src="url" alt=""/><button class="remove" @click="storeInfo.images.splice(i, 1)">&times;</button></div>
+              </template>
+            </div>
+            <div style="margin-top:var(--s5);display:flex;gap:var(--s3);align-items:center">
+              <button class="btn-primary" :class="{ loading: storeSaving }" @click="saveStoreInfo()" style="width:auto;height:38px;padding:0 var(--s6);font-size:13px;text-transform:none;letter-spacing:0">
+                <span class="spinner"></span>
+                <span class="btn-text" x-text="storeSaving ? 'Saving...' : 'Save Changes'"></span>
+              </button>
+              <span x-show="storeSavedMsg" style="font-size:12px;color:#059669;font-weight:600" x-text="storeSavedMsg"></span>
+            </div>
+          </div>
+        </div>
+
+      </div></template>
+
+      <!-- ===== PACKS ===== -->
+      <template x-if="page === 'packs'"><div id="page-packs">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)">
+          <div></div>
+          <button class="btn-primary" style="width:auto;height:38px;padding:0 var(--s6);font-size:13px;text-transform:none;letter-spacing:0;gap:var(--s2)" @click="packForm={name:'',description:'',price:0,image:'',days_valid:30};packEditingId=null;packShowForm=true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Pack
+          </button>
+        </div>
+
+        <!-- Pack form slideover -->
+        <div class="slideover" :class="{ open: packShowForm }">
+          <div class="backdrop" @click="packShowForm=false"></div>
+          <div class="panel">
+            <div class="panel-header">
+              <h2 x-text="packEditingId ? 'Edit Pack' : 'New Pack'"></h2>
+              <button class="panel-close" @click="packShowForm=false">&times;</button>
+            </div>
+            <div class="panel-body">
+              <div class="form-block"><label>Pack Name</label><input class="field" x-model="packForm.name" placeholder="Summer Bundle"/></div>
+              <div class="form-block"><label>Description</label><textarea class="field" x-model="packForm.description" rows="3" placeholder="Bundle description..."></textarea></div>
+              <div class="form-grid">
+                <div class="form-block"><label>Pack Price (DZD)</label><input class="field" type="number" x-model="packForm.price" placeholder="3500"/></div>
+                <div class="form-block"><label>Days Valid</label><input class="field" type="number" x-model="packForm.days_valid" placeholder="30"/></div>
+              </div>
+              <div class="form-block full" style="margin-top:var(--s4)"><label>Pack Image</label></div>
+              <div class="upload-zone" @click="$refs.packFileInput.click()" @dragover.prevent="$el.classList.add('dragover')" @dragleave.prevent="$el.classList.remove('dragover')" @drop.prevent="$el.classList.remove('dragover');handlePackDrop($event)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <p>Drop image here or click to upload</p>
+                <div class="upload-progress" :style="{ display: packUploading ? 'block' : 'none' }"><div class="bar" :style="{ width: packUploadProgress + '%' }"></div></div>
+              </div>
+              <input type="file" accept="image/*" x-ref="packFileInput" @change="handlePackFiles($event.target.files)" style="display:none"/>
+              <div class="upload-preview" x-show="packForm.image">
+                <div class="thumb"><img :src="packForm.image" alt=""/><button class="remove" @click="packForm.image=''">&times;</button></div>
+              </div>
+              <div style="margin-top:var(--s5);display:flex;gap:var(--s3);align-items:center">
+                <button class="btn-primary" :class="{ loading: packSaving }" @click="savePack()">
+                  <span class="spinner"></span>
+                  <span class="btn-text" x-text="packSaving ? 'Saving...' : 'Save Pack'"></span>
+                </button>
+                <button class="btn-secondary" @click="packShowForm=false">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pack grid -->
+        <template x-if="!packs.length && !packSaving">
+          <p style="text-align:center;padding:var(--s7);color:var(--text-subtle);font-size:14px">No packs yet. Create your first bundle!</p>
+        </template>
+        <div class="pack-grid">
+          <template x-for="p in packs" :key="p.id">
+            <div class="pack-card">
+              <img class="pack-card-img" :src="p.image || 'https://placehold.co/400x300/f5f5f6/0d0d0d?text='+encodeURIComponent(p.name)" :alt="p.name" loading="lazy"/>
+              <div class="pack-card-body">
+                <div class="pack-card-name" x-text="p.name"></div>
+                <div class="pack-card-desc" x-text="p.description"></div>
+                <div class="pack-card-meta">
+                  <span class="pack-card-price" x-text="Number(p.price).toLocaleString() + ' DZD'"></span>
+                  <span class="pack-card-days" x-text="p.days_valid + ' days'"></span>
+                </div>
+              </div>
+              <div class="pack-card-actions">
+                <button class="btn-icon" title="Edit" @click="editPack(p)" style="width:30px;height:30px;font-size:13px">&#9998;</button>
+                <button class="btn-icon" title="Delete" @click="deletePack(p.id)" style="width:30px;height:30px;font-size:13px;color:var(--red)">&times;</button>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div></template>
+
+      <!-- ===== CUSTOMERS ===== -->
+      <template x-if="page === 'customers'"><div id="page-customers">
+        
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)">
+          <div class="filter-control" style="cursor:text">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Search customers..." x-model="custSearch" @input.debounce.500ms="loadCustomers()"/>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Orders</th><th>LTV</th><th>Risk</th><th>Last Order</th></tr></thead><tbody id="customers-body"></tbody></table>
+          </div>
+          <div class="pagination" id="customers-pages"></div>
+        </div>
+      </div></template>
+    </div>
+  </div>
+
+  <!-- Product Form Slideover -->
+  <div class="slideover" :class="{ open: showProductForm }">
+    <div class="backdrop" @click="closeProductForm()"></div>
+    <div class="panel">
+      <div class="panel-header">
+        <h2 x-text="editingProduct ? 'Edit Product' : 'New Product'"></h2>
+        <button class="panel-close" @click="closeProductForm()">&times;</button>
+      </div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div class="form-block full"><label>Product Name</label><input class="field" x-model="form.name" placeholder="e.g. Gold Standard Whey"/></div>
+          <div class="form-block full"><label>Description</label><textarea class="field" x-model="form.description" placeholder="Product description" rows="4"></textarea></div>
+          <div class="form-block"><label>Price (DZD)</label><input class="field" type="number" x-model="form.price" placeholder="9900"/></div>
+          <div class="form-block"><label>Compare At Price</label><input class="field" type="number" x-model="form.comparePrice" placeholder="12900"/></div>
+          <div class="form-block"><label>SKU</label><input class="field" x-model="form.sku" placeholder="ON-WHEY-5LB"/></div>
+          <div class="form-block"><label>Barcode</label><input class="field" x-model="form.barcode" placeholder="Optional"/></div>
+          <div class="form-block"><label>Stock</label><input class="field" type="number" x-model="form.stock" placeholder="50"/></div>
+          <div class="form-block"><label>Low Stock Threshold</label><input class="field" type="number" x-model="form.lowStock" placeholder="5"/></div>
+          <div class="form-block"><label>Weight (grams)</label><input class="field" type="number" step="0.01" x-model="form.weight" placeholder="2270"/></div>
+          <div class="form-block"><label>Brand</label>
+            <template x-if="!showNewBrand">
+              <div class="field-dropdown" :class="{ open: brandOpen }" @click.outside="brandOpen=false">
+                <div class="trigger" @click="brandOpen=!brandOpen;if(brandOpen)setTimeout(()=>$el.nextElementSibling?.querySelector('.search input')?.focus(),50)" role="button" tabindex="0" @keydown.enter="brandOpen=!brandOpen">
+                  <span class="val" :class="{ placeholder: !form.brandId }" x-text="form.brandId ? (brands.find(b=>b.id===form.brandId)?.name||'Select brand') : 'Select brand'"></span>
+                  <span class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></span>
+                </div>
+                <div class="menu">
+                  <div class="search"><input type="text" placeholder="Search brands..." x-model="brandSearch" @keydown.escape="brandOpen=false"/></div>
+                  <template x-for="b in brands.filter(x=>!brandSearch||x.name.toLowerCase().includes(brandSearch.toLowerCase()))" :key="b.id">
+                    <button class="opt" :class="{ selected: form.brandId===b.id }" @click="form.brandId=b.id;brandOpen=false;brandSearch=''" type="button">
+                      <span class="opt-label" x-text="b.name"></span>
+                      <span class="check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    </button>
+                  </template>
+                  <div x-show="brands.filter(x=>!brandSearch||x.name.toLowerCase().includes(brandSearch.toLowerCase())).length===0" class="opt-empty">No brands found</div>
+                  <div class="divider"></div>
+                  <button class="opt-add" @click="showNewBrand=true;brandOpen=false;brandSearch='';setTimeout(()=>$el?.focus(),100)" type="button">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add new brand
+                  </button>
+                </div>
+              </div>
+            </template>
+            <template x-if="showNewBrand">
+              <div style="display:flex;gap:var(--s2);align-items:center">
+                <input class="field" style="flex:1" x-model="newBrandName" placeholder="Enter brand name" @keydown.enter="createBrand()" @keydown.escape="showNewBrand=false;newBrandName=''" x-ref="newBrandInput"/>
+                <button style="height:36px;padding:0 var(--s3);border-radius:var(--r-md);border:none;background:var(--accent);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:var(--s1);white-space:nowrap" @click="createBrand()" x-text="addingBrand?'Creating...':'Save'"></button>
+                <button style="height:36px;width:36px;border-radius:var(--r-md);border:1px solid var(--border);background:var(--bg-card);color:var(--text-muted);font-size:16px;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center" @click="showNewBrand=false;newBrandName=''">&times;</button>
+              </div>
+            </template>
+          </div>
+          <div class="form-block"><label>Category</label>
+            <template x-if="!showNewCat">
+              <div class="field-dropdown" :class="{ open: catOpen }" @click.outside="catOpen=false">
+                <div class="trigger" @click="catOpen=!catOpen;if(catOpen)setTimeout(()=>$el.nextElementSibling?.querySelector('.search input')?.focus(),50)" role="button" tabindex="0" @keydown.enter="catOpen=!catOpen">
+                  <span class="val" :class="{ placeholder: !form.categoryId }" x-text="form.categoryId ? (categories.find(c=>c.id===form.categoryId)?.name||'Select category') : 'Select category'"></span>
+                  <span class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></span>
+                </div>
+                <div class="menu">
+                  <div class="search"><input type="text" placeholder="Search categories..." x-model="catSearch" @keydown.escape="catOpen=false"/></div>
+                  <template x-for="c in categories.filter(x=>!catSearch||x.name.toLowerCase().includes(catSearch.toLowerCase()))" :key="c.id">
+                    <button class="opt" :class="{ selected: form.categoryId===c.id }" @click="form.categoryId=c.id;catOpen=false;catSearch=''" type="button">
+                      <span class="opt-label" x-text="c.name"></span>
+                      <span class="check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    </button>
+                  </template>
+                  <div x-show="categories.filter(x=>!catSearch||x.name.toLowerCase().includes(catSearch.toLowerCase())).length===0" class="opt-empty">No categories found</div>
+                  <div class="divider"></div>
+                  <button class="opt-add" @click="showNewCat=true;catOpen=false;catSearch='';setTimeout(()=>$el?.focus(),100)" type="button">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add new category
+                  </button>
+                </div>
+              </div>
+            </template>
+            <template x-if="showNewCat">
+              <div style="display:flex;gap:var(--s2);align-items:center">
+                <input class="field" style="flex:1" x-model="newCatName" placeholder="Enter category name" @keydown.enter="createCategory()" @keydown.escape="showNewCat=false;newCatName=''" x-ref="newCatInput"/>
+                <button style="height:36px;padding:0 var(--s3);border-radius:var(--r-md);border:none;background:var(--accent);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:var(--s1);white-space:nowrap" @click="createCategory()" x-text="addingCat?'Creating...':'Save'"></button>
+                <button style="height:36px;width:36px;border-radius:var(--r-md);border:1px solid var(--border);background:var(--bg-card);color:var(--text-muted);font-size:16px;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center" @click="showNewCat=false;newCatName=''">&times;</button>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <div class="form-block full" style="margin-top:var(--s4)"><label>Ingredients</label><textarea class="field" x-model="form.ingredients" placeholder="One per line" rows="3"></textarea></div>
+        <div class="form-block full"><label>How To Use</label><textarea class="field" x-model="form.howToUse" placeholder="One step per line" rows="3"></textarea></div>
+
+        <div class="form-block full" style="margin-top:var(--s4)"><label>Section Visibility</label></div>
+        <div class="form-row"><button class="toggle" :class="{ active: form.showIngredients }" @click="form.showIngredients = !form.showIngredients" type="button"></button><span class="toggle-label">Ingredients</span><span class="toggle-desc">Show on product detail</span></div>
+        <div class="form-row"><button class="toggle" :class="{ active: form.showHowToUse }" @click="form.showHowToUse = !form.showHowToUse" type="button"></button><span class="toggle-label">How To Use</span><span class="toggle-desc">Show on product detail</span></div>
+
+        <div class="form-block full" style="margin-top:var(--s5)"><label>Images</label></div>
+        <div class="upload-zone" x-ref="dropzone" @click="$refs.fileInput.click()" @dragover.prevent="dragover=true" @dragleave="dragover=false" @drop.prevent="handleDrop($event)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <p>Drop images here or click to upload</p>
+          <div class="upload-progress" :style="{ display: uploading ? 'block' : 'none' }"><div class="bar" :style="{ width: uploadProgress + '%' }"></div></div>
+        </div>
+        <input type="file" accept="image/*" multiple x-ref="fileInput" @change="handleFiles($event.target.files)" style="display:none"/>
+        <div class="upload-preview">
+          <template x-for="(url, i) in form.images" :key="i">
+            <div class="thumb"><img :src="url" alt=""/><button class="remove" @click="form.images.splice(i, 1)">&times;</button></div>
+          </template>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button class="btn-secondary" @click="closeProductForm()">Cancel</button>
+        <button class="btn-primary" style="width:auto;height:38px;padding:0 var(--s6);font-size:13px;text-transform:none;letter-spacing:0" :class="{ loading: saving }" @click="saveProduct()">
+          <span class="spinner"></span>
+          <span class="btn-text" x-text="editingProduct ? 'Save Changes' : 'Create Product'"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function adminApp(){
+    return{
+      page:location.hash.slice(1)||'dashboard',greeting:'',todayStr:'',timeOfDay:'',sidebarOpen:false,
+      kpiData:{},alerts:[],notifications:[],unreadCount:0,
+      bestSellers:{byQuantity:[],byRevenue:[]},unsold:{neverSold:[],stale:[]},unsoldOpen:false,
+      topCustomers:[],codReliability:[],categoryBreakdown:[],recentOrders:[],
+      orderSearch:'',orderStatus:'',orderPage:1,orderTotal:0,
+      statusColors:{pending:'#f59e0b',confirmed:'#3b82f6',processing:'#3b82f6',shipped:'#7c3aed',delivered:'#10b981',cancelled:'#ef4444'},
+      statusList:[
+        {val:'pending',label:'Pending',color:'#f59e0b'},
+        {val:'confirmed',label:'Confirmed',color:'#3b82f6'},
+        {val:'processing',label:'Processing',color:'#3b82f6'},
+        {val:'shipped',label:'Shipped',color:'#7c3aed'},
+        {val:'delivered',label:'Delivered',color:'#10b981'},
+        {val:'cancelled',label:'Cancelled',color:'#ef4444'}
+      ],
+      prodSearch:'',prodPage:1,prodTotal:0,prodData:[],prodDetail:null,prodLoading:false,
+      detailForm:{id:'',name:'',description:'',ingredients:'',howToUse:'',price:0,stock:0,sku:'',brandName:'',categoryId:'',showIngredients:false,showHowToUse:false,comparePrice:0,lowStock:5,weight:0,isActive:true},
+      detailImg:'',detailEdit:{},detailSnapshot:null,hasUnsaved:false,savedMsg:'',
+      custSearch:'',custPage:1,custTotal:0,
+      showProductForm:false,editingProduct:null,saving:false,uploading:false,uploadProgress:0,
+      storeInfo:{store_name:'',store_description:'',owner_name:'',phone:'',location:'',location_link:'',instagram:'',tiktok:'',images:[]},
+      storeSaving:false,storeUploading:false,storeUploadProgress:0,storeSavedMsg:'',
+      packs:[],packForm:{name:'',description:'',price:0,image:'',days_valid:30},packSaving:false,packEditingId:null,packShowForm:false,packUploading:false,packUploadProgress:0,
+      brands:[],categories:[],
+      showNewBrand:false,newBrandName:'',addingBrand:false,brandOpen:false,brandSearch:'',
+      showNewCat:false,newCatName:'',addingCat:false,catOpen:false,catSearch:'',
+      form:{name:'',description:'',price:0,comparePrice:0,sku:'',barcode:'',stock:0,lowStock:5,weight:0,brandId:'',categoryId:'',ingredients:'',howToUse:'',showIngredients:true,showHowToUse:true,images:[],isActive:true},
+      navItems:[
+        {id:'dashboard',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',label:'Dashboard'},
+        {id:'orders',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',label:'Orders'},
+        {id:'products',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>',label:'Products'},
+        {id:'customers',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',label:'Customers'},
+        {id:'store',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',label:'My Store'},
+        {id:'packs',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/><path d="M4 8v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><polyline points="10 12 12 14 14 12"/><line x1="12" y1="10" x2="12" y2="18"/></svg>',label:'Packs'}
+      ],
+      init(){
+        const token=localStorage.getItem('admin_token')
+        if(!token){location.href='/admin-login.html';return}
+        this._token=token
+        const hashPage=location.hash.slice(1)
+        if(hashPage&&['dashboard','orders','products','customers','store','packs'].includes(hashPage)){this.page=hashPage;setTimeout(()=>this.switchPage(hashPage),0)}else{this.loadDashboard()}
+        const h=new Date().getHours()
+        this.timeOfDay=h<12?'morning':h<17?'afternoon':'evening'
+        this.greeting='Good '+this.timeOfDay+', Admin'
+        this.todayStr=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
+        let sx=0
+        document.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true})
+        document.addEventListener('touchmove',e=>{
+          if(window.innerWidth>768)return
+          const dx=e.touches[0].clientX-sx
+          if(!this.sidebarOpen&&sx<30&&dx>80){this.sidebarOpen=true;sx=0}
+          else if(this.sidebarOpen&&dx<-80){this.sidebarOpen=false;sx=0}
+        },{passive:true})
+        this.$watch('detailForm',()=>{
+          if(this.detailSnapshot){
+            this.hasUnsaved=JSON.stringify(this.detailForm)!==JSON.stringify(this.detailSnapshot)
+          }
+        },{deep:true})
+      },
+      authFetch(url,opts={}){
+        const headers=opts.headers||{}
+        headers['Authorization']='Bearer '+this._token
+        if(opts.body&&typeof opts.body==='string'&&!headers['Content-Type']){headers['Content-Type']='application/json'}
+        return fetch(url,{...opts,headers}).then(r=>{
+          if(r.status===401){localStorage.removeItem('admin_token');location.href='/admin-login.html';return Promise.reject('Unauthorized')}
+          return r
+        })
+      },
+      // Toast helper
+      toast(msg,type='success'){
+        const el=document.createElement('div')
+        el.className='toast '+type
+        el.innerHTML='<span>'+msg+'</span><button class="toast-close" onclick="this.parentElement.remove()">&times;</button>'
+        document.getElementById('toasts').appendChild(el)
+        setTimeout(()=>{el.classList.add('leaving');setTimeout(()=>el.remove(),250)},3000)
+      },
+      // Confirm helper (returns promise)
+      confirm(title,message){
+        return new Promise(resolve=>{
+          const modal=document.getElementById('confirmModal')
+          const data=Alpine.$data(modal)
+          data.title=title;data.message=message;data.onConfirm=()=>resolve(true);data.show=true
+          modal.addEventListener('click',function handler(e){if(e.target===modal||e.target.classList.contains('modal-cancel')){data.show=false;resolve(false);modal.removeEventListener('click',handler)}})
+        })
+      },
+      switchPage(id){
+        this.page=id;location.hash='#'+id
+        if(id==='orders')this.loadOrders()
+        else if(id==='products')this.loadProducts()
+        else if(id==='customers')this.loadCustomers()
+        else if(id==='store')this.loadStoreInfo()
+        else if(id==='packs')this.loadPacks()
+        else if(id==='dashboard')this.loadDashboard()
+        this.sidebarOpen=false
+      },
+      loadDashboard(){
+        this.authFetch('/api/admin/dashboard').then(r=>r.json()).then(d=>{
+          this.kpiData=d.kpi||{}
+          this.alerts=d.alerts||[]
+          this.bestSellers=d.bestSellers||{byQuantity:[],byRevenue:[]}
+          this.unsold=d.unsold||{neverSold:[],stale:[]}
+          this.topCustomers=d.topCustomers||[]
+          this.codReliability=d.codReliability||[]
+          this.categoryBreakdown=d.categoryBreakdown||[]
+          this.recentOrders=d.recentOrders||[]
+          const rev=d.revenueChart||[], ord=d.orderChart||[]
+          this.renderRevChart(rev)
+          this.renderStatusDist(ord,d.kpi)
+          this.renderBestSellers()
+          this.renderCategoryChart()
+          this.renderRecentOrders()
+        }).catch(()=>{})
+      },
+      renderRevChart(data){
+        const el=document.getElementById('rev-chart')
+        if(!el)return
+        const days=30
+        const now=new Date()
+        const map={}
+        data.forEach(d=>{map[d.date]=d.val})
+        const points=[]
+        for(let i=days-1;i>=0;i--){
+          const dt=new Date(now);dt.setDate(dt.getDate()-i)
+          const key=dt.toISOString().slice(0,10)
+          points.push({date:key,val:map[key]||0,label:dt.toLocaleDateString('en',{weekday:'short'}).slice(0,3)+' '+dt.getDate()})
+        }
+        const max=Math.max(...points.map(p=>p.val),1)
+        const yTicks=5
+        const yLabels=[]
+        for(let i=0;i<=yTicks;i++){yLabels.push(Math.round(max*(yTicks-i)/yTicks))}
+        const gridHtml=Array(yTicks+1).fill(0).map(()=>'<div class="gl"></div>').join('')
+        const yHtml=yLabels.map(v=>'DA '+v.toLocaleString()).map(l=>'<span>'+l+'</span>').join('')
+        const barHtml=points.map(p=>{
+          const h=p.val>0?Math.max((p.val/max)*160,4):2
+          const cls=p.val>0?'has-value':'zero'
+          const shortLabel=p.label.slice(4)
+          return '<div class="bar-wrap"><div class="bar '+cls+'" style="height:'+h+'px"><div class="chart-tooltip">DA '+p.val.toLocaleString()+'</div></div><span class="bar-label">'+shortLabel+'</span></div>'
+        }).join('')
+        el.innerHTML='<div class="rev-yaxis">'+yHtml+'</div><div class="rev-bars-wrap"><div class="rev-gridlines">'+gridHtml+'</div>'+barHtml+'</div>'
+      },
+      renderStatusDist(ordData,kpi){
+        const el=document.getElementById('status-dist')
+        if(!el)return
+        const total=kpi?.totalOrders||0
+        if(total===0){el.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);font-size:13px">No orders yet</div>';return}
+        const items=[
+          {label:'Pending',val:kpi?.pendingOrders||0,color:'#f59e0b'},
+          {label:'Shipped',val:kpi?.shippedOrders||0,color:'#7c3aed'},
+          {label:'Delivered',val:kpi?.deliveredOrders||0,color:'#10b981'},
+          {label:'Cancelled',val:kpi?.cancelledOrders||0,color:'#ef4444'}
+        ]
+        el.innerHTML=items.map(s=>{
+          const p=total>0?Math.round((s.val/total)*100):0
+          return '<div class="status-row"><span class="dot" style="background:'+s.color+'"></span><span class="lbl">'+s.label+'</span><span class="val">'+s.val+' / '+total+'</span><div class="bar-bg"><div class="bar-fill" style="width:'+p+'%;background:'+s.color+'"></div></div></div>'
+        }).join('')
+      },
+      renderBestSellers(){
+        ['byQuantity','byRevenue'].forEach(key=>{
+          const el=document.getElementById('bs-'+key)
+          if(!el)return
+          const data=this.bestSellers[key]||[]
+          if(!data.length){
+            const icon=key==='byQuantity'?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px;opacity:.3;margin-bottom:8px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px;opacity:.3;margin-bottom:8px"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>'
+            const msg=key==='byQuantity'?'No products sold yet':'No revenue data yet'
+            const sub=key==='byQuantity'?'Make your first sale to see rankings.':'Completed orders will appear here.'
+            el.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--s6);text-align:center;color:var(--text-muted)">'+icon+'<div style="font-size:13px;font-weight:600;margin-bottom:2px">'+msg+'</div><div style="font-size:11px">'+sub+'</div></div>'
+            return
+          }
+          const max=Math.max(...data.map(d=>d.qty||d.revenue||1),1)
+          el.innerHTML=data.map((d,i)=>{
+            const name=d.name||d.product_name||'Unknown Product'
+            const label=key==='byQuantity'?(d.qty||0)+' sold':'DA '+(d.revenue||0).toLocaleString()
+            const pct=Math.max((key==='byQuantity'?d.qty:d.revenue)/max*100,5)
+            return '<div class="bs-item"><div class="bs-rank">'+(i+1)+'</div><div class="bs-body"><div class="bs-name">'+name+'</div><div class="bs-bar-bg"><div class="bs-bar-fill" style="width:'+pct+'%"></div></div></div><div class="bs-val">'+label+'</div></div>'
+          }).join('')
+        })
+      },
+      renderCategoryChart(){
+        const el=document.getElementById('cat-chart')
+        if(!el)return
+        const data=this.categoryBreakdown||[]
+        if(!data.length){
+          el.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--s6);text-align:center;color:var(--text-muted)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px;opacity:.3;margin-bottom:8px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><div style="font-size:13px;font-weight:600;margin-bottom:2px">No category sales yet</div><div style="font-size:11px">Completed orders will appear here.</div></div>'
+          return
+        }
+        const colors=['#7c3aed','#3b82f6','#10b981','#f59e0b','#ef4444','#ec4899','#14b8a6','#6366f1','#f97316','#84cc16']
+        el.innerHTML=data.map((c,i)=>{
+          const cl=colors[i%colors.length]
+          return `<div class="cat-row"><span class="cat-dot" style="background:${cl}"></span><span class="cat-name">${c.name}</span><span class="cat-bar-bg"><span class="cat-bar-fill" style="width:${c.percentage}%;background:${cl}"></span></span><span class="cat-pct">${c.percentage.toFixed(1)}%</span><span class="cat-val">${c.orders}</span></div>`
+        }).join('')
+      },
+      renderRecentOrders(){
+        const el=document.getElementById('recent-orders-body')
+        if(!el)return
+        const data=this.recentOrders||[]
+        if(!data.length){el.innerHTML='<tr><td colspan="5"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><p>No recent orders</p></div></td></tr>';return}
+        el.innerHTML=data.map(o=>`<tr><td><strong>#${o.order_number}</strong></td><td>${o.first_name} ${o.last_name}</td><td><strong>DA ${o.total.toLocaleString()}</strong></td><td><span class="badge badge-${o.status}">${o.status}</span></td><td style="color:var(--text-muted);font-size:12px">${new Date(o.created_at).toLocaleDateString()}</td></tr>`).join('')
+      },
+      loadOrders(){
+        const p=new URLSearchParams({page:this.orderPage,limit:20})
+        if(this.orderSearch)p.set('search',this.orderSearch)
+        if(this.orderStatus)p.set('status',this.orderStatus)
+        this.authFetch('/api/admin/orders?'+p).then(r=>r.json()).then(d=>{
+          this.renderOrders(d.orders||[])
+          this.orderTotal=d.total||0
+          this.renderPages('orders-pages',d.total,d.page,d.limit,(pg)=>{this.orderPage=pg;this.loadOrders()})
+        })
+      },
+      renderOrders(o){
+        const b=document.getElementById('orders-body')
+        if(!b)return
+        if(!o.length){b.innerHTML='<tr><td colspan="6"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><p>No orders found</p></div></td></tr>';return}
+        b.innerHTML=o.map(r=>`<tr><td><strong>#${r.order_number}</strong></td><td>${r.first_name} ${r.last_name}</td><td>${r.item_count}</td><td><strong>DA ${r.total.toLocaleString()}</strong></td><td><span class="badge badge-${r.status}">${r.status}</span></td><td style="color:var(--text-muted);font-size:12px">${new Date(r.created_at).toLocaleDateString()}</td></tr>`).join('')
+      },
+      loadProducts(){
+        this.prodLoading=true
+        const p=new URLSearchParams({page:this.prodPage,limit:20})
+        if(this.prodSearch)p.set('search',this.prodSearch)
+        this.authFetch('/api/admin/products?'+p).then(r=>r.json()).then(d=>{
+          this.renderProducts(d.products||[])
+          this.prodTotal=d.total||0
+          this.renderPages('products-pages',d.total,d.page,d.limit,(pg)=>{this.prodPage=pg;this.loadProducts()})
+          this.prodLoading=false
+        }).catch(e=>{console.error('loadProducts error',e);this.prodLoading=false})
+      },
+      renderProducts(p){
+        const b=document.getElementById('products-grid')
+        if(!b)return
+        this.prodData=p
+        if(!p.length){b.innerHTML='<div class="empty-state" style="grid-column:1/-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="width:48px;height:48px;opacity:.3;margin-bottom:var(--s4)"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><p>No products found</p></div>';return}
+        b.innerHTML=p.map(pr=>`<div class="prod-card" data-id="${pr.ID}">
+          <img class="prod-card-img" src="${pr.Image||'https://placehold.co/400x300/f5f5f6/0d0d0d?text='+encodeURIComponent(pr.Name)}" alt="${pr.Name}" loading="lazy" onerror="this.src='https://placehold.co/400x300/f5f5f6/0d0d0d?text=Product'"/>
+          <div class="prod-card-body">
+            <div class="prod-card-name">${pr.Name}</div>
+            <div class="prod-card-brand">${pr.Brand||pr.Category||''}</div>
+            <div class="prod-card-sku">${pr.SKU||'-'}</div>
+            <div class="prod-card-meta">
+              <span class="prod-card-price">DA ${pr.Price.toLocaleString()}</span>
+              <span class="prod-card-stock ${pr.Stock===0?'out':pr.Stock<=5?'low':'ok'}">${pr.Stock===0?'Out':pr.Stock<=5?'Low':'In Stock'}</span>
+            </div>
+          </div>
+        </div>`).join('')
+        b.querySelectorAll('.prod-card').forEach(c=>c.addEventListener('click',()=>this.viewProduct(c.dataset.id)))
+      },
+
+      openProductForm(){
+        this.editingProduct=null
+        this.form={name:'',description:'',price:0,comparePrice:0,sku:'',barcode:'',stock:0,lowStock:5,weight:0,brandId:'',categoryId:'',ingredients:'',howToUse:'',showIngredients:true,showHowToUse:true,images:[],isActive:true}
+        this.showProductForm=true
+        this.loadBrands();this.loadCategories()
+      },
+
+      closeProductForm(){
+        this.showProductForm=false;this.editingProduct=null
+      },
+
+      async editProduct(id){
+        try{
+          const r=await this.authFetch('/api/admin/products/detail/'+id)
+          const d=await r.json()
+          this.form={
+            name:d.Name||'',description:d.Description||'',
+            price:d.Price||0,comparePrice:d.CompareAtPrice||0,sku:d.SKU||'',barcode:d.Barcode||'',
+            stock:d.Stock||0,lowStock:d.LowStockThreshold||5,weight:d.WeightGrams||0,
+            brandId:d.BrandID||'',categoryId:d.CategoryID||'',
+            ingredients:d.Ingredients||'',howToUse:d.HowToUse||'',
+            showIngredients:d.Sections?.includes('ingredients')||false,
+            showHowToUse:d.Sections?.includes('how_to_use')||false,
+            images:(d.Images||[]).map(i=>i.url),isActive:d.IsActive
+          }
+          this.editingProduct=id
+          this.showProductForm=true
+          this.loadBrands();this.loadCategories()
+        }catch(e){console.error(e)}
+      },
+
+      async saveProduct(){
+        if(!this.form.name.trim())return
+        this.saving=true
+        const sections=[]
+        if(this.form.showIngredients) sections.push('ingredients')
+        if(this.form.showHowToUse) sections.push('how_to_use')
+
+        const payload={
+          name:this.form.name,description:this.form.description,ingredients:this.form.ingredients,
+          how_to_use:this.form.howToUse,sku:this.form.sku,barcode:this.form.barcode,
+          brand_id:this.form.brandId,category_id:this.form.categoryId,
+          price:Number(this.form.price)||0,compare_at_price:Number(this.form.comparePrice)||0,
+          cost_price:0,stock:Number(this.form.stock)||0,
+          low_stock_threshold:Number(this.form.lowStock)||5,
+          weight_grams:Number(this.form.weight)||0,
+          is_active:this.form.isActive,is_featured:false,
+          sections:sections.join(','),image_urls:this.form.images
+        }
+
+        try{
+          const url=this.editingProduct?'/api/admin/products/'+this.editingProduct:'/api/admin/products'
+          const method=this.editingProduct?'PUT':'POST'
+          const r=await fetch(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+          const d=await r.json()
+          if(d.success||d.id){
+            this.closeProductForm()
+            this.loadProducts()
+          }else{alert(d.error||'Error saving product')}
+        }catch(e){alert('Save failed')}
+        finally{this.saving=false}
+      },
+
+      async viewProduct(id){
+        try{
+          const r=await this.authFetch('/api/admin/products/detail/'+id)
+          const d=await r.json()
+          this.detailForm={
+            id:d.ID,name:d.Name||'',description:d.Description||'',ingredients:d.Ingredients||'',howToUse:d.HowToUse||'',
+            price:d.Price||0,stock:d.Stock||0,sku:d.SKU||'',brandName:d.Brand||d.BrandID||'',categoryId:d.CategoryID||'',
+            showIngredients:d.Sections?.includes('ingredients')||false,showHowToUse:d.Sections?.includes('how_to_use')||false,
+            comparePrice:d.CompareAtPrice||0,lowStock:d.LowStockThreshold||5,weight:d.WeightGrams||0,isActive:d.IsActive!==false
+          }
+          this.detailEdit={}
+          this.detailImg=(Array.isArray(d.Images)&&d.Images.length>0&&d.Images[0]?.url)?d.Images[0].url:''
+          this.detailSnapshot=JSON.parse(JSON.stringify(this.detailForm))
+          this.hasUnsaved=false
+          this.savedMsg=''
+          this.prodDetail=id
+        }catch(e){console.error(e)}
+      },
+      async saveProductDetail(){
+        this.saving=true;this.savedMsg=''
+        const sections=[]
+        if(this.detailForm.showIngredients)sections.push('ingredients')
+        if(this.detailForm.showHowToUse)sections.push('how_to_use')
+        try{
+          const r=await this.authFetch('/api/admin/products/'+this.prodDetail,{
+            method:'PUT',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({
+              name:this.detailForm.name,description:this.detailForm.description,ingredients:this.detailForm.ingredients,
+              how_to_use:this.detailForm.howToUse,sku:this.detailForm.sku,
+              category_id:this.detailForm.categoryId,price:Number(this.detailForm.price)||0,
+              compare_at_price:Number(this.detailForm.comparePrice)||0,cost_price:0,stock:Number(this.detailForm.stock)||0,
+              low_stock_threshold:Number(this.detailForm.lowStock)||5,weight_grams:Number(this.detailForm.weight)||0,
+              is_active:this.detailForm.isActive,is_featured:false,
+              sections:sections.join(','),image_urls:this.detailImg?[this.detailImg]:[]
+            })
+          })
+          const d=await r.json()
+          if(d.success){
+            this.detailSnapshot=JSON.parse(JSON.stringify(this.detailForm))
+            this.hasUnsaved=false
+            this.savedMsg='Saved!'
+          }else{alert(d.error||'Save failed')}
+        }catch(e){alert('Save error')}
+        finally{this.saving=false;setTimeout(()=>{this.savedMsg=''},2000)}
+      },
+      revertProductDetail(){
+        if(this.detailSnapshot){
+          this.detailForm=JSON.parse(JSON.stringify(this.detailSnapshot))
+          this.hasUnsaved=false
+        }
+      },
+      async changeDetailImage(e){
+        const f=e.target.files[0];if(!f)return
+        const fd=new FormData();fd.set('file',f)
+        try{
+          const r=await this.authFetch('/api/admin/upload',{method:'POST',body:fd})
+          const d=await r.json()
+          if(d.success&&d.url)this.detailImg=d.url
+        }catch(e){console.error(e)}
+      },
+      async loadBrands(){
+        try{const r=await this.authFetch('/api/admin/brands');const d=await r.json();this.brands=d.brands||[]}catch(e){}
+      },
+      async loadCategories(){
+        try{const r=await this.authFetch('/api/admin/categories');const d=await r.json();this.categories=d.categories||[]}catch(e){}
+      },
+      async createBrand(){
+        if(!this.newBrandName.trim())return
+        this.addingBrand=true
+        try{
+          const r=await this.authFetch('/api/admin/brands',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:this.newBrandName.trim()})})
+          const d=await r.json()
+          if(d.success||d.id){
+            this.newBrandName='';this.showNewBrand=false
+            await this.loadBrands()
+            this.form.brandId=d.id
+          }else{alert(d.error||'Failed')}
+        }catch(e){alert('Error creating brand')}
+        finally{this.addingBrand=false}
+      },
+      async createCategory(){
+        if(!this.newCatName.trim())return
+        this.addingCat=true
+        try{
+          const r=await this.authFetch('/api/admin/categories',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:this.newCatName.trim()})})
+          const d=await r.json()
+          if(d.success||d.id){
+            this.newCatName='';this.showNewCat=false
+            await this.loadCategories()
+            this.form.categoryId=d.id
+          }else{alert(d.error||'Failed')}
+        }catch(e){alert('Error creating category')}
+        finally{this.addingCat=false}
+      },
+
+      async handleDrop(e){
+        this.handleFiles(e.dataTransfer.files)
+      },
+
+      async handleFiles(files){
+        for(const f of files){
+          if(!f.type.startsWith('image/'))continue
+          this.uploading=true;this.uploadProgress=0
+          const fd=new FormData();fd.set('file',f)
+          try{
+            const r=await this.authFetch('/api/admin/upload',{method:'POST',body:fd})
+            const d=await r.json()
+            if(d.success&&d.url){this.form.images.push(d.url)}
+          }catch(e){console.error(e)}
+        }
+        this.uploading=false;this.uploadProgress=100
+      },
+      loadCustomers(){
+        const p=new URLSearchParams({page:this.custPage,limit:20})
+        if(this.custSearch)p.set('search',this.custSearch)
+        this.authFetch('/api/admin/customers?'+p).then(r=>r.json()).then(d=>{
+          this.renderCustomers(d.customers||[])
+          this.custTotal=d.total||0
+          this.renderPages('customers-pages',d.total,d.page,d.limit,(pg)=>{this.custPage=pg;this.loadCustomers()})
+        })
+      },
+      renderCustomers(c){
+        const b=document.getElementById('customers-body')
+        if(!b)return
+        if(!c.length){b.innerHTML='<tr><td colspan="7"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><p>No customers found</p></div></td></tr>';return}
+        b.innerHTML=c.map(x=>`<tr><td><strong>${x.first_name} ${x.last_name}</strong></td><td>${x.email}</td><td>${x.phone}</td><td>${x.total_orders}</td><td><strong>DA ${x.lifetime.toLocaleString()}</strong></td><td><span style="font-weight:600;color:${x.risk_score>6?'#dc2626':x.risk_score>3?'#d97706':'#059669'}">${x.risk_score}</span></td><td style="color:var(--text-muted);font-size:12px">${x.last_order?new Date(x.last_order).toLocaleDateString():'-'}</td></tr>`).join('')
+      },
+      renderPages(id,total,page,limit,onClick){
+        const el=document.getElementById(id)
+        if(!el)return
+        const pages=Math.ceil(total/limit)
+        if(pages<=1){el.innerHTML='';return}
+        let h='<span class="page-info">'+total+' total</span>'
+        h+=`<button class="page-btn" ${page<=1?'disabled':''} data-p="${page-1}">&lsaquo;</button>`
+        const s=Math.max(1,page-2),e=Math.min(pages,page+2)
+        if(s>1)h+=`<button class="page-btn" data-p="1">1</button>${s>2?'<span class="page-info">...</span>':''}`
+        for(let i=s;i<=e;i++)h+=`<button class="page-btn ${i===page?'active':''}" data-p="${i}">${i}</button>`
+        if(e<pages)h+=`${e<pages-1?'<span class="page-info">...</span>':''}<button class="page-btn" data-p="${pages}">${pages}</button>`
+        h+=`<button class="page-btn" ${page>=pages?'disabled':''} data-p="${page+1}">&rsaquo;</button>`
+        el.innerHTML=h
+        el.querySelectorAll('[data-p]').forEach(b=>b.addEventListener('click',()=>{if(!b.disabled)onClick(parseInt(b.dataset.p))}))
+      },
+      loadNotifs(){
+        Promise.all([
+          this.authFetch('/api/admin/dashboard').then(r=>r.json()).catch(()=>({})),
+          this.authFetch('/api/admin/orders?status=pending&limit=3').then(r=>r.json()).catch(()=>({})),
+          this.authFetch('/api/admin/orders?status=cancelled&limit=3').then(r=>r.json()).catch(()=>({}))
+        ]).then(([dash, pend, canc])=>{
+          const items=[]
+          const alerts=dash.alerts||[]
+          alerts.forEach(a=>{
+            if(a.type==='low_stock') items.push({id:'ls-'+Math.random(),type:'low_stock',title:a.message,created_at:new Date().toISOString(),is_read:false})
+          })
+          if(dash.kpi?.pendingOrders>0) items.push({id:'po',type:'order',title:dash.kpi.pendingOrders+' pending order'+(dash.kpi.pendingOrders>1?'s':''),created_at:new Date().toISOString(),is_read:false})
+          ;(pend.orders||[]).forEach(o=>items.push({id:'o-'+o.id,type:'order',title:'Order #'+o.order_number+' is pending — DA '+o.total.toLocaleString(),created_at:o.created_at,is_read:false}))
+          ;(canc.orders||[]).forEach(o=>items.push({id:'c-'+o.id,type:'cancelled',title:'Order #'+o.order_number+' was cancelled',created_at:o.created_at,is_read:false}))
+          items.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))
+          this.notifications=items.slice(0,20)
+          this.unreadCount=items.filter(n=>!n.is_read).length
+        }).catch(()=>{})
+      },
+      async loadStoreInfo(){
+        try{
+          const r=await fetch('/api/store-info')
+          if(r.ok){const d=await r.json();this.storeInfo={store_name:d.store_name||'',store_description:d.store_description||'',owner_name:d.owner_name||'',phone:d.phone||'',location:d.location||'',location_link:d.location_link||'',instagram:d.instagram||'',tiktok:d.tiktok||'',images:d.images||[]}}
+        }catch(e){console.error(e)}
+      },
+      async saveStoreInfo(){
+        this.storeSaving=true;this.storeSavedMsg=''
+        try{
+          const body=JSON.stringify({store_name:this.storeInfo.store_name,store_description:this.storeInfo.store_description,owner_name:this.storeInfo.owner_name,phone:this.storeInfo.phone,location:this.storeInfo.location,location_link:this.storeInfo.location_link,instagram:this.storeInfo.instagram,tiktok:this.storeInfo.tiktok,images:this.storeInfo.images})
+          const r=await this.authFetch('/api/admin/store-info',{method:'PUT',headers:{'Content-Type':'application/json'},body})
+          const d=await r.json()
+          if(d.success){this.storeSavedMsg='Saved!'}else{alert(d.error||'Save failed')}
+        }catch(e){alert('Save error: '+e.message)}
+        finally{this.storeSaving=false;setTimeout(()=>{this.storeSavedMsg=''},2000)}
+      },
+      async handleStoreDrop(e){
+        this.handleStoreFiles(e.dataTransfer.files)
+      },
+      async handleStoreFiles(files){
+        for(const f of files){
+          if(!f.type.startsWith('image/'))continue
+          this.storeUploading=true;this.storeUploadProgress=0
+          const fd=new FormData();fd.set('file',f)
+          try{
+            const r=await this.authFetch('/api/admin/upload',{method:'POST',body:fd})
+            const d=await r.json()
+            if(d.success&&d.url){this.storeInfo.images.push(d.url)}
+          }catch(e){console.error(e)}
+        }
+        this.storeUploading=false;this.storeUploadProgress=100
+      },
+      async loadPacks(){
+        try{
+          const r=await this.authFetch('/api/admin/packs')
+          if(r.ok)this.packs=await r.json()
+        }catch(e){console.error(e)}
+      },
+      editPack(p){
+        this.packForm={name:p.name,description:p.description,price:p.price,image:p.image||'',days_valid:p.days_valid}
+        this.packEditingId=p.id;this.packShowForm=true
+      },
+      async savePack(){
+        this.packSaving=true
+        try{
+          const body=JSON.stringify({name:this.packForm.name,description:this.packForm.description,price:Number(this.packForm.price),image:this.packForm.image,days_valid:Number(this.packForm.days_valid)})
+          const isEdit=!!this.packEditingId
+          const r=await this.authFetch('/api/admin/packs'+(isEdit?'/'+this.packEditingId:''),{method:isEdit?'PUT':'POST',headers:{'Content-Type':'application/json'},body})
+          const d=await r.json()
+          if(d.success||d.id){this.packShowForm=false;this.loadPacks()}
+          else{alert(d.error||'Save failed')}
+        }catch(e){alert('Save error: '+e.message)}
+        finally{this.packSaving=false}
+      },
+      async deletePack(id){
+        if(!confirm('Delete this pack?'))return
+        try{
+          const r=await this.authFetch('/api/admin/packs/'+id,{method:'DELETE'})
+          const d=await r.json()
+          if(d.success)this.loadPacks()
+          else alert(d.error||'Delete failed')
+        }catch(e){alert('Delete error: '+e.message)}
+      },
+      async handlePackUpload(files){
+        const f=files[0]
+        if(!f||!f.type.startsWith('image/'))return
+        this.packUploading=true
+        this.packUploadProgress=0
+        try{
+          const fd=new FormData();fd.set('file',f)
+          const r=await this.authFetch('/api/admin/upload',{method:'POST',body:fd})
+          const d=await r.json()
+          if(d.success&&d.url)this.packForm.image=d.url
+        }catch(e){console.error(e)}
+        finally{this.packUploading=false;this.packUploadProgress=0}
+      },
+      handlePackFiles(files){this.handlePackUpload(files)},
+      handlePackDrop(e){this.handlePackUpload(e.dataTransfer.files)},
+      logout(){
+        localStorage.removeItem('admin_token');
+        window.location.href='/admin-login.html'
+      }
+    }
+  }
+</script>
+</body>
+</html>

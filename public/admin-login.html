@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login — Ecommerce</title>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    button{font-family:inherit}
+    html,body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#0d0d0d;line-height:1.6;-webkit-font-smoothing:antialiased;background:#0c0c14;height:100%;display:flex;align-items:center;justify-content:center}
+
+    .login-card{width:100%;max-width:400px;padding:40px;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+    .login-brand{display:flex;align-items:center;gap:10px;margin-bottom:32px;justify-content:center}
+    .login-brand .icon{width:40px;height:40px;background:linear-gradient(135deg,#a78bfa,#7c3aed);border-radius:10px;display:flex;align-items:center;justify-content:center}
+    .login-brand .icon svg{width:20px;height:20px;color:#fff}
+    .login-brand span{font-size:20px;font-weight:800;letter-spacing:-.03em;color:#0d0d0d}
+
+    .login-title{font-size:18px;font-weight:700;text-align:center;margin-bottom:4px}
+    .login-sub{font-size:13px;color:#8a8a8e;text-align:center;margin-bottom:28px}
+
+    .form-group{margin-bottom:16px}
+    .form-group label{display:block;font-size:12px;font-weight:600;color:#8a8a8e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+    .form-input{width:100%;padding:12px 14px;border:1.5px solid #e8e8ed;border-radius:10px;font-size:14px;font-family:inherit;background:#f4f4f6;transition:border-color .2s,box-shadow .2s;outline:none}
+    .form-input:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.12);background:#fff}
+    .form-input::placeholder{color:#b0b0b4}
+
+    .login-btn{width:100%;padding:13px;border:none;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;margin-top:8px}
+    .login-btn:hover{background:linear-gradient(135deg,#6d28d9,#5b21b6);transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,58,237,.35)}
+    .login-btn:active{transform:translateY(0)}
+    .login-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none}
+
+    .error-msg{background:#fef2f2;color:#dc2626;font-size:13px;font-weight:500;padding:10px 14px;border-radius:8px;margin-bottom:16px;text-align:center;display:none}
+    .error-msg.show{display:block;animation:shake .3s ease}
+    @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+  </style>
+</head>
+<body>
+  <div class="login-card" x-data="{email:'',pass:'',loading:false,error:'',showPass:false}" x-init="if(localStorage.getItem('admin_token'))location.href='/admin.html'">
+    <div class="login-brand">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <span>Admin Panel</span>
+    </div>
+
+    <p class="login-title">Welcome back</p>
+    <p class="login-sub">Sign in to manage your store</p>
+
+    <div class="error-msg" :class="{'show':error}" x-text="error"></div>
+
+    <form @submit.prevent="
+      loading=true;error='';
+      const fd=new FormData();fd.append('email',email);fd.append('password',pass);
+      fetch('/api/admin/login',{method:'POST',body:fd})
+        .then(r=>r.json())
+        .then(d=>{
+          if(d.success&&d.token){
+            localStorage.setItem('admin_token',d.token);
+            location.href='/admin.html';
+          }else{error=d.message||'Invalid credentials';loading=false}
+        })
+        .catch(e=>{error='Connection failed';loading=false})
+    ">
+      <div class="form-group">
+        <label>Email</label>
+        <input class="form-input" type="email" x-model="email" placeholder="admin@store.com" required autofocus/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <div style="position:relative">
+          <input class="form-input" :type="showPass?'text':'password'" x-model="pass" placeholder="Enter password" required style="padding-right:44px"/>
+          <button type="button" @click="showPass=!showPass" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#8a8a8e;font-size:12px;font-weight:600;padding:4px" x-text="showPass?'Hide':'Show'"></button>
+        </div>
+      </div>
+      <button class="login-btn" type="submit" :disabled="loading||!email||!pass">
+        <span x-show="!loading">Sign In</span>
+        <span x-show="loading">Signing in...</span>
+      </button>
+    </form>
+  </div>
+</body>
+</html>
