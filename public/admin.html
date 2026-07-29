@@ -350,7 +350,6 @@
     .prod-card-img{width:100%;aspect-ratio:4/3;object-fit:contain;background:var(--bg-alt);padding:var(--s2)}
     .prod-card-body{padding:var(--s4);display:flex;flex-direction:column;flex:1}
     .prod-card-name{font-size:14px;font-weight:700;margin-bottom:2px}
-    .prod-card-sku{font-size:11px;color:var(--text-muted);margin-bottom:var(--s2)}
     .prod-card-meta{display:flex;align-items:center;justify-content:space-between;margin-top:auto}
     .prod-card-price{font-size:16px;font-weight:800}
     .prod-card-stock{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px}
@@ -741,9 +740,9 @@
               <template x-if="unsold.neverSold.length>0">
                 <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:var(--s2);margin-top:var(--s2)">Never Sold</div>
                 <div style="max-height:160px;overflow-y:auto">
-                  <table style="font-size:12px"><thead><tr><th>Name</th><th>SKU</th><th>Price</th><th>Stock</th></tr></thead>
+                  <table style="font-size:12px"><thead><tr><th>Name</th><th>Price</th><th>Stock</th></tr></thead>
                     <tbody><template x-for="p in unsold.neverSold" :key="p.id">
-                      <tr><td x-text="p.name"></td><td style="color:var(--text-muted)" x-text="p.sku||'-'"></td><td x-text="'DA '+p.price.toLocaleString()"></td><td x-text="p.stock"></td></tr>
+                      <tr><td x-text="p.name"></td><td x-text="'DA '+p.price.toLocaleString()"></td><td x-text="p.stock"></td></tr>
                     </template></tbody>
                   </table>
                 </div></div>
@@ -751,9 +750,9 @@
               <template x-if="unsold.stale.length>0">
                 <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:var(--s2);margin-top:var(--s3)">Not Sold in 30 Days</div>
                 <div style="max-height:160px;overflow-y:auto">
-                  <table style="font-size:12px"><thead><tr><th>Name</th><th>SKU</th><th>Price</th><th>Stock</th></tr></thead>
+                  <table style="font-size:12px"><thead><tr><th>Name</th><th>Price</th><th>Stock</th></tr></thead>
                     <tbody><template x-for="p in unsold.stale" :key="p.id">
-                      <tr><td x-text="p.name"></td><td style="color:var(--text-muted)" x-text="p.sku||'-'"></td><td x-text="'DA '+p.price.toLocaleString()"></td><td x-text="p.stock"></td></tr>
+                      <tr><td x-text="p.name"></td><td x-text="'DA '+p.price.toLocaleString()"></td><td x-text="p.stock"></td></tr>
                     </template></tbody>
                   </table>
                 </div></div>
@@ -930,10 +929,6 @@
                     <label>Brand</label>
                     <input class="pw-inp" type="text" x-model="detailForm.brandName" placeholder="Brand name"/>
                   </div>
-                  <div class="pw-fld">
-                    <label>SKU</label>
-                    <input class="pw-inp" type="text" x-model="detailForm.sku" placeholder="e.g. ON-WHEY-5LB"/>
-                  </div>
                 </div>
                 <div class="pw-fld">
                   <label>Description</label>
@@ -1023,19 +1018,11 @@
                   <input class="pw-inp" type="number" x-model="detailForm.price" placeholder="9900"/>
                 </div>
                 <div class="pw-fld">
-                  <label>Cost Price (DZD)</label>
-                  <input class="pw-inp" type="number" x-model="detailForm.costPrice" placeholder="6000"/>
-                </div>
-                <div class="pw-fld">
-                  <label>Compare-at Price (DZD)</label>
+                  <label>Old Price (DZD)</label>
                   <input class="pw-inp" type="number" x-model="detailForm.comparePrice" placeholder="12000"/>
+                  <div class="pw-margin" x-show="detailForm.comparePrice > 0" x-text="'Strikethrough: DA '+Number(detailForm.comparePrice).toLocaleString()"></div>
                 </div>
-                <div class="pw-fld" x-show="detailForm.comparePrice > 0">
-                  <div class="pw-margin" x-text="'DA '+((detailForm.comparePrice||0)-(detailForm.price||0)).toLocaleString()+' savings'"></div>
-                </div>
-                <div class="pw-fld" x-show="detailForm.costPrice > 0 && detailForm.price > 0">
-                  <div class="pw-margin" x-text="'Margin: '+Math.round(((detailForm.price-detailForm.costPrice)/detailForm.price)*100)+'%'" style="color:var(--green)"></div>
-                </div>
+
               </div>
             </div>
 
@@ -1101,16 +1088,8 @@
                     <span class="label">Description</span>
                   </div>
                   <div class="pw-health-row">
-                    <span class="icon" :class="detailForm.sku?'ok':'miss'" x-text="detailForm.sku?'&#10003;':'&#10007;'"></span>
-                    <span class="label">SKU</span>
-                  </div>
-                  <div class="pw-health-row">
                     <span class="icon" :class="detailForm.price>0?'ok':'miss'" x-text="detailForm.price>0?'&#10003;':'&#10007;'"></span>
                     <span class="label">Price</span>
-                  </div>
-                  <div class="pw-health-row">
-                    <span class="icon" :class="detailForm.costPrice>0?'ok':'miss'" x-text="detailForm.costPrice>0?'&#10003;':'&#10007;'"></span>
-                    <span class="label">Cost Price</span>
                   </div>
                   <div class="pw-health-row">
                     <span class="icon" :class="detailForm.stock>0?'ok':'miss'" x-text="detailForm.stock>0?'&#10003;':'&#10007;'"></span>
@@ -1118,9 +1097,9 @@
                   </div>
                 </div>
                 <div class="pw-score-bar" style="margin-top:var(--s3)">
-                  <div class="pw-score-fill" :style="'width:'+Math.round((([detailImg,detailForm.description,detailForm.sku,detailForm.price>0,detailForm.costPrice>0,detailForm.stock>0].filter(Boolean).length)/6)*100)+'%'"></div>
+                  <div class="pw-score-fill" :style="'width:'+Math.round((([detailImg,detailForm.description,detailForm.price>0,detailForm.stock>0].filter(Boolean).length)/4)*100)+'%'"></div>
                 </div>
-                <div style="text-align:right;font-size:11px;font-weight:700;color:var(--accent);margin-top:4px" x-text="Math.round((([detailImg,detailForm.description,detailForm.sku,detailForm.price>0,detailForm.costPrice>0,detailForm.stock>0].filter(Boolean).length)/6)*100)+'% Complete'"></div>
+                <div style="text-align:right;font-size:11px;font-weight:700;color:var(--accent);margin-top:4px" x-text="Math.round((([detailImg,detailForm.description,detailForm.price>0,detailForm.stock>0].filter(Boolean).length)/4)*100)+'% Complete'"></div>
               </div>
             </div>
 
@@ -1130,9 +1109,7 @@
               <div class="pw-card-body">
                 <div class="pw-stat-grid">
                   <div class="pw-stat"><div class="v" x-text="detailForm.stock*detailForm.price>0?'DA '+Number(detailForm.stock*detailForm.price).toLocaleString():'--'"></div><div class="l">Inventory Value</div></div>
-                  <div class="pw-stat"><div class="v" x-text="detailForm.stock*detailForm.costPrice>0?'DA '+Number(detailForm.stock*detailForm.costPrice).toLocaleString():'--'"></div><div class="l">Cost Value</div></div>
                   <div class="pw-stat"><div class="v" x-text="detailForm.weight?detailForm.weight+'kg':'--'"></div><div class="l">Weight</div></div>
-                  <div class="pw-stat"><div class="v" x-text="detailForm.price>0&&detailForm.costPrice>0?'DA '+(detailForm.price-detailForm.costPrice).toLocaleString():'--'"></div><div class="l">Margin / Unit</div></div>
                 </div>
               </div>
             </div>
@@ -1155,6 +1132,7 @@
               <div class="form-block"><label>Instagram URL</label><input class="field" x-model="storeInfo.instagram" placeholder="https://instagram.com/ironfuel_dz"/></div>
               <div class="form-block"><label>TikTok URL</label><input class="field" x-model="storeInfo.tiktok" placeholder="https://tiktok.com/@ironfuel_dz"/></div>
             </div>
+            <div class="form-block" style="margin-top:var(--s3)"><label>WhatsApp Profile/Chat URL</label><input class="field" x-model="storeInfo.whatsapp" placeholder="https://wa.me/213555123456"/></div>
             <div class="form-block full" style="margin-top:var(--s4)"><label>Store Images</label></div>
             <div class="upload-zone" x-ref="storeDropzone" @click="$refs.storeFileInput.click()" @dragover.prevent="dragover=true" @dragleave="dragover=false" @drop.prevent="handleStoreDrop($event)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -1282,9 +1260,7 @@
           <div class="form-block full"><label>Product Name</label><input class="field" x-model="form.name" placeholder="e.g. Gold Standard Whey"/></div>
           <div class="form-block full"><label>Description</label><textarea class="field" x-model="form.description" placeholder="Product description" rows="4"></textarea></div>
           <div class="form-block"><label>Price (DZD)</label><input class="field" type="number" x-model="form.price" placeholder="9900"/></div>
-          <div class="form-block"><label>Cost Price (DZD)</label><input class="field" type="number" x-model="form.costPrice" placeholder="6000"/></div>
-          <div class="form-block"><label>Compare At Price</label><input class="field" type="number" x-model="form.comparePrice" placeholder="12900"/></div>
-          <div class="form-block"><label>SKU</label><input class="field" x-model="form.sku" placeholder="ON-WHEY-5LB"/></div>
+          <div class="form-block"><label>Old Price (DZD)</label><input class="field" type="number" x-model="form.comparePrice" placeholder="Optional strikethrough price"/></div>
           <div class="form-block"><label>Barcode</label><input class="field" x-model="form.barcode" placeholder="Optional"/></div>
           <div class="form-block"><label>Stock</label><input class="field" type="number" x-model="form.stock" placeholder="50"/></div>
           <div class="form-block"><label>Low Stock Threshold</label><input class="field" type="number" x-model="form.lowStock" placeholder="5"/></div>
@@ -1405,17 +1381,17 @@
         {val:'cancelled',label:'Cancelled',color:'#ef4444'}
       ],
       prodSearch:'',prodPage:1,prodTotal:0,prodData:[],prodDetail:null,prodLoading:false,prodStatusFilter:'',prodSortBy:'newest',prodStatusOpen:false,prodSortOpen:false,
-      detailForm:{id:'',name:'',description:'',ingredients:'',howToUse:'',price:0,costPrice:0,stock:0,sku:'',brandName:'',categoryId:'',showIngredients:false,showHowToUse:false,comparePrice:0,lowStock:5,weight:0,isActive:true,isFeatured:false},
+      detailForm:{id:'',name:'',description:'',ingredients:'',howToUse:'',price:0,comparePrice:0,stock:0,brandId:'',brandName:'',categoryId:'',showIngredients:false,showHowToUse:false,lowStock:5,weight:0,isActive:true,isFeatured:false},
       detailImg:'',detailEdit:{},detailSnapshot:null,hasUnsaved:false,savedMsg:'',imgUploading:false,_toggling:false,
       custSearch:'',custPage:1,custTotal:0,
       showProductForm:false,editingProduct:null,saving:false,uploading:false,uploadProgress:0,
-      storeInfo:{store_name:'',store_description:'',owner_name:'',phone:'',location:'',location_link:'',instagram:'',tiktok:'',images:[]},
+      storeInfo:{store_name:'',store_description:'',owner_name:'',phone:'',location:'',location_link:'',instagram:'',tiktok:'',whatsapp:'',images:[],promo_banner:{}},
       storeSaving:false,storeUploading:false,storeUploadProgress:0,storeSavedMsg:'',
       packs:[],packForm:{name:'',description:'',price:0,image:'',days_valid:30},packSaving:false,packEditingId:null,packShowForm:false,packUploading:false,packUploadProgress:0,
       brands:[],categories:[],
       showNewBrand:false,newBrandName:'',addingBrand:false,brandOpen:false,brandSearch:'',
       showNewCat:false,newCatName:'',addingCat:false,catOpen:false,catSearch:'',
-      form:{name:'',description:'',price:0,comparePrice:0,sku:'',barcode:'',stock:0,lowStock:5,weight:0,brandId:'',categoryId:'',ingredients:'',howToUse:'',showIngredients:true,showHowToUse:true,images:[],isActive:true},
+      form:{name:'',description:'',price:0,comparePrice:0,barcode:'',stock:0,lowStock:5,weight:0,brandId:'',categoryId:'',ingredients:'',howToUse:'',showIngredients:true,showHowToUse:true,images:[],isActive:true},
       navItems:[
         {id:'dashboard',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',label:'Dashboard'},
         {id:'orders',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',label:'Orders'},
@@ -1628,7 +1604,6 @@
           <div class="prod-card-body">
             <div class="prod-card-name">${pr.Name}</div>
             <div class="prod-card-brand">${pr.Brand||pr.Category||''}</div>
-            <div class="prod-card-sku">${pr.SKU||'-'}</div>
             <div class="prod-card-meta">
               <span class="prod-card-price">DA ${pr.Price.toLocaleString()}</span>
               <span class="prod-card-stock ${pr.Stock===0?'out':pr.Stock<=5?'low':'ok'}">${pr.Stock===0?'Out':pr.Stock<=5?'Low':'In Stock'}</span>
@@ -1648,7 +1623,7 @@
 
       openProductForm(){
         this.editingProduct=null
-        this.form={name:'',description:'',price:0,costPrice:0,comparePrice:0,sku:'',barcode:'',stock:0,lowStock:5,weight:0,brandId:'',categoryId:'',ingredients:'',howToUse:'',showIngredients:true,showHowToUse:true,isFeatured:false,images:[],isActive:true}
+        this.form={name:'',description:'',price:0,comparePrice:0,barcode:'',stock:0,lowStock:5,weight:0,brandId:'',categoryId:'',ingredients:'',howToUse:'',showIngredients:true,showHowToUse:true,isFeatured:false,images:[],isActive:true}
         this.showProductForm=true
         this.loadBrands();this.loadCategories()
       },
@@ -1663,7 +1638,7 @@
           const d=await r.json()
           this.form={
             name:d.Name||'',description:d.Description||'',
-            price:d.Price||0,costPrice:d.CostPrice||0,comparePrice:d.CompareAtPrice||0,sku:d.SKU||'',barcode:d.Barcode||'',
+            price:d.Price||0,comparePrice:d.CompareAtPrice||0,barcode:d.Barcode||'',
             stock:d.Stock||0,lowStock:d.LowStockThreshold||5,weight:d.WeightGrams?d.WeightGrams/1000:'',
             brandId:d.BrandID||'',categoryId:d.CategoryID||'',
             ingredients:d.Ingredients||'',howToUse:d.HowToUse||'',
@@ -1687,10 +1662,9 @@
 
         const payload={
           name:this.form.name,description:this.form.description,ingredients:this.form.ingredients,
-          how_to_use:this.form.howToUse,sku:this.form.sku,barcode:this.form.barcode,
+          how_to_use:this.form.howToUse,barcode:this.form.barcode,
           brand_id:this.form.brandId,category_id:this.form.categoryId,
-          price:Number(this.form.price)||0,cost_price:Number(this.form.costPrice)||0,
-          compare_at_price:Number(this.form.comparePrice)||0,
+          price:Number(this.form.price)||0,compare_at_price:Number(this.form.comparePrice)||0,
           stock:Number(this.form.stock)||0,
           low_stock_threshold:Number(this.form.lowStock)||5,
           weight_grams:Number(this.form.weight)*1000||0,
@@ -1717,9 +1691,9 @@
           const d=await r.json()
           this.detailForm={
             id:d.ID,name:d.Name||'',description:d.Description||'',ingredients:d.Ingredients||'',howToUse:d.HowToUse||'',
-            price:d.Price||0,costPrice:d.CostPrice||0,stock:d.Stock||0,sku:d.SKU||'',brandName:d.Brand||d.BrandID||'',categoryId:d.CategoryID||'',
+            price:d.Price||0,comparePrice:d.CompareAtPrice||0,stock:d.Stock||0,brandId:d.BrandID||'',brandName:d.Brand||d.BrandID||'',categoryId:d.CategoryID||'',
             showIngredients:d.Sections?.includes('ingredients')||false,showHowToUse:d.Sections?.includes('how_to_use')||false,
-            comparePrice:d.CompareAtPrice||0,lowStock:d.LowStockThreshold||5,weight:d.WeightGrams?d.WeightGrams/1000:'',
+            lowStock:d.LowStockThreshold||5,weight:d.WeightGrams?d.WeightGrams/1000:'',
             isActive:d.IsActive!==false,isFeatured:d.IsFeatured||false
           }
           this.detailEdit={}
@@ -1740,10 +1714,9 @@
             method:'PUT',headers:{'Content-Type':'application/json'},
             body:JSON.stringify({
               name:this.detailForm.name,description:this.detailForm.description,ingredients:this.detailForm.ingredients,
-              how_to_use:this.detailForm.howToUse,sku:this.detailForm.sku,
-              category_id:this.detailForm.categoryId,price:Number(this.detailForm.price)||0,
-              cost_price:Number(this.detailForm.costPrice)||0,
-              compare_at_price:Number(this.detailForm.comparePrice)||0,stock:Number(this.detailForm.stock)||0,
+              how_to_use:this.detailForm.howToUse,
+              brand_id:this.detailForm.brandId,category_id:this.detailForm.categoryId,price:Number(this.detailForm.price)||0,compare_at_price:Number(this.detailForm.comparePrice)||0,
+              stock:Number(this.detailForm.stock)||0,
               low_stock_threshold:Number(this.detailForm.lowStock)||5,weight_grams:Number(this.detailForm.weight)*1000||0,
               is_active:this.detailForm.isActive,is_featured:this.detailForm.isFeatured,
               sections:sections.join(','),image_urls:this.detailImg?[this.detailImg]:[]
@@ -1754,6 +1727,7 @@
             this.detailSnapshot=JSON.parse(JSON.stringify(this.detailForm))
             this.hasUnsaved=false
             this.savedMsg='Saved!'
+            this.loadProducts()
           }else{alert(d.error||'Save failed')}
         }catch(e){alert('Save error')}
         finally{this.saving=false;setTimeout(()=>{this.savedMsg=''},2000)}
@@ -1841,7 +1815,7 @@
           const d=await r.json()
           this.form={
             name:(d.Name||'')+' (Copy)',description:d.Description||'',
-            price:d.Price||0,costPrice:d.CostPrice||0,comparePrice:d.CompareAtPrice||0,sku:'',barcode:'',
+            price:d.Price||0,comparePrice:d.CompareAtPrice||0,barcode:'',
             stock:0,lowStock:d.LowStockThreshold||5,weight:d.WeightGrams||0,
             brandId:d.BrandID||'',categoryId:d.CategoryID||'',
             ingredients:d.Ingredients||'',howToUse:d.HowToUse||'',
@@ -1970,13 +1944,13 @@
       async loadStoreInfo(){
         try{
           const r=await fetch('/api/store-info')
-          if(r.ok){const d=await r.json();this.storeInfo={store_name:d.store_name||'',store_description:d.store_description||'',owner_name:d.owner_name||'',phone:d.phone||'',location:d.location||'',location_link:d.location_link||'',instagram:d.instagram||'',tiktok:d.tiktok||'',images:d.images||[]}}
+          if(r.ok){const d=await r.json();this.storeInfo={store_name:d.store_name||'',store_description:d.store_description||'',owner_name:d.owner_name||'',phone:d.phone||'',location:d.location||'',location_link:d.location_link||'',instagram:d.instagram||'',tiktok:d.tiktok||'',whatsapp:d.whatsapp||'',images:d.images||[]}}
         }catch(e){console.error(e)}
       },
       async saveStoreInfo(){
         this.storeSaving=true;this.storeSavedMsg=''
         try{
-          const body=JSON.stringify({store_name:this.storeInfo.store_name,store_description:this.storeInfo.store_description,owner_name:this.storeInfo.owner_name,phone:this.storeInfo.phone,location:this.storeInfo.location,location_link:this.storeInfo.location_link,instagram:this.storeInfo.instagram,tiktok:this.storeInfo.tiktok,images:this.storeInfo.images})
+          const body=JSON.stringify({store_name:this.storeInfo.store_name,store_description:this.storeInfo.store_description,owner_name:this.storeInfo.owner_name,phone:this.storeInfo.phone,location:this.storeInfo.location,location_link:this.storeInfo.location_link,instagram:this.storeInfo.instagram,tiktok:this.storeInfo.tiktok,whatsapp:this.storeInfo.whatsapp,images:this.storeInfo.images||[],promo_banner:this.storeInfo.promo_banner||{}})
           const r=await this.authFetch('/api/admin/store-info',{method:'PUT',headers:{'Content-Type':'application/json'},body})
           const d=await r.json()
           if(d.success){this.storeSavedMsg='Saved!'}else{alert(d.error||'Save failed')}

@@ -16,6 +16,7 @@ import (
 	_ "image/gif"
 	_ "image/png"
 
+	"github.com/gofiber/fiber/v3"
 	"github.com/yourorg/ecommerce/database"
 	"golang.org/x/image/draw"
 	_ "golang.org/x/image/webp"
@@ -271,4 +272,44 @@ func GenerateSrcset(primaryURL string) string {
 // IsWebpURL checks if a URL points to a WebP image
 func IsWebpURL(url string) bool {
 	return strings.HasSuffix(strings.ToLower(url), ".webp")
+}
+
+func AdminUpload(c fiber.Ctx) error {
+	file, err := c.FormFile("file")
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "no file"})
+	}
+	src, err := file.Open()
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "cannot open"})
+	}
+	defer src.Close()
+
+	data, err := io.ReadAll(src)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "cannot read"})
+	}
+
+	if err := ValidateUpload(data, file.Filename); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	sizes, err := ProcessImage(data, file.Filename)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "image processing failed: " + err.Error()})
+	}
+
+	urls, err := UploadImages(sizes, file.Filename)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "upload failed: " + err.Error()})
+	}
+
+	return c.JSON(fiber.Map{
+		"success":  true,
+		"url":      urls["card"],
+		"thumb":    urls["thumb"],
+		"card":     urls["card"],
+		"detail":   urls["detail"],
+		"original": urls["original"],
+	})
 }

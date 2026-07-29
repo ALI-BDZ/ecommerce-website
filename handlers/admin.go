@@ -117,29 +117,28 @@ func AdminDashboard(c fiber.Ctx) error {
 	type UP struct {
 		ID        string `json:"id"`
 		Name      string `json:"name"`
-		SKU       string `json:"sku"`
 		Price     int64  `json:"price"`
 		Stock     int64  `json:"stock"`
 		CreatedAt string `json:"created_at"`
 	}
 	neverSold := []UP{}
-	nsrows, _ := database.DB.Query(ctx, `SELECT p.id,p.name,COALESCE(p.sku,''),p.price,p.stock,p.created_at FROM products p WHERE p.is_active=true AND NOT EXISTS (SELECT 1 FROM order_items oi WHERE oi.product_id=p.id::text) ORDER BY p.created_at DESC`)
+	nsrows, _ := database.DB.Query(ctx, `SELECT p.id,p.name,p.price,p.stock,p.created_at FROM products p WHERE p.is_active=true AND NOT EXISTS (SELECT 1 FROM order_items oi WHERE oi.product_id=p.id::text) ORDER BY p.created_at DESC`)
 	if nsrows != nil {
 		defer nsrows.Close()
 		for nsrows.Next() {
-			var id, n, sku, ca string; var pr, st int64
-			nsrows.Scan(&id, &n, &sku, &pr, &st, &ca)
-			neverSold = append(neverSold, UP{id, n, sku, pr, st, ca})
+			var id, n, ca string; var pr, st int64
+			nsrows.Scan(&id, &n, &pr, &st, &ca)
+			neverSold = append(neverSold, UP{id, n, pr, st, ca})
 		}
 	}
 	stale := []UP{}
-	strows, _ := database.DB.Query(ctx, `SELECT p.id,p.name,COALESCE(p.sku,''),p.price,p.stock FROM products p WHERE p.is_active=true AND EXISTS (SELECT 1 FROM order_items oi WHERE oi.product_id=p.id::text) AND NOT EXISTS (SELECT 1 FROM order_items oi JOIN orders o ON o.id=oi.order_id WHERE oi.product_id=p.id::text AND o.status NOT IN ('cancelled') AND o.created_at>=now()-'30 days'::interval) ORDER BY p.created_at DESC LIMIT 10`)
+	strows, _ := database.DB.Query(ctx, `SELECT p.id,p.name,p.price,p.stock FROM products p WHERE p.is_active=true AND EXISTS (SELECT 1 FROM order_items oi WHERE oi.product_id=p.id::text) AND NOT EXISTS (SELECT 1 FROM order_items oi JOIN orders o ON o.id=oi.order_id WHERE oi.product_id=p.id::text AND o.status NOT IN ('cancelled') AND o.created_at>=now()-'30 days'::interval) ORDER BY p.created_at DESC LIMIT 10`)
 	if strows != nil {
 		defer strows.Close()
 		for strows.Next() {
-			var id, n, sku string; var pr, st int64
-			strows.Scan(&id, &n, &sku, &pr, &st)
-			stale = append(stale, UP{id, n, sku, pr, st, ""})
+			var id, n string; var pr, st int64
+			strows.Scan(&id, &n, &pr, &st)
+			stale = append(stale, UP{id, n, pr, st, ""})
 		}
 	}
 
@@ -334,7 +333,7 @@ func AdminProducts(c fiber.Ctx) error {
 	where, args, aidx := "WHERE 1=1", []interface{}{}, 0
 	if search != "" {
 		aidx++
-		where += " AND (p.name ILIKE $" + strconv.Itoa(aidx) + " OR p.sku ILIKE $" + strconv.Itoa(aidx) + ")"
+		where += " AND (p.name ILIKE $" + strconv.Itoa(aidx) + ")"
 		args = append(args, "%"+search+"%")
 	}
 	if status == "active" {
@@ -363,20 +362,20 @@ func AdminProducts(c fiber.Ctx) error {
 	case "stock_desc":
 		orderClause = "p.stock DESC"
 	}
-	q := "SELECT p.id,p.name,p.sku,p.price,p.stock,p.is_active,p.orders_count,p.revenue,p.created_at,COALESCE(b.name,''),COALESCE(c.name,''),COALESCE(ROUND(AVG(r.rating),1),0),COALESCE((SELECT url FROM product_images WHERE product_id=p.id ORDER BY sort_order LIMIT 1),'') FROM products p LEFT JOIN brands b ON b.id=p.brand_id LEFT JOIN categories c ON c.id=p.category_id LEFT JOIN reviews r ON r.product_id=p.id " + where + " GROUP BY p.id,b.name,c.name ORDER BY " + orderClause + " LIMIT $" + strconv.Itoa(aidx) + " OFFSET $" + strconv.Itoa(aidx+1)
+	q := "SELECT p.id,p.name,p.price,p.stock,p.is_active,p.orders_count,p.revenue,p.created_at,COALESCE(b.name,''),COALESCE(c.name,''),COALESCE(ROUND(AVG(r.rating),1),0),COALESCE((SELECT url FROM product_images WHERE product_id=p.id ORDER BY sort_order LIMIT 1),'') FROM products p LEFT JOIN brands b ON b.id=p.brand_id LEFT JOIN categories c ON c.id=p.category_id LEFT JOIN reviews r ON r.product_id=p.id " + where + " GROUP BY p.id,b.name,c.name ORDER BY " + orderClause + " LIMIT $" + strconv.Itoa(aidx) + " OFFSET $" + strconv.Itoa(aidx+1)
 	rows, err := database.DB.Query(ctx, q, args...)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
 	defer rows.Close()
 	type P struct {
-		ID, Name, SKU, Brand, Category, CreatedAt, Image string
+		ID, Name, Brand, Category, CreatedAt, Image string
 		Price, Revenue int64; Stock, Orders int; IsActive bool; Rating float64
 	}
 	prods := []P{}
 	for rows.Next() {
 		var p P
-		rows.Scan(&p.ID, &p.Name, &p.SKU, &p.Price, &p.Stock, &p.IsActive, &p.Orders, &p.Revenue, &p.CreatedAt, &p.Brand, &p.Category, &p.Rating, &p.Image)
+		rows.Scan(&p.ID, &p.Name, &p.Price, &p.Stock, &p.IsActive, &p.Orders, &p.Revenue, &p.CreatedAt, &p.Brand, &p.Category, &p.Rating, &p.Image)
 		prods = append(prods, p)
 	}
 	return c.JSON(fiber.Map{"products": prods, "total": total, "page": page, "limit": limit})

@@ -12,9 +12,9 @@ import (
 
 func main() {
 	godotenv.Load()
-	dsn := os.Getenv("DATABASE_URL")
+	dsn := os.Getenv("DATABASE_DIRECT_URL")
 	if dsn == "" {
-		dsn = os.Getenv("DATABASE_DIRECT_URL")
+		dsn = os.Getenv("DATABASE_URL")
 	}
 	if dsn == "" {
 		log.Fatal("DATABASE_URL not set")
@@ -244,19 +244,44 @@ DELETE FROM orders WHERE status='pending';
 		{"011_add_missing_fks", `
 -- customer_delivery_history.order_id → orders.id (clean orphans first)
 DELETE FROM customer_delivery_history WHERE order_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM orders WHERE id=customer_delivery_history.order_id);
-ALTER TABLE customer_delivery_history ADD CONSTRAINT fk_cdh_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='fk_cdh_order') THEN
+    ALTER TABLE customer_delivery_history ADD CONSTRAINT fk_cdh_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 -- categories.parent_id → categories.id (clean orphans first)
 UPDATE categories SET parent_id=NULL WHERE parent_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM categories c WHERE c.id=categories.parent_id);
-ALTER TABLE categories ADD CONSTRAINT fk_cat_parent FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='fk_cat_parent') THEN
+    ALTER TABLE categories ADD CONSTRAINT fk_cat_parent FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 -- content.author_id → staff.id (clean orphans first)
 UPDATE content SET author_id=NULL WHERE author_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM staff WHERE id=content.author_id);
-ALTER TABLE content ADD CONSTRAINT fk_content_author FOREIGN KEY (author_id) REFERENCES staff(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='fk_content_author') THEN
+    ALTER TABLE content ADD CONSTRAINT fk_content_author FOREIGN KEY (author_id) REFERENCES staff(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 -- activity_logs.staff_id → staff.id (clean orphans first)
 UPDATE activity_logs SET staff_id=NULL WHERE staff_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM staff WHERE id=activity_logs.staff_id);
-ALTER TABLE activity_logs ADD CONSTRAINT fk_al_staff FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='fk_al_staff') THEN
+    ALTER TABLE activity_logs ADD CONSTRAINT fk_al_staff FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE SET NULL;
+  END IF;
+END $$;
+	`},
+		{"012_drop_sku", `
+ALTER TABLE products DROP COLUMN IF EXISTS sku;
+	`},
+		{"013_drop_cost_price", `
+ALTER TABLE products DROP COLUMN IF EXISTS cost_price;
+	`},
+		{"014_add_whatsapp", `
+ALTER TABLE store_info ADD COLUMN IF NOT EXISTS whatsapp TEXT NOT NULL DEFAULT '';
 	`},
 	}
 
