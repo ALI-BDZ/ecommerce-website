@@ -230,6 +230,34 @@ ALTER TABLE store_info ADD COLUMN IF NOT EXISTS location_link TEXT NOT NULL DEFA
 		{"008_store_description", `
 ALTER TABLE store_info ADD COLUMN IF NOT EXISTS store_description TEXT NOT NULL DEFAULT '';
 `},
+		{"009_cleanup_phantom_items", `
+DELETE FROM order_items WHERE product_name IS NULL OR product_name = '';
+DELETE FROM orders WHERE NOT EXISTS (SELECT 1 FROM order_items WHERE order_id = orders.id);
+DELETE FROM notifications WHERE type='order_created' AND data->>'order_id' IS NOT NULL AND NOT EXISTS (SELECT 1 FROM orders WHERE orders.id::text = notifications.data->>'order_id');
+DELETE FROM notifications WHERE type='cancelled' AND data->>'order_id' IS NOT NULL AND NOT EXISTS (SELECT 1 FROM orders WHERE orders.id::text = notifications.data->>'order_id');
+	`},
+		{"010_remove_test_orders", `
+DELETE FROM notifications WHERE type='order_created' AND data->>'order_id' IS NOT NULL AND EXISTS (SELECT 1 FROM orders WHERE orders.id::text = notifications.data->>'order_id' AND orders.status='pending');
+DELETE FROM order_items WHERE order_id IN (SELECT id FROM orders WHERE status='pending');
+DELETE FROM orders WHERE status='pending';
+	`},
+		{"011_add_missing_fks", `
+-- customer_delivery_history.order_id → orders.id (clean orphans first)
+DELETE FROM customer_delivery_history WHERE order_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM orders WHERE id=customer_delivery_history.order_id);
+ALTER TABLE customer_delivery_history ADD CONSTRAINT fk_cdh_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE SET NULL;
+
+-- categories.parent_id → categories.id (clean orphans first)
+UPDATE categories SET parent_id=NULL WHERE parent_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM categories c WHERE c.id=categories.parent_id);
+ALTER TABLE categories ADD CONSTRAINT fk_cat_parent FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL;
+
+-- content.author_id → staff.id (clean orphans first)
+UPDATE content SET author_id=NULL WHERE author_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM staff WHERE id=content.author_id);
+ALTER TABLE content ADD CONSTRAINT fk_content_author FOREIGN KEY (author_id) REFERENCES staff(id) ON DELETE SET NULL;
+
+-- activity_logs.staff_id → staff.id (clean orphans first)
+UPDATE activity_logs SET staff_id=NULL WHERE staff_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM staff WHERE id=activity_logs.staff_id);
+ALTER TABLE activity_logs ADD CONSTRAINT fk_al_staff FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE SET NULL;
+	`},
 	}
 
 	for _, m := range migrations {

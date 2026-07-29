@@ -87,9 +87,14 @@ func AdminDashboard(c fiber.Ctx) error {
 		}
 	}
 
-	type BS struct{ ID, Name string; Qty, Revenue int64 }
+	type BS struct {
+		ID      string `json:"id"`
+		Name    string `json:"name"`
+		Qty     int64  `json:"qty"`
+		Revenue int64  `json:"revenue"`
+	}
 	bestQty := []BS{}
-	bqrows, _ := database.DB.Query(ctx, `SELECT oi.product_id,oi.product_name,SUM(oi.quantity)::bigint,SUM(oi.price*oi.quantity)::bigint FROM order_items oi JOIN orders o ON o.id=oi.order_id WHERE o.status!='cancelled' GROUP BY oi.product_id,oi.product_name ORDER BY SUM(oi.quantity) DESC LIMIT 5`)
+	bqrows, _ := database.DB.Query(ctx, `SELECT oi.product_id,oi.product_name,SUM(oi.quantity)::bigint,SUM(oi.price*oi.quantity)::bigint FROM order_items oi JOIN orders o ON o.id=oi.order_id WHERE o.status!='cancelled' AND oi.product_name IS NOT NULL AND oi.product_name!='' AND EXISTS (SELECT 1 FROM products p WHERE p.id::text=oi.product_id) GROUP BY oi.product_id,oi.product_name ORDER BY SUM(oi.quantity) DESC LIMIT 5`)
 	if bqrows != nil {
 		defer bqrows.Close()
 		for bqrows.Next() {
@@ -99,7 +104,7 @@ func AdminDashboard(c fiber.Ctx) error {
 		}
 	}
 	bestRev := []BS{}
-	brrows, _ := database.DB.Query(ctx, `SELECT oi.product_id,oi.product_name,SUM(oi.quantity)::bigint,SUM(oi.price*oi.quantity)::bigint FROM order_items oi JOIN orders o ON o.id=oi.order_id WHERE o.status!='cancelled' GROUP BY oi.product_id,oi.product_name ORDER BY SUM(oi.price*oi.quantity) DESC LIMIT 5`)
+	brrows, _ := database.DB.Query(ctx, `SELECT oi.product_id,oi.product_name,SUM(oi.quantity)::bigint,SUM(oi.price*oi.quantity)::bigint FROM order_items oi JOIN orders o ON o.id=oi.order_id WHERE o.status!='cancelled' AND oi.product_name IS NOT NULL AND oi.product_name!='' AND EXISTS (SELECT 1 FROM products p WHERE p.id::text=oi.product_id) GROUP BY oi.product_id,oi.product_name ORDER BY SUM(oi.price*oi.quantity) DESC LIMIT 5`)
 	if brrows != nil {
 		defer brrows.Close()
 		for brrows.Next() {
@@ -109,7 +114,14 @@ func AdminDashboard(c fiber.Ctx) error {
 		}
 	}
 
-	type UP struct{ ID, Name, SKU string; Price, Stock int64; CreatedAt string }
+	type UP struct {
+		ID        string `json:"id"`
+		Name      string `json:"name"`
+		SKU       string `json:"sku"`
+		Price     int64  `json:"price"`
+		Stock     int64  `json:"stock"`
+		CreatedAt string `json:"created_at"`
+	}
 	neverSold := []UP{}
 	nsrows, _ := database.DB.Query(ctx, `SELECT p.id,p.name,COALESCE(p.sku,''),p.price,p.stock,p.created_at FROM products p WHERE p.is_active=true AND NOT EXISTS (SELECT 1 FROM order_items oi WHERE oi.product_id=p.id::text) ORDER BY p.created_at DESC`)
 	if nsrows != nil {
@@ -131,7 +143,14 @@ func AdminDashboard(c fiber.Ctx) error {
 		}
 	}
 
-	type TC struct{ ID, FirstName, LastName, Phone string; Orders int; Lifetime int64 }
+	type TC struct {
+		ID        string `json:"id"`
+		FirstName string `json:"first_name"`
+		LastName  string `json:"last_name"`
+		Phone     string `json:"phone"`
+		Orders    int    `json:"orders"`
+		Lifetime  int64  `json:"lifetime"`
+	}
 	topCust := []TC{}
 	tcrows, _ := database.DB.Query(ctx, `SELECT id,first_name,last_name,phone,total_orders,lifetime_value FROM customers ORDER BY lifetime_value DESC LIMIT 10`)
 	if tcrows != nil {
@@ -143,7 +162,15 @@ func AdminDashboard(c fiber.Ctx) error {
 		}
 	}
 
-	type CR struct{ ID, FirstName, LastName, Phone string; Failed, Total int; Rate float64 }
+	type CR struct {
+		ID        string  `json:"id"`
+		FirstName string  `json:"first_name"`
+		LastName  string  `json:"last_name"`
+		Phone     string  `json:"phone"`
+		Failed    int     `json:"failed"`
+		Total     int     `json:"total"`
+		Rate      float64 `json:"rate"`
+	}
 	codRisk := []CR{}
 	crrows, _ := database.DB.Query(ctx, `SELECT c.id,c.first_name,c.last_name,c.phone,COUNT(*) FILTER (WHERE cdh.event IN ('refused','no_answer','wrong_address','courier_returned'))::int,COUNT(*)::int FROM customer_delivery_history cdh JOIN customers c ON c.id=cdh.customer_id GROUP BY c.id,c.first_name,c.last_name,c.phone HAVING COUNT(*) FILTER (WHERE cdh.event IN ('refused','no_answer','wrong_address','courier_returned'))>0 ORDER BY COUNT(*) FILTER (WHERE cdh.event IN ('refused','no_answer','wrong_address','courier_returned')) DESC LIMIT 10`)
 	if crrows != nil {
@@ -159,9 +186,13 @@ func AdminDashboard(c fiber.Ctx) error {
 		}
 	}
 
-	type CB struct{ Name string; Orders int64; Percentage float64 }
+	type CB struct {
+		Name       string  `json:"name"`
+		Orders     int64   `json:"orders"`
+		Percentage float64 `json:"percentage"`
+	}
 	catBreak := []CB{}
-	cbrows, _ := database.DB.Query(ctx, `SELECT COALESCE(c.name,'Uncategorized'),COUNT(DISTINCT o.id) FROM orders o JOIN order_items oi ON oi.order_id=o.id LEFT JOIN products p ON p.id::text=oi.product_id LEFT JOIN categories c ON c.id=p.category_id WHERE o.status!='cancelled' GROUP BY c.name ORDER BY COUNT(DISTINCT o.id) DESC`)
+	cbrows, _ := database.DB.Query(ctx, `SELECT COALESCE(c.name,'Uncategorized'),COUNT(DISTINCT o.id) FROM orders o JOIN order_items oi ON oi.order_id=o.id LEFT JOIN products p ON p.id::text=oi.product_id LEFT JOIN categories c ON c.id=p.category_id WHERE o.status!='cancelled' AND oi.product_name IS NOT NULL AND oi.product_name!='' GROUP BY c.name ORDER BY COUNT(DISTINCT o.id) DESC`)
 	if cbrows != nil {
 		defer cbrows.Close()
 		var catTotal int64
@@ -181,7 +212,15 @@ func AdminDashboard(c fiber.Ctx) error {
 		}
 	}
 
-	type RO struct{ ID, Status, FirstName, LastName, CreatedAt string; OrderNumber int; Total int64 }
+	type RO struct {
+		ID          string `json:"id"`
+		Status      string `json:"status"`
+		FirstName   string `json:"first_name"`
+		LastName    string `json:"last_name"`
+		CreatedAt   string `json:"created_at"`
+		OrderNumber int    `json:"order_number"`
+		Total       int64  `json:"total"`
+	}
 	recentOrd := []RO{}
 	rorows, _ := database.DB.Query(ctx, `SELECT id,order_number,status,first_name,last_name,total,created_at FROM orders ORDER BY created_at DESC LIMIT 20`)
 	if rorows != nil {
@@ -262,8 +301,16 @@ func AdminOrders(c fiber.Ctx) error {
 	}
 	defer rows.Close()
 	type O struct {
-		ID, Status, FirstName, LastName, Phone, PaymentMethod, CreatedAt string
-		OrderNumber int; Total int64; ItemCount int
+		ID            string `json:"id"`
+		OrderNumber   int    `json:"order_number"`
+		Status        string `json:"status"`
+		FirstName     string `json:"first_name"`
+		LastName      string `json:"last_name"`
+		Phone         string `json:"phone"`
+		Total         int64  `json:"total"`
+		PaymentMethod string `json:"payment_method"`
+		CreatedAt     string `json:"created_at"`
+		ItemCount     int    `json:"item_count"`
 	}
 	orders := []O{}
 	for rows.Next() {
@@ -280,6 +327,8 @@ func AdminProducts(c fiber.Ctx) error {
 	}
 	ctx := context.Background()
 	search := c.Query("search")
+	status := c.Query("status")
+	sortBy := c.Query("sort", "newest")
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	limit, _ := strconv.Atoi(c.Query("limit", "20"))
 	where, args, aidx := "WHERE 1=1", []interface{}{}, 0
@@ -288,11 +337,33 @@ func AdminProducts(c fiber.Ctx) error {
 		where += " AND (p.name ILIKE $" + strconv.Itoa(aidx) + " OR p.sku ILIKE $" + strconv.Itoa(aidx) + ")"
 		args = append(args, "%"+search+"%")
 	}
+	if status == "active" {
+		where += " AND p.is_active=true"
+	} else if status == "draft" {
+		where += " AND p.is_active=false"
+	}
 	var total int64
 	database.DB.QueryRow(ctx, "SELECT COUNT(*) FROM products p "+where, args...).Scan(&total)
 	aidx++
 	args = append(args, limit, (page-1)*limit)
-	q := "SELECT p.id,p.name,p.sku,p.price,p.stock,p.is_active,p.orders_count,p.revenue,p.created_at,COALESCE(b.name,''),COALESCE(c.name,''),COALESCE(ROUND(AVG(r.rating),1),0),COALESCE((SELECT url FROM product_images WHERE product_id=p.id ORDER BY sort_order LIMIT 1),'') FROM products p LEFT JOIN brands b ON b.id=p.brand_id LEFT JOIN categories c ON c.id=p.category_id LEFT JOIN reviews r ON r.product_id=p.id " + where + " GROUP BY p.id,b.name,c.name ORDER BY p.created_at DESC LIMIT $" + strconv.Itoa(aidx) + " OFFSET $" + strconv.Itoa(aidx+1)
+	orderClause := "p.created_at DESC"
+	switch sortBy {
+	case "oldest":
+		orderClause = "p.created_at ASC"
+	case "price_asc":
+		orderClause = "p.price ASC"
+	case "price_desc":
+		orderClause = "p.price DESC"
+	case "name_asc":
+		orderClause = "p.name ASC"
+	case "name_desc":
+		orderClause = "p.name DESC"
+	case "stock_asc":
+		orderClause = "p.stock ASC"
+	case "stock_desc":
+		orderClause = "p.stock DESC"
+	}
+	q := "SELECT p.id,p.name,p.sku,p.price,p.stock,p.is_active,p.orders_count,p.revenue,p.created_at,COALESCE(b.name,''),COALESCE(c.name,''),COALESCE(ROUND(AVG(r.rating),1),0),COALESCE((SELECT url FROM product_images WHERE product_id=p.id ORDER BY sort_order LIMIT 1),'') FROM products p LEFT JOIN brands b ON b.id=p.brand_id LEFT JOIN categories c ON c.id=p.category_id LEFT JOIN reviews r ON r.product_id=p.id " + where + " GROUP BY p.id,b.name,c.name ORDER BY " + orderClause + " LIMIT $" + strconv.Itoa(aidx) + " OFFSET $" + strconv.Itoa(aidx+1)
 	rows, err := database.DB.Query(ctx, q, args...)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
@@ -336,8 +407,17 @@ func AdminCustomers(c fiber.Ctx) error {
 	}
 	defer rows.Close()
 	type C struct {
-		ID, FirstName, LastName, Phone, Email, LastOrder, CreatedAt string
-		TotalOrders int; Lifetime int64; RiskScore int; Blacklisted bool
+		ID           string `json:"id"`
+		FirstName    string `json:"first_name"`
+		LastName     string `json:"last_name"`
+		Phone        string `json:"phone"`
+		Email        string `json:"email"`
+		LastOrder    string `json:"last_order"`
+		CreatedAt    string `json:"created_at"`
+		TotalOrders  int    `json:"total_orders"`
+		Lifetime     int64  `json:"lifetime"`
+		RiskScore    int    `json:"risk_score"`
+		Blacklisted  bool   `json:"blacklisted"`
 	}
 	custs := []C{}
 	for rows.Next() {
@@ -366,7 +446,12 @@ func AdminNotifications(c fiber.Ctx) error {
 	}
 	defer rows.Close()
 	type N struct {
-		ID, Type, Title, Body, CreatedAt string; IsRead bool
+		ID        string `json:"id"`
+		Type      string `json:"type"`
+		Title     string `json:"title"`
+		Body      string `json:"body"`
+		CreatedAt string `json:"created_at"`
+		IsRead    bool   `json:"is_read"`
 	}
 	notifs := []N{}
 	for rows.Next() {
@@ -420,6 +505,6 @@ func CheckLowStock() {
 		database.DB.Exec(ctx,
 			`INSERT INTO notifications (type, title, body, data) VALUES ($1,$2,$3,$4)`,
 			notifType, title, body,
-			`{"product_id":"`+id+`","product_name":"`+name+`","stock":`+strconv.Itoa(stock)+`,"threshold":`+strconv.Itoa(threshold)+`}`)
+			map[string]interface{}{"product_id": id, "product_name": name, "stock": stock, "threshold": threshold})
 	}
 }

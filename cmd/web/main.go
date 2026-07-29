@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"crypto/rand"
 	"encoding/hex"
@@ -9,8 +8,8 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -179,6 +178,24 @@ func adminAuthMiddleware(c fiber.Ctx) error {
 	return c.Next()
 }
 
+func uniqueSlug(base string, excludeID string) string {
+	if database.DB == nil { return base }
+	ctx := context.Background()
+	slug := base
+	for i := 0; ; i++ {
+		var exists int
+		q := `SELECT COUNT(*) FROM products WHERE slug=$1`
+		args := []interface{}{slug}
+		if excludeID != "" {
+			q += ` AND id!=$2::uuid`
+			args = append(args, excludeID)
+		}
+		database.DB.QueryRow(ctx, q, args...).Scan(&exists)
+		if exists == 0 { return slug }
+		slug = fmt.Sprintf("%s-%d", base, i+2)
+	}
+}
+
 func main() {
 	godotenv.Load()
 
@@ -192,9 +209,12 @@ func main() {
 		fixProductData()
 	}
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		BodyLimit: 15 * 1024 * 1024,
+	})
 
 	app.Use(cors.New())
+	app.Use(handlers.SecurityHeaders)
 
 	app.Get("/*", static.New("./public", static.Config{
 		CacheDuration: 10 * time.Second,
@@ -213,7 +233,7 @@ func main() {
 
 	admin := api.Group("/admin")
 
-	admin.Post("/login", func(c fiber.Ctx) error {
+	admin.Post("/login", handlers.RateLimit(5, 1*time.Minute), func(c fiber.Ctx) error {
 		email := c.FormValue("email")
 		pass := c.FormValue("password")
 		if email == os.Getenv("ADMIN_USER") && pass == os.Getenv("ADMIN_PASS") {
@@ -308,7 +328,7 @@ func main() {
 		body := struct {
 			Name,Description,ShortDescription,Ingredients,HowToUse,SKU,Barcode,BrandID,CategoryID,Sections string
 			Price,CompareAtPrice,CostPrice int64; Stock,LowStockThreshold int; WeightGrams float64
-			IsActive,IsFeatured bool; ImageURLs []string
+			IsActive,IsFeatured bool; ImageURLs []string `json:"image_urls"`
 		}{}
 		if err := json.Unmarshal(c.Body(), &body); err != nil { return c.Status(400).JSON(fiber.Map{"error": "invalid body"}) }
 		if body.Name == "" { return c.Status(400).JSON(fiber.Map{"error": "name required"}) }
@@ -318,6 +338,7 @@ func main() {
 		slug = strings.NewReplacer("--", "-", "'", "", "\"", "", "(", "", ")", "").Replace(slug)
 		slug = strings.Trim(slug, "-")
 		if slug == "" { slug = "product" }
+		slug = uniqueSlug(slug, "")
 
 		// Build sections JSON based on which sections are enabled
 		secMap := fiber.Map{}
@@ -356,13 +377,15 @@ func main() {
 		body := struct {
 			Name,Description,ShortDescription,Ingredients,HowToUse,SKU,Barcode,BrandID,CategoryID,Sections string
 			Price,CompareAtPrice,CostPrice int64; Stock,LowStockThreshold int; WeightGrams float64
-			IsActive,IsFeatured bool; ImageURLs []string
+			IsActive,IsFeatured bool; ImageURLs []string `json:"image_urls"`
 		}{}
 		if err := json.Unmarshal(c.Body(), &body); err != nil { return c.Status(400).JSON(fiber.Map{"error": "invalid body"}) }
 		ctx := context.Background()
 		slug := strings.ToLower(strings.ReplaceAll(body.Name, " ", "-"))
 		slug = strings.NewReplacer("--", "-", "'", "", "\"", "", "(", "", ")", "").Replace(slug)
 		slug = strings.Trim(slug, "-")
+		if slug == "" { slug = "product" }
+		slug = uniqueSlug(slug, c.Params("id"))
 
 		var bid, cid *string
 		if body.BrandID != "" { bid = &body.BrandID }
@@ -376,12 +399,68 @@ func main() {
 
 		handlers.CheckLowStock()
 
-		// Replace images: delete existing, insert new
+		// Get old image URLs before replacing
+		oldImages := []string{}
+		orows, _ := database.DB.Query(ctx, "SELECT url FROM product_images WHERE product_id=$1", c.Params("id"))
+		if orows != nil {
+			defer orows.Close()
+			for orows.Next() { var u string; orows.Scan(&u); oldImages = append(oldImages, u) }
+		}
+
+		// Replace DB rows
 		database.DB.Exec(ctx, "DELETE FROM product_images WHERE product_id=$1", c.Params("id"))
 		for i, url := range body.ImageURLs {
 			database.DB.Exec(ctx, "INSERT INTO product_images (product_id,url,alt,sort_order) VALUES ($1,$2,$3,$4)", c.Params("id"), url, body.Name, i)
 		}
+
+		// Delete orphaned images from storage (old images not in new set)
+		newSet := make(map[string]bool)
+		for _, u := range body.ImageURLs { newSet[u] = true }
+		for _, old := range oldImages {
+			if !newSet[old] { handlers.DeleteSupabaseObject(old) }
+		}
+
 		return c.JSON(fiber.Map{"success": true, "slug": slug})
+	})
+
+	admin.Patch("/products/:id/status", func(c fiber.Ctx) error {
+		if database.DB == nil { return c.Status(503).JSON(fiber.Map{"error": "db not connected"}) }
+		body := struct {
+			IsActive   *bool `json:"is_active"`
+			IsFeatured *bool `json:"is_featured"`
+		}{}
+		if err := json.Unmarshal(c.Body(), &body); err != nil { return c.Status(400).JSON(fiber.Map{"error": "invalid body"}) }
+		ctx := context.Background()
+		if body.IsActive != nil {
+			database.DB.Exec(ctx, `UPDATE products SET is_active=$1, updated_at=now() WHERE id=$2::uuid`, *body.IsActive, c.Params("id"))
+		}
+		if body.IsFeatured != nil {
+			database.DB.Exec(ctx, `UPDATE products SET is_featured=$1, updated_at=now() WHERE id=$2::uuid`, *body.IsFeatured, c.Params("id"))
+		}
+		return c.JSON(fiber.Map{"success": true})
+	})
+
+	admin.Delete("/products/:id", func(c fiber.Ctx) error {
+		if database.DB == nil { return c.Status(503).JSON(fiber.Map{"error": "db not connected"}) }
+		ctx := context.Background()
+		pid := c.Params("id")
+
+		var exists int
+		database.DB.QueryRow(ctx, `SELECT COUNT(*) FROM order_items WHERE product_id=$1`, pid).Scan(&exists)
+		if exists > 0 {
+			tag, err := database.DB.Exec(ctx, `UPDATE products SET is_active=false, updated_at=now() WHERE id=$1::uuid`, pid)
+			if err != nil { return c.Status(500).JSON(fiber.Map{"error": err.Error()}) }
+			if tag.RowsAffected() == 0 { return c.Status(404).JSON(fiber.Map{"error": "not found"}) }
+			return c.JSON(fiber.Map{"success": true, "archived": true, "message": "Product has order history — archived instead of deleted"})
+		}
+
+		handlers.DeleteProductImages(pid)
+		database.DB.Exec(ctx, `DELETE FROM product_images WHERE product_id=$1`, pid)
+		database.DB.Exec(ctx, `DELETE FROM product_variants WHERE product_id=$1`, pid)
+		tag, err := database.DB.Exec(ctx, `DELETE FROM products WHERE id=$1::uuid`, pid)
+		if err != nil { return c.Status(500).JSON(fiber.Map{"error": err.Error()}) }
+		if tag.RowsAffected() == 0 { return c.Status(404).JSON(fiber.Map{"error": "not found"}) }
+		return c.JSON(fiber.Map{"success": true, "message": "Product deleted"})
 	})
 
 	admin.Post("/upload", func(c fiber.Ctx) error {
@@ -394,31 +473,28 @@ func main() {
 		data, err := io.ReadAll(src)
 		if err != nil { return c.Status(500).JSON(fiber.Map{"error": "cannot read"}) }
 
-		ext := ""
-		if idx := strings.LastIndex(file.Filename, "."); idx >= 0 { ext = file.Filename[idx:] }
-		objectName := fmt.Sprintf("products/%d%s", time.Now().UnixNano(), ext)
-
-		supabaseURL := os.Getenv("SUPABASE_URL")
-		serviceRole := os.Getenv("SUPABASE_SERVICE_ROLE")
-		bucket := "products"
-		uploadURL := fmt.Sprintf("%s/storage/v1/object/%s/%s", supabaseURL, bucket, objectName)
-
-		req, _ := http.NewRequest("POST", uploadURL, bytes.NewReader(data))
-		req.Header.Set("Authorization", "Bearer "+serviceRole)
-		req.Header.Set("Content-Type", file.Header.Get("Content-Type"))
-
-		client := &http.Client{Timeout: 30 * time.Second}
-		resp, err := client.Do(req)
-		if err != nil { return c.Status(500).JSON(fiber.Map{"error": "upload failed: " + err.Error()}) }
-		defer resp.Body.Close()
-
-		if resp.StatusCode >= 300 {
-			respBody, _ := io.ReadAll(resp.Body)
-			return c.Status(500).JSON(fiber.Map{"error": fmt.Sprintf("supabase error %d: %s", resp.StatusCode, string(respBody))})
+		if err := handlers.ValidateUpload(data, file.Filename); err != nil {
+			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
 
-		publicURL := fmt.Sprintf("%s/storage/v1/object/public/%s/%s", supabaseURL, bucket, objectName)
-		return c.JSON(fiber.Map{"success": true, "url": publicURL})
+		sizes, err := handlers.ProcessImage(data, file.Filename)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "image processing failed: " + err.Error()})
+		}
+
+		urls, err := handlers.UploadImages(sizes, file.Filename)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "upload failed: " + err.Error()})
+		}
+
+		return c.JSON(fiber.Map{
+			"success":  true,
+			"url":      urls["card"],
+			"thumb":    urls["thumb"],
+			"card":     urls["card"],
+			"detail":   urls["detail"],
+			"original": urls["original"],
+		})
 	})
 
 	// Store info (public) — reads from DB directly (no cache to avoid stale images)
@@ -575,18 +651,27 @@ func main() {
 		if database.DB == nil { return c.Status(503).JSON(fiber.Map{"error": "db not connected"}) }
 		ctx := context.Background()
 		cat := c.Query("category")
+		page, _ := strconv.Atoi(c.Query("page", "1"))
+		limit, _ := strconv.Atoi(c.Query("limit", "24"))
+		if page < 1 { page = 1 }
+		if limit < 1 { limit = 24 }
+		if limit > 50 { limit = 50 }
+		offset := (page - 1) * limit
+
 		where := "WHERE p.is_active=true"
-		if cat != "" { where += " AND c.slug=$1" }
-		q := `SELECT p.id,p.name,p.slug,p.price,COALESCE(p.compare_at_price,0),COALESCE(ROUND(AVG(r.rating),1),0),COUNT(r.id),COALESCE(c.name,''),COALESCE(c.slug,''),COALESCE(b.name,''),COALESCE((SELECT url FROM product_images WHERE product_id=p.id ORDER BY sort_order LIMIT 1),'') FROM products p LEFT JOIN categories c ON c.id=p.category_id LEFT JOIN brands b ON b.id=p.brand_id LEFT JOIN reviews r ON r.product_id=p.id ` + where + ` GROUP BY p.id,c.name,c.slug,b.name ORDER BY p.created_at DESC`
-		var rows interface{ Close(); Next() bool; Scan(...interface{}) error }
-		var err error
-		if cat != "" {
-			r, e := database.DB.Query(ctx, q, cat)
-			rows, err = r, e
-		} else {
-			r, e := database.DB.Query(ctx, q)
-			rows, err = r, e
-		}
+		args := []interface{}{}
+		aidx := 0
+		if cat != "" { aidx++; where += " AND c.slug=$" + strconv.Itoa(aidx); args = append(args, cat) }
+
+		var total int64
+		countQ := "SELECT COUNT(*) FROM products p LEFT JOIN categories c ON c.id=p.category_id " + where
+		database.DB.QueryRow(ctx, countQ, args...).Scan(&total)
+
+		aidx++; limitArg := aidx
+		aidx++; offsetArg := aidx
+		args = append(args, limit, offset)
+		q := `SELECT p.id,p.name,p.slug,p.price,COALESCE(p.compare_at_price,0),COALESCE(ROUND(AVG(r.rating),1),0),COUNT(r.id),COALESCE(c.name,''),COALESCE(c.slug,''),COALESCE(b.name,''),COALESCE((SELECT url FROM product_images WHERE product_id=p.id ORDER BY sort_order LIMIT 1),'') FROM products p LEFT JOIN categories c ON c.id=p.category_id LEFT JOIN brands b ON b.id=p.brand_id LEFT JOIN reviews r ON r.product_id=p.id ` + where + ` GROUP BY p.id,c.name,c.slug,b.name ORDER BY p.created_at DESC LIMIT $` + strconv.Itoa(limitArg) + ` OFFSET $` + strconv.Itoa(offsetArg)
+		rows, err := database.DB.Query(ctx, q, args...)
 		if err != nil { return c.Status(500).JSON(fiber.Map{"error": err.Error()}) }
 		defer rows.Close()
 		type LP struct {
@@ -608,7 +693,13 @@ func main() {
 			rows.Scan(&p.ID,&p.Name,&p.Slug,&p.Price,&p.CompareAtPrice,&p.Rating,&p.Reviews,&p.Category,&p.CategorySlug,&p.Brand,&p.Image)
 			prods = append(prods, p)
 		}
-		return c.JSON(prods)
+		return c.JSON(fiber.Map{
+			"products": prods,
+			"total":    total,
+			"page":     page,
+			"limit":    limit,
+			"pages":    (total + int64(limit) - 1) / int64(limit),
+		})
 	})
 
 	// Public packs listing
@@ -694,8 +785,8 @@ func main() {
 		return c.JSON(fiber.Map{"success": true, "message": "Added to cart"})
 	})
 
-	// Create order
-	api.Post("/orders", func(c fiber.Ctx) error {
+	// Create order (rate limited: 10/min per IP)
+	api.Post("/orders", handlers.RateLimit(10, 1*time.Minute), func(c fiber.Ctx) error {
 		var req OrderRequest
 		if err := c.Bind().JSON(&req); err != nil {
 			return c.Status(400).JSON(fiber.Map{"success": false, "message": "Invalid request body"})
@@ -703,6 +794,10 @@ func main() {
 
 		if req.FirstName == "" || req.LastName == "" || req.Phone == "" || req.Address == "" || req.Wilaya == "" || req.City == "" {
 			return c.Status(400).JSON(fiber.Map{"success": false, "message": "Missing required fields"})
+		}
+
+		if len(req.Items) == 0 {
+			return c.Status(400).JSON(fiber.Map{"success": false, "message": "No items in order"})
 		}
 
 		if req.PaymentMethod == "" {
@@ -720,19 +815,82 @@ func main() {
 		}
 		defer tx.Rollback(ctx)
 
+		// Server-side price validation + stock check
+		var serverSubtotal int64
+		type validatedItem struct {
+			ProductID   string
+			ProductName string
+			Brand       string
+			Variant     string
+			ImageURL    string
+			Price       int64
+			Quantity    int
+		}
+		validated := make([]validatedItem, 0, len(req.Items))
+
+		for _, item := range req.Items {
+			var dbPrice int64
+			var dbStock int
+			var dbIsActive bool
+			var dbName string
+			err := tx.QueryRow(ctx,
+				`SELECT price, stock, is_active, name FROM products WHERE id=$1::uuid FOR UPDATE`,
+				item.ProductID,
+			).Scan(&dbPrice, &dbStock, &dbName, &dbIsActive)
+			if err != nil {
+				return c.Status(400).JSON(fiber.Map{"success": false, "message": "Product not found: " + item.ProductID})
+			}
+			if !dbIsActive {
+				return c.Status(400).JSON(fiber.Map{"success": false, "message": "Product not available: " + dbName})
+			}
+			if item.Quantity < 1 {
+				return c.Status(400).JSON(fiber.Map{"success": false, "message": "Invalid quantity for: " + dbName})
+			}
+			if dbStock < item.Quantity {
+				return c.Status(400).JSON(fiber.Map{"success": false, "message": "Insufficient stock for: " + dbName + " (available: " + strconv.Itoa(dbStock) + ")"})
+			}
+			// Use server price, not client price
+			serverSubtotal += dbPrice * int64(item.Quantity)
+			validated = append(validated, validatedItem{
+				ProductID:   item.ProductID,
+				ProductName: dbName,
+				Brand:       item.Brand,
+				Variant:     item.Variant,
+				ImageURL:    item.ImageURL,
+				Price:       dbPrice,
+				Quantity:    item.Quantity,
+			})
+		}
+
+		// Calculate totals server-side
+		serverShipping := req.ShippingCost
+		serverDiscount := req.Discount
+		if serverShipping < 0 {
+			serverShipping = 0
+		}
+		if serverDiscount < 0 {
+			serverDiscount = 0
+		}
+		if serverDiscount > serverSubtotal {
+			serverDiscount = serverSubtotal
+		}
+		serverTotal := serverSubtotal + serverShipping - serverDiscount
+
+		// Insert order with server-calculated amounts
 		var orderID string
 		err = tx.QueryRow(ctx,
 			`INSERT INTO orders (first_name, last_name, phone, email, address, wilaya, city, notes, payment_method, subtotal, shipping_cost, discount, total)
 			 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) RETURNING id`,
 			req.FirstName, req.LastName, req.Phone, req.Email,
 			req.Address, req.Wilaya, req.City, req.Notes,
-			req.PaymentMethod, req.Subtotal, req.ShippingCost, req.Discount, req.Total,
+			req.PaymentMethod, serverSubtotal, serverShipping, serverDiscount, serverTotal,
 		).Scan(&orderID)
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"success": false, "message": "Failed to create order"})
 		}
 
-		for _, item := range req.Items {
+		// Insert order items + decrement stock + update product counters
+		for _, item := range validated {
 			_, err := tx.Exec(ctx,
 				`INSERT INTO order_items (order_id, product_id, product_name, product_brand, variant, image_url, price, quantity)
 				 VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
@@ -741,6 +899,48 @@ func main() {
 			if err != nil {
 				return c.Status(500).JSON(fiber.Map{"success": false, "message": "Failed to save order items"})
 			}
+
+			// Decrement stock
+			_, err = tx.Exec(ctx,
+				`UPDATE products SET stock=stock-$1, updated_at=now() WHERE id=$2::uuid`,
+				item.Quantity, item.ProductID,
+			)
+			if err != nil {
+				return c.Status(500).JSON(fiber.Map{"success": false, "message": "Failed to update stock"})
+			}
+
+			// Update product denormalized counters
+			itemRevenue := item.Price * int64(item.Quantity)
+			_, err = tx.Exec(ctx,
+				`UPDATE products SET orders_count=orders_count+1, revenue=revenue+$1, updated_at=now() WHERE id=$2::uuid`,
+				itemRevenue, item.ProductID,
+			)
+			if err != nil {
+				return c.Status(500).JSON(fiber.Map{"success": false, "message": "Failed to update product stats"})
+			}
+		}
+
+		// Upsert customer record
+		var custExists int
+		tx.QueryRow(ctx, `SELECT COUNT(*) FROM customers WHERE phone=$1`, req.Phone).Scan(&custExists)
+		if custExists == 0 {
+			// Create new customer
+			_, err = tx.Exec(ctx,
+				`INSERT INTO customers (first_name,last_name,phone,email,total_orders,delivered_orders,lifetime_value,average_basket,last_order_at)
+				 VALUES ($1,$2,$3,$4,1,0,$5,$5,now())`,
+				req.FirstName, req.LastName, req.Phone, req.Email, serverTotal,
+			)
+		} else {
+			// Update existing customer
+			_, err = tx.Exec(ctx,
+				`UPDATE customers SET total_orders=total_orders+1, lifetime_value=lifetime_value+$1,
+				 average_basket=(lifetime_value+$1)/(total_orders+1), last_order_at=now(), updated_at=now()
+				 WHERE phone=$2`,
+				serverTotal, req.Phone,
+			)
+		}
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"success": false, "message": "Failed to update customer stats"})
 		}
 
 		if err := tx.Commit(ctx); err != nil {
@@ -784,6 +984,163 @@ func main() {
 		}
 
 		return c.JSON(fiber.Map{"success": true, "order": order})
+	})
+
+	// Update order status (admin)
+	admin.Put("/orders/:id/status", func(c fiber.Ctx) error {
+		if database.DB == nil {
+			return c.Status(503).JSON(fiber.Map{"success": false, "message": "Database not connected"})
+		}
+		orderID := c.Params("id")
+		body := struct {
+			Status string `json:"status"`
+		}{}
+		if err := json.Unmarshal(c.Body(), &body); err != nil || body.Status == "" {
+			return c.Status(400).JSON(fiber.Map{"success": false, "message": "status required"})
+		}
+
+		validStatuses := map[string]bool{
+			"pending": true, "confirmed": true, "shipped": true,
+			"delivered": true, "cancelled": true, "returned": true, "refunded": true,
+		}
+		if !validStatuses[body.Status] {
+			return c.Status(400).JSON(fiber.Map{"success": false, "message": "invalid status"})
+		}
+
+		ctx := context.Background()
+		tx, err := database.DB.Begin(ctx)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"success": false, "message": "Failed to start transaction"})
+		}
+		defer tx.Rollback(ctx)
+
+		// Fetch current order
+		var currentStatus, phone string
+		var orderTotal int64
+		err = tx.QueryRow(ctx, `SELECT status, phone, total FROM orders WHERE id=$1::uuid FOR UPDATE`, orderID).Scan(&currentStatus, &phone, &orderTotal)
+		if err != nil {
+			return c.Status(404).JSON(fiber.Map{"success": false, "message": "Order not found"})
+		}
+
+		// Validate transition
+		allowed := map[string][]string{
+			"pending":   {"confirmed", "cancelled"},
+			"confirmed": {"shipped", "cancelled"},
+			"shipped":   {"delivered", "returned"},
+			"delivered": {"returned", "refunded"},
+			"returned":  {"refunded"},
+		}
+		valid := false
+		for _, s := range allowed[currentStatus] {
+			if s == body.Status { valid = true; break }
+		}
+		if !valid {
+			return c.Status(400).JSON(fiber.Map{"success": false, "message": "cannot transition from " + currentStatus + " to " + body.Status})
+		}
+
+		// Build timestamp updates
+		statusUpdate := ""
+		switch body.Status {
+		case "shipped":
+			statusUpdate = ", shipped_at=now()"
+		case "delivered":
+			statusUpdate = ", delivered_at=now()"
+		}
+
+		// On cancel or return: restore stock + adjust product counters
+		if body.Status == "cancelled" || body.Status == "returned" {
+			irows, err := tx.Query(ctx, `SELECT product_id, price, quantity FROM order_items WHERE order_id=$1::uuid`, orderID)
+			if err != nil {
+				return c.Status(500).JSON(fiber.Map{"success": false, "message": "Failed to read order items"})
+			}
+			defer irows.Close()
+
+			type itemData struct {
+				ProductID string
+				Price     int64
+				Quantity  int
+			}
+			items := []itemData{}
+			for irows.Next() {
+				var it itemData
+				irows.Scan(&it.ProductID, &it.Price, &it.Quantity)
+				items = append(items, it)
+			}
+
+			for _, it := range items {
+				// Restore stock (lock product row to prevent race)
+				_, err := tx.Exec(ctx,
+					`UPDATE products SET stock=stock+$1, updated_at=now() WHERE id=$2::uuid FOR UPDATE`,
+					it.Quantity, it.ProductID,
+				)
+				if err != nil {
+					return c.Status(500).JSON(fiber.Map{"success": false, "message": "Failed to restore stock"})
+				}
+
+				// Decrement product counters
+				itemRevenue := it.Price * int64(it.Quantity)
+				_, err = tx.Exec(ctx,
+					`UPDATE products SET
+						orders_count=GREATEST(orders_count-1,0),
+						revenue=GREATEST(revenue-$1,0),
+						return_count=return_count+$2,
+						updated_at=now()
+					 WHERE id=$3::uuid`,
+					itemRevenue, it.Quantity, it.ProductID,
+				)
+				if err != nil {
+					return c.Status(500).JSON(fiber.Map{"success": false, "message": "Failed to update product stats"})
+				}
+			}
+
+			// Adjust customer stats
+			if body.Status == "cancelled" {
+				_, err = tx.Exec(ctx,
+					`UPDATE customers SET
+						total_orders=GREATEST(total_orders-1,0),
+						lifetime_value=GREATEST(lifetime_value-$1,0),
+						cancelled_orders=cancelled_orders+1,
+						updated_at=now()
+					 WHERE phone=$2`,
+					orderTotal, phone,
+				)
+			} else {
+				_, err = tx.Exec(ctx,
+					`UPDATE customers SET
+						returned_orders=returned_orders+1,
+						updated_at=now()
+					 WHERE phone=$1`,
+					phone,
+				)
+			}
+			if err != nil {
+				return c.Status(500).JSON(fiber.Map{"success": false, "message": "Failed to update customer stats"})
+			}
+		}
+
+		// On deliver: update customer delivered count
+		if body.Status == "delivered" {
+			_, err = tx.Exec(ctx,
+				`UPDATE customers SET delivered_orders=delivered_orders+1, updated_at=now() WHERE phone=$1`, phone)
+			if err != nil {
+				return c.Status(500).JSON(fiber.Map{"success": false, "message": "Failed to update customer stats"})
+			}
+		}
+
+		// Update order status
+		_, err = tx.Exec(ctx,
+			`UPDATE orders SET status=$1, updated_at=now()`+statusUpdate+` WHERE id=$2::uuid`,
+			body.Status, orderID,
+		)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"success": false, "message": "Failed to update order"})
+		}
+
+		if err := tx.Commit(ctx); err != nil {
+			return c.Status(500).JSON(fiber.Map{"success": false, "message": "Failed to commit"})
+		}
+
+		return c.JSON(fiber.Map{"success": true, "message": "Order status updated to " + body.Status})
 	})
 
 	port := os.Getenv("PORT")

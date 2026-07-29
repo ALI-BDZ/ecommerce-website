@@ -32,11 +32,7 @@
     .navbar-icon-btn:hover{background:rgba(255,255,255,0.12);transform:translateY(-1px)}
     .navbar.scrolled .navbar-icon-btn{color:var(--text)}.navbar.scrolled .navbar-icon-btn:hover{background:var(--paper-cool)}
     .cart-count{position:absolute;top:2px;right:2px;background:var(--accent);color:var(--white);font-size:9px;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--paper);}
-    .search-panel{position:absolute;top:52px;right:-8px;width:340px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-xl);padding:var(--space-4);z-index:50;opacity:0;transform:translateY(8px) scale(0.98);transition:opacity var(--duration-fast),transform var(--duration-fast);pointer-events:none;}
-    .search-panel.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
-    .search-input{width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:14px;background:var(--paper-warm);outline:none;transition:border-color var(--duration-fast),box-shadow var(--duration-fast);font-family:inherit;}
-    .search-input:focus{border-color:var(--accent-light);box-shadow:0 0 0 4px var(--accent-glow)}
-    .search-results{margin-top:var(--space-3);max-height:300px;overflow-y:auto}
+
 
     /* ─── ABOUT PAGE ─── */
     .about-page{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden}
@@ -114,16 +110,7 @@
         <a href="/deals.html" class="navbar-link">Offers</a>
         <a href="/about.html" class="navbar-link active">About Us</a>
       </nav>
-      <div class="navbar-actions" x-data="{ searchOpen: false }" @keydown.escape.window="searchOpen = false">
-        <div class="search-wrap">
-          <button class="navbar-icon-btn" @click="searchOpen = !searchOpen" aria-label="Search">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          </button>
-          <div class="search-panel" :class="{ open: searchOpen }" @click.outside="searchOpen = false">
-            <input type="search" placeholder="Search products..." class="search-input"/>
-            <div id="search-results" class="search-results"></div>
-          </div>
-        </div>
+      <div class="navbar-actions">
         <a href="/cart" class="navbar-icon-btn" aria-label="Cart">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
           <span class="cart-count" x-text="$store.cart.count" x-show="$store.cart.count > 0" x-cloak>0</span>

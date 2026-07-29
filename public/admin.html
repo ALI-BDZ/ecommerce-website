@@ -165,6 +165,28 @@
     .filter-control .arrow.open{transform:rotate(180deg)}
     .filter-control .status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:block}
     .filter-control .sep{width:1px;height:20px;background:var(--border);flex-shrink:0}
+    .filter-trigger{display:flex;align-items:center;gap:var(--s2);height:36px;padding:0 var(--s4);border-radius:var(--r-md);border:1px solid var(--border);background:var(--bg-card);font-size:12px;font-weight:500;font-family:inherit;color:var(--text);cursor:pointer;transition:all var(--fast);position:relative;white-space:nowrap;min-width:120px}
+    .filter-trigger:hover{border-color:var(--accent);background:var(--bg-alt)}
+    .filter-trigger.open{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,58,237,.1);background:var(--bg-card)}
+    .filter-trigger .val{flex:1;text-align:left}
+    .filter-trigger .placeholder{color:var(--text-muted)}
+    .filter-trigger .arrow{display:flex;align-items:center;transition:transform .25s cubic-bezier(.16,1,.3,1);color:var(--text-muted)}
+    .filter-trigger.open .arrow{transform:rotate(180deg)}
+    .filter-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;min-width:100%;background:var(--bg-card);border-radius:var(--r-md);box-shadow:0 12px 48px rgba(0,0,0,.14),0 0 0 1px rgba(0,0,0,.04);z-index:200;padding:var(--s1);display:none;max-height:260px;overflow-y:auto;transform-origin:top center}
+    .filter-dropdown.open{display:block;animation:dropReveal .2s cubic-bezier(.16,1,.3,1) both}
+    .filter-dropdown .opt{display:flex;align-items:center;gap:var(--s2);padding:9px 12px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:var(--text);cursor:pointer;transition:all .15s;border:none;background:none;font-family:inherit;width:100%;text-align:left}
+    .filter-dropdown .opt:hover{background:var(--bg-alt);transform:translateX(4px)}
+    .filter-dropdown .opt.selected{background:var(--accent-soft);color:var(--accent);font-weight:600}
+    .filter-dropdown .opt .opt-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .filter-dropdown .opt .check{color:var(--accent);margin-left:auto;opacity:0;transition:opacity .15s;display:flex}
+    .filter-dropdown .opt.selected .check{opacity:1}
+    .prod-card .card-actions{display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s2);opacity:0;transform:translateY(4px);transition:all .25s cubic-bezier(.16,1,.3,1)}
+    .prod-card:hover .card-actions{opacity:1;transform:translateY(0)}
+    .card-toggle-btn{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;border:1px solid transparent;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;height:28px;flex-shrink:0}
+    .card-toggle-btn.active{background:var(--green-soft);color:#059669;border-color:rgba(5,150,105,.2)}
+    .card-toggle-btn.draft{background:var(--orange-soft);color:#d97706;border-color:rgba(217,119,6,.2)}
+    .card-toggle-btn:hover{transform:scale(1.05);box-shadow:0 2px 6px rgba(0,0,0,.1)}
+    .card-toggle-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
 
     .dropdown-menu{position:absolute;top:calc(100% + 8px);left:0;min-width:210px;background:var(--bg-card);border-radius:var(--r-md);box-shadow:0 12px 48px rgba(0,0,0,.14),0 0 0 1px rgba(0,0,0,.04);z-index:200;padding:var(--s1);display:none;overflow:hidden;transform-origin:top left}
     .dropdown-menu.open{display:block;animation:dropReveal .25s cubic-bezier(.16,1,.3,1) both}
@@ -210,11 +232,11 @@
     .form-block .field-sm{height:36px;font-size:12px}
     .form-block select.field{cursor:pointer}
     .field-dropdown{position:relative}
-    .field-dropdown .trigger{width:100%;height:40px;padding:0 var(--s3);border-radius:var(--r-md);border:1px solid var(--border);font-size:13px;font-family:inherit;background:var(--bg-alt);color:var(--text);outline:none;transition:all var(--fast);cursor:pointer;display:flex;align-items:center;gap:var(--s2);-webkit-appearance:none;appearance:none}
+    .field-dropdown .trigger{width:100%;height:42px;padding:0 var(--s4);border-radius:var(--r-md);border:1px solid var(--border);font-size:13px;font-weight:500;font-family:inherit;background:var(--bg-card);color:var(--text);outline:none;transition:all var(--fast);cursor:pointer;display:flex;align-items:center;gap:var(--s2);-webkit-appearance:none;appearance:none}
     .field-dropdown .trigger:hover{border-color:var(--text-subtle)}
     .field-dropdown .trigger:focus,.field-dropdown.open .trigger{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,58,237,.1);background:var(--bg-card)}
     .field-dropdown .trigger .val{flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .field-dropdown .trigger .placeholder{color:var(--text-subtle)}
+    .field-dropdown .trigger .placeholder{color:var(--text-muted)}
     .field-dropdown .trigger .arrow{display:flex;align-items:center;transition:transform .25s cubic-bezier(.16,1,.3,1);color:var(--text-muted);flex-shrink:0}
     .field-dropdown.open .trigger .arrow{transform:rotate(180deg)}
     .field-dropdown .menu{position:absolute;top:calc(100% + 4px);left:0;right:0;min-width:0;background:var(--bg-card);border-radius:var(--r-md);box-shadow:0 12px 48px rgba(0,0,0,.14),0 0 0 1px rgba(0,0,0,.04);z-index:300;padding:var(--s1);display:none;max-height:240px;overflow-y:auto;transform-origin:top center}
@@ -255,6 +277,7 @@
 
     .btn-primary{height:38px;padding:0 var(--s5);border-radius:999px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all var(--fast);display:inline-flex;align-items:center;gap:var(--s2)}
     .btn-primary:hover{opacity:.9}
+    .btn-primary:disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
     .btn-primary.loading .btn-text{opacity:.5}
     .btn-primary .spinner{display:none;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
     .btn-primary.loading .spinner{display:inline-block}
@@ -264,7 +287,8 @@
     .upload-zone-sm:hover{background:var(--border);color:var(--text)}
     @keyframes spin{to{transform:rotate(360deg)}}
     .btn-secondary{height:38px;padding:0 var(--s5);border-radius:999px;border:1px solid var(--border);background:var(--bg-card);color:var(--text);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all var(--fast)}
-    .btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+    .btn-secondary:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+    .btn-secondary:active{transform:translateY(0)}
     .empty-state svg{width:48px;height:48px;margin-bottom:var(--s4);opacity:.3}
     .empty-state p{font-size:14px}
 
@@ -357,6 +381,8 @@
     .pw-badge-draft{background:var(--orange-soft);color:#d97706}
     .pw-badge-archived{background:var(--red-soft);color:#dc2626}
     .pw-badge-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+    .pw-toggle-btn{border:none;cursor:pointer;transition:all .2s;font-family:inherit}
+    .pw-toggle-btn:hover{transform:scale(1.05);box-shadow:0 2px 8px rgba(0,0,0,.12)}
     .pw-id{font-size:11px;color:var(--text-subtle);font-weight:500}
     .pw-body{display:grid;grid-template-columns:1fr 340px;gap:var(--s5);padding-top:var(--s5);animation:fadeIn .3s}
     .pw-main{min-width:0;display:flex;flex-direction:column;gap:var(--s4)}
@@ -814,12 +840,48 @@
       <!-- ===== PRODUCTS ===== -->
       <template x-if="page === 'products' && !prodDetail"><div id="page-products">
         
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)">
-          <div class="filter-control" style="cursor:text">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4);flex-wrap:wrap;gap:var(--s3)">
+          <div class="filter-control" style="cursor:text;flex:1;min-width:200px">
             <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" placeholder="Search products..." x-model="prodSearch" @input.debounce.500ms="loadProducts()"/>
           </div>
-          <button class="btn-primary" style="width:auto;height:38px;padding:0 var(--s5);font-size:13px;text-transform:none;letter-spacing:0" @click="openProductForm()">+ New Product</button>
+          <div style="display:flex;gap:var(--s2);flex-wrap:wrap">
+            <div class="field-dropdown" style="min-width:140px" :class="{ open: prodStatusOpen }" @click.outside="prodStatusOpen=false">
+              <button class="trigger" @click="prodStatusOpen=!prodStatusOpen" type="button">
+                <span class="val" :class="{ placeholder: !prodStatusFilter }" x-text="prodStatusFilter==='active'?'Active':prodStatusFilter==='draft'?'Draft':'All Status'"></span>
+                <span class="arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></span>
+              </button>
+              <div class="menu">
+                <button class="opt" :class="{ selected: !prodStatusFilter }" @click="prodStatusFilter='';prodStatusOpen=false;loadProducts()" type="button">
+                  <span class="opt-label">All Status</span>
+                  <span class="check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+                </button>
+                <button class="opt" :class="{ selected: prodStatusFilter==='active' }" @click="prodStatusFilter='active';prodStatusOpen=false;loadProducts()" type="button">
+                  <span class="opt-label">Active</span>
+                  <span class="check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+                </button>
+                <button class="opt" :class="{ selected: prodStatusFilter==='draft' }" @click="prodStatusFilter='draft';prodStatusOpen=false;loadProducts()" type="button">
+                  <span class="opt-label">Draft</span>
+                  <span class="check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+                </button>
+              </div>
+            </div>
+            <div class="field-dropdown" style="min-width:160px" :class="{ open: prodSortOpen }" @click.outside="prodSortOpen=false">
+              <button class="trigger" @click="prodSortOpen=!prodSortOpen" type="button">
+                <span class="val" :class="{ placeholder: !prodSortBy || prodSortBy==='newest' }" x-text="({newest:'Newest',oldest:'Oldest',price_asc:'Price: Low→High',price_desc:'Price: High→Low',name_asc:'Name: A→Z',name_desc:'Name: Z→A',stock_asc:'Stock: Low',stock_desc:'Stock: High'})[prodSortBy]||'Sort'"></span>
+                <span class="arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></span>
+              </button>
+              <div class="menu">
+                <template x-for="opt in [{val:'newest',label:'Newest'},{val:'oldest',label:'Oldest'},{val:'price_asc',label:'Price: Low → High'},{val:'price_desc',label:'Price: High → Low'},{val:'name_asc',label:'Name: A → Z'},{val:'name_desc',label:'Name: Z → A'},{val:'stock_asc',label:'Stock: Low'},{val:'stock_desc',label:'Stock: High'}]" :key="opt.val">
+                  <button class="opt" :class="{ selected: prodSortBy===opt.val }" @click="prodSortBy=opt.val;prodSortOpen=false;loadProducts()" type="button">
+                    <span class="opt-label" x-text="opt.label"></span>
+                    <span class="check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+                  </button>
+                </template>
+              </div>
+            </div>
+            <button class="btn-primary" style="width:auto;height:36px;padding:0 var(--s5);font-size:13px;text-transform:none;letter-spacing:0" @click="openProductForm()">+ New Product</button>
+          </div>
         </div>
         <div x-show="!prodLoading" class="prod-grid" id="products-grid"></div>
         <div x-show="prodLoading" style="text-align:center;padding:var(--s8);color:var(--text-muted);font-size:14px">Loading...</div>
@@ -835,15 +897,16 @@
               Back
             </button>
             <div style="width:1px;height:20px;background:var(--border)"></div>
-            <span class="pw-badge" :class="detailForm.isActive?'pw-badge-published':'pw-badge-draft'">
+            <button class="pw-badge pw-toggle-btn" :class="detailForm.isActive?'pw-badge-published':'pw-badge-draft'" @click="toggleStatus()" title="Click to toggle status" type="button">
               <span class="pw-badge-dot"></span>
               <span x-text="detailForm.isActive?'Published':'Draft'"></span>
-            </span>
+            </button>
             <span class="pw-id" x-text="'#'+detailForm.id"></span>
           </div>
           <div class="pw-sticky-right">
-            <button class="btn-secondary" style="height:34px;padding:0 var(--s4);font-size:12px" @click="prodDetail=null;loadProducts()">Discard</button>
-            <button class="btn-primary" style="height:34px;padding:0 var(--s5);font-size:12px" :class="{ loading: saving }" @click="saveProductDetail()">
+            <button class="btn-secondary" style="height:34px;padding:0 var(--s4);font-size:12px;color:var(--red);border-color:var(--red)" @click="deleteProductDetail()">Delete</button>
+            <button class="btn-secondary" style="height:34px;padding:0 var(--s4);font-size:12px;opacity:0.5;pointer-events:none" :style="hasUnsaved?'opacity:1;pointer-events:auto':''" @click="revertProductDetail()">Discard</button>
+            <button class="btn-primary" style="height:34px;padding:0 var(--s5);font-size:12px" :class="{ loading: saving }" :disabled="!hasUnsaved" @click="saveProductDetail()">
               <span class="spinner"></span>
               <span class="btn-text" x-text="saving?'Saving...':'Save Changes'"></span>
             </button>
@@ -930,15 +993,23 @@
               <div class="pw-card-head"><h3>Product Image</h3></div>
               <div class="pw-card-body">
                 <div class="pw-img-main" @click="$refs.detailImgInput.click()">
-                  <img :src="detailImg || 'https://placehold.co/600x600/f5f5f6/0d0d0d?text=Product'" :alt="detailForm.name"/>
+                  <template x-if="!imgUploading">
+                    <img :src="detailImg || 'https://placehold.co/600x600/f5f5f6/0d0d0d?text=Product'" :alt="detailForm.name" @error="$event.target.src='https://placehold.co/600x600/f5f5f6/0d0d0d?text=No+Image'"/>
+                  </template>
+                  <template x-if="imgUploading">
+                    <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);font-size:13px;flex-direction:column;gap:var(--s2)">
+                      <div class="spinner" style="width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite"></div>
+                      <span>Uploading...</span>
+                    </div>
+                  </template>
                   <div class="pw-img-overlay">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                     <span>Replace Image</span>
                   </div>
-                  <input type="file" accept="image/*" x-ref="detailImgInput" @change="changeDetailImage($event)" class="pw-detail-input"/>
+                  <input type="file" accept="image/jpeg,image/png,image/webp" x-ref="detailImgInput" @change="changeDetailImage($event)" class="pw-detail-input"/>
                 </div>
                 <div class="pw-gallery" style="margin-top:var(--s3)" x-show="detailImg">
-                  <div class="pw-thumb"><img :src="detailImg" alt=""/></div>
+                  <div class="pw-thumb"><img :src="detailImg" alt="" @error="$event.target.parentElement.style.display='none'"/></div>
                 </div>
               </div>
             </div>
@@ -948,15 +1019,22 @@
               <div class="pw-card-head"><h3>Pricing</h3></div>
               <div class="pw-card-body">
                 <div class="pw-fld">
-                  <label>Selling Price</label>
+                  <label>Selling Price (DZD)</label>
                   <input class="pw-inp" type="number" x-model="detailForm.price" placeholder="9900"/>
                 </div>
                 <div class="pw-fld">
-                  <label>Compare-at Price</label>
-                  <input class="pw-inp pw-inp-sm" type="number" x-model="detailForm.comparePrice" placeholder="12000"/>
+                  <label>Cost Price (DZD)</label>
+                  <input class="pw-inp" type="number" x-model="detailForm.costPrice" placeholder="6000"/>
+                </div>
+                <div class="pw-fld">
+                  <label>Compare-at Price (DZD)</label>
+                  <input class="pw-inp" type="number" x-model="detailForm.comparePrice" placeholder="12000"/>
                 </div>
                 <div class="pw-fld" x-show="detailForm.comparePrice > 0">
                   <div class="pw-margin" x-text="'DA '+((detailForm.comparePrice||0)-(detailForm.price||0)).toLocaleString()+' savings'"></div>
+                </div>
+                <div class="pw-fld" x-show="detailForm.costPrice > 0 && detailForm.price > 0">
+                  <div class="pw-margin" x-text="'Margin: '+Math.round(((detailForm.price-detailForm.costPrice)/detailForm.price)*100)+'%'" style="color:var(--green)"></div>
                 </div>
               </div>
             </div>
@@ -978,7 +1056,33 @@
                 </div>
                 <div class="pw-fld">
                   <label>Low Stock Alert</label>
-                  <input class="pw-inp pw-inp-sm" type="number" x-model="detailForm.lowStock" placeholder="5"/>
+                  <input class="pw-inp" type="number" x-model="detailForm.lowStock" placeholder="5"/>
+                </div>
+                <div class="pw-fld">
+                  <label>Weight (kg)</label>
+                  <input class="pw-inp" type="number" step="0.01" x-model="detailForm.weight" placeholder="2.27"/>
+                </div>
+              </div>
+            </div>
+
+            <!-- Visibility -->
+            <div class="pw-card">
+              <div class="pw-card-head"><h3>Visibility</h3></div>
+              <div class="pw-card-body" style="padding:var(--s3) var(--s5)">
+                <div class="pw-section-row">
+                  <div>
+                    <span class="lbl">Status</span>
+                    <span class="desc">Published or draft</span>
+                  </div>
+                  <span class="pw-section-status" :class="detailForm.isActive?'on':'off'" x-text="detailForm.isActive?'ON':'OFF'" @click="toggleStatus()" style="cursor:pointer"></span>
+                  <button class="toggle" :class="{ active: detailForm.isActive }" @click="toggleStatus()" type="button"></button>
+                </div>
+                <div class="pw-section-row">
+                  <div>
+                    <span class="lbl">Featured</span>
+                    <span class="desc">Show on homepage</span>
+                  </div>
+                  <button class="toggle" :class="{ active: detailForm.isFeatured }" @click="toggleFeatured()" type="button"></button>
                 </div>
               </div>
             </div>
@@ -1005,14 +1109,18 @@
                     <span class="label">Price</span>
                   </div>
                   <div class="pw-health-row">
+                    <span class="icon" :class="detailForm.costPrice>0?'ok':'miss'" x-text="detailForm.costPrice>0?'&#10003;':'&#10007;'"></span>
+                    <span class="label">Cost Price</span>
+                  </div>
+                  <div class="pw-health-row">
                     <span class="icon" :class="detailForm.stock>0?'ok':'miss'" x-text="detailForm.stock>0?'&#10003;':'&#10007;'"></span>
                     <span class="label">In Stock</span>
                   </div>
                 </div>
                 <div class="pw-score-bar" style="margin-top:var(--s3)">
-                  <div class="pw-score-fill" :style="'width:'+Math.round((([detailImg,detailForm.description,detailForm.sku,detailForm.price>0,detailForm.stock>0].filter(Boolean).length)/5)*100)+'%'"></div>
+                  <div class="pw-score-fill" :style="'width:'+Math.round((([detailImg,detailForm.description,detailForm.sku,detailForm.price>0,detailForm.costPrice>0,detailForm.stock>0].filter(Boolean).length)/6)*100)+'%'"></div>
                 </div>
-                <div style="text-align:right;font-size:11px;font-weight:700;color:var(--accent);margin-top:4px" x-text="Math.round((([detailImg,detailForm.description,detailForm.sku,detailForm.price>0,detailForm.stock>0].filter(Boolean).length)/5)*100)+'% Complete'"></div>
+                <div style="text-align:right;font-size:11px;font-weight:700;color:var(--accent);margin-top:4px" x-text="Math.round((([detailImg,detailForm.description,detailForm.sku,detailForm.price>0,detailForm.costPrice>0,detailForm.stock>0].filter(Boolean).length)/6)*100)+'% Complete'"></div>
               </div>
             </div>
 
@@ -1022,21 +1130,15 @@
               <div class="pw-card-body">
                 <div class="pw-stat-grid">
                   <div class="pw-stat"><div class="v" x-text="detailForm.stock*detailForm.price>0?'DA '+Number(detailForm.stock*detailForm.price).toLocaleString():'--'"></div><div class="l">Inventory Value</div></div>
-                  <div class="pw-stat"><div class="v" x-text="detailForm.weight?detailForm.weight+'g':'--'"></div><div class="l">Weight</div></div>
+                  <div class="pw-stat"><div class="v" x-text="detailForm.stock*detailForm.costPrice>0?'DA '+Number(detailForm.stock*detailForm.costPrice).toLocaleString():'--'"></div><div class="l">Cost Value</div></div>
+                  <div class="pw-stat"><div class="v" x-text="detailForm.weight?detailForm.weight+'kg':'--'"></div><div class="l">Weight</div></div>
+                  <div class="pw-stat"><div class="v" x-text="detailForm.price>0&&detailForm.costPrice>0?'DA '+(detailForm.price-detailForm.costPrice).toLocaleString():'--'"></div><div class="l">Margin / Unit</div></div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Unsaved changes bar -->
-        <div class="pw-unsaved" :class="{ show: hasUnsaved }">
-          <span class="msg">Unsaved changes</span>
-          <div class="actions">
-            <button class="btn-secondary" style="height:32px;padding:0 var(--s4);font-size:12px" @click="revertProductDetail()">Discard</button>
-            <button class="btn-primary" style="height:32px;padding:0 var(--s4);font-size:12px" @click="saveProductDetail()">Save</button>
-          </div>
-        </div>
       </div></template>
 
       <!-- ===== MY STORE ===== -->
@@ -1180,12 +1282,13 @@
           <div class="form-block full"><label>Product Name</label><input class="field" x-model="form.name" placeholder="e.g. Gold Standard Whey"/></div>
           <div class="form-block full"><label>Description</label><textarea class="field" x-model="form.description" placeholder="Product description" rows="4"></textarea></div>
           <div class="form-block"><label>Price (DZD)</label><input class="field" type="number" x-model="form.price" placeholder="9900"/></div>
+          <div class="form-block"><label>Cost Price (DZD)</label><input class="field" type="number" x-model="form.costPrice" placeholder="6000"/></div>
           <div class="form-block"><label>Compare At Price</label><input class="field" type="number" x-model="form.comparePrice" placeholder="12900"/></div>
           <div class="form-block"><label>SKU</label><input class="field" x-model="form.sku" placeholder="ON-WHEY-5LB"/></div>
           <div class="form-block"><label>Barcode</label><input class="field" x-model="form.barcode" placeholder="Optional"/></div>
           <div class="form-block"><label>Stock</label><input class="field" type="number" x-model="form.stock" placeholder="50"/></div>
           <div class="form-block"><label>Low Stock Threshold</label><input class="field" type="number" x-model="form.lowStock" placeholder="5"/></div>
-          <div class="form-block"><label>Weight (grams)</label><input class="field" type="number" step="0.01" x-model="form.weight" placeholder="2270"/></div>
+          <div class="form-block"><label>Weight (kg)</label><input class="field" type="number" step="0.01" x-model="form.weight" placeholder="2.27"/></div>
           <div class="form-block"><label>Brand</label>
             <template x-if="!showNewBrand">
               <div class="field-dropdown" :class="{ open: brandOpen }" @click.outside="brandOpen=false">
@@ -1258,6 +1361,7 @@
         <div class="form-block full" style="margin-top:var(--s4)"><label>Section Visibility</label></div>
         <div class="form-row"><button class="toggle" :class="{ active: form.showIngredients }" @click="form.showIngredients = !form.showIngredients" type="button"></button><span class="toggle-label">Ingredients</span><span class="toggle-desc">Show on product detail</span></div>
         <div class="form-row"><button class="toggle" :class="{ active: form.showHowToUse }" @click="form.showHowToUse = !form.showHowToUse" type="button"></button><span class="toggle-label">How To Use</span><span class="toggle-desc">Show on product detail</span></div>
+        <div class="form-row"><button class="toggle" :class="{ active: form.isFeatured }" @click="form.isFeatured = !form.isFeatured" type="button"></button><span class="toggle-label">Featured</span><span class="toggle-desc">Show on homepage</span></div>
 
         <div class="form-block full" style="margin-top:var(--s5)"><label>Images</label></div>
         <div class="upload-zone" x-ref="dropzone" @click="$refs.fileInput.click()" @dragover.prevent="dragover=true" @dragleave="dragover=false" @drop.prevent="handleDrop($event)">
@@ -1265,7 +1369,7 @@
           <p>Drop images here or click to upload</p>
           <div class="upload-progress" :style="{ display: uploading ? 'block' : 'none' }"><div class="bar" :style="{ width: uploadProgress + '%' }"></div></div>
         </div>
-        <input type="file" accept="image/*" multiple x-ref="fileInput" @change="handleFiles($event.target.files)" style="display:none"/>
+        <input type="file" accept="image/jpeg,image/png,image/webp" multiple x-ref="fileInput" @change="handleFiles($event.target.files)" style="display:none"/>
         <div class="upload-preview">
           <template x-for="(url, i) in form.images" :key="i">
             <div class="thumb"><img :src="url" alt=""/><button class="remove" @click="form.images.splice(i, 1)">&times;</button></div>
@@ -1300,9 +1404,9 @@
         {val:'delivered',label:'Delivered',color:'#10b981'},
         {val:'cancelled',label:'Cancelled',color:'#ef4444'}
       ],
-      prodSearch:'',prodPage:1,prodTotal:0,prodData:[],prodDetail:null,prodLoading:false,
-      detailForm:{id:'',name:'',description:'',ingredients:'',howToUse:'',price:0,stock:0,sku:'',brandName:'',categoryId:'',showIngredients:false,showHowToUse:false,comparePrice:0,lowStock:5,weight:0,isActive:true},
-      detailImg:'',detailEdit:{},detailSnapshot:null,hasUnsaved:false,savedMsg:'',
+      prodSearch:'',prodPage:1,prodTotal:0,prodData:[],prodDetail:null,prodLoading:false,prodStatusFilter:'',prodSortBy:'newest',prodStatusOpen:false,prodSortOpen:false,
+      detailForm:{id:'',name:'',description:'',ingredients:'',howToUse:'',price:0,costPrice:0,stock:0,sku:'',brandName:'',categoryId:'',showIngredients:false,showHowToUse:false,comparePrice:0,lowStock:5,weight:0,isActive:true,isFeatured:false},
+      detailImg:'',detailEdit:{},detailSnapshot:null,hasUnsaved:false,savedMsg:'',imgUploading:false,_toggling:false,
       custSearch:'',custPage:1,custTotal:0,
       showProductForm:false,editingProduct:null,saving:false,uploading:false,uploadProgress:0,
       storeInfo:{store_name:'',store_description:'',owner_name:'',phone:'',location:'',location_link:'',instagram:'',tiktok:'',images:[]},
@@ -1321,6 +1425,7 @@
         {id:'packs',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/><path d="M4 8v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><polyline points="10 12 12 14 14 12"/><line x1="12" y1="10" x2="12" y2="18"/></svg>',label:'Packs'}
       ],
       init(){
+        window._adminApp=this
         const token=localStorage.getItem('admin_token')
         if(!token){location.href='/admin-login.html';return}
         this._token=token
@@ -1339,6 +1444,7 @@
           else if(this.sidebarOpen&&dx<-80){this.sidebarOpen=false;sx=0}
         },{passive:true})
         this.$watch('detailForm',()=>{
+          if(this._toggling)return
           if(this.detailSnapshot){
             this.hasUnsaved=JSON.stringify(this.detailForm)!==JSON.stringify(this.detailSnapshot)
           }
@@ -1503,6 +1609,8 @@
         this.prodLoading=true
         const p=new URLSearchParams({page:this.prodPage,limit:20})
         if(this.prodSearch)p.set('search',this.prodSearch)
+        if(this.prodStatusFilter)p.set('status',this.prodStatusFilter)
+        if(this.prodSortBy)p.set('sort',this.prodSortBy)
         this.authFetch('/api/admin/products?'+p).then(r=>r.json()).then(d=>{
           this.renderProducts(d.products||[])
           this.prodTotal=d.total||0
@@ -1525,6 +1633,14 @@
               <span class="prod-card-price">DA ${pr.Price.toLocaleString()}</span>
               <span class="prod-card-stock ${pr.Stock===0?'out':pr.Stock<=5?'low':'ok'}">${pr.Stock===0?'Out':pr.Stock<=5?'Low':'In Stock'}</span>
             </div>
+            <div class="card-actions">
+              <button class="card-toggle-btn ${pr.IsActive?'active':'draft'}" onclick="event.stopPropagation();window._adminApp.toggleProductCard('${pr.ID}',this)" title="${pr.IsActive?'Published':'Draft — click to publish'}">
+                <span class="card-toggle-dot"></span>
+                <span class="card-toggle-label">${pr.IsActive?'Published':'Draft'}</span>
+              </button>
+              <button class="btn-secondary" style="height:28px;font-size:11px;padding:0 8px" onclick="event.stopPropagation();window._adminApp.duplicateProduct('${pr.ID}')">Duplicate</button>
+              <button class="btn-secondary" style="height:28px;font-size:11px;padding:0 8px;color:var(--red);border-color:var(--red)" onclick="event.stopPropagation();if(confirm('Delete this product?'))window._adminApp.deleteProduct('${pr.ID}')">Delete</button>
+            </div>
           </div>
         </div>`).join('')
         b.querySelectorAll('.prod-card').forEach(c=>c.addEventListener('click',()=>this.viewProduct(c.dataset.id)))
@@ -1532,7 +1648,7 @@
 
       openProductForm(){
         this.editingProduct=null
-        this.form={name:'',description:'',price:0,comparePrice:0,sku:'',barcode:'',stock:0,lowStock:5,weight:0,brandId:'',categoryId:'',ingredients:'',howToUse:'',showIngredients:true,showHowToUse:true,images:[],isActive:true}
+        this.form={name:'',description:'',price:0,costPrice:0,comparePrice:0,sku:'',barcode:'',stock:0,lowStock:5,weight:0,brandId:'',categoryId:'',ingredients:'',howToUse:'',showIngredients:true,showHowToUse:true,isFeatured:false,images:[],isActive:true}
         this.showProductForm=true
         this.loadBrands();this.loadCategories()
       },
@@ -1547,12 +1663,13 @@
           const d=await r.json()
           this.form={
             name:d.Name||'',description:d.Description||'',
-            price:d.Price||0,comparePrice:d.CompareAtPrice||0,sku:d.SKU||'',barcode:d.Barcode||'',
-            stock:d.Stock||0,lowStock:d.LowStockThreshold||5,weight:d.WeightGrams||0,
+            price:d.Price||0,costPrice:d.CostPrice||0,comparePrice:d.CompareAtPrice||0,sku:d.SKU||'',barcode:d.Barcode||'',
+            stock:d.Stock||0,lowStock:d.LowStockThreshold||5,weight:d.WeightGrams?d.WeightGrams/1000:'',
             brandId:d.BrandID||'',categoryId:d.CategoryID||'',
             ingredients:d.Ingredients||'',howToUse:d.HowToUse||'',
             showIngredients:d.Sections?.includes('ingredients')||false,
             showHowToUse:d.Sections?.includes('how_to_use')||false,
+            isFeatured:d.IsFeatured||false,
             images:(d.Images||[]).map(i=>i.url),isActive:d.IsActive
           }
           this.editingProduct=id
@@ -1572,18 +1689,19 @@
           name:this.form.name,description:this.form.description,ingredients:this.form.ingredients,
           how_to_use:this.form.howToUse,sku:this.form.sku,barcode:this.form.barcode,
           brand_id:this.form.brandId,category_id:this.form.categoryId,
-          price:Number(this.form.price)||0,compare_at_price:Number(this.form.comparePrice)||0,
-          cost_price:0,stock:Number(this.form.stock)||0,
+          price:Number(this.form.price)||0,cost_price:Number(this.form.costPrice)||0,
+          compare_at_price:Number(this.form.comparePrice)||0,
+          stock:Number(this.form.stock)||0,
           low_stock_threshold:Number(this.form.lowStock)||5,
-          weight_grams:Number(this.form.weight)||0,
-          is_active:this.form.isActive,is_featured:false,
+          weight_grams:Number(this.form.weight)*1000||0,
+          is_active:this.form.isActive,is_featured:this.form.isFeatured,
           sections:sections.join(','),image_urls:this.form.images
         }
 
         try{
           const url=this.editingProduct?'/api/admin/products/'+this.editingProduct:'/api/admin/products'
           const method=this.editingProduct?'PUT':'POST'
-          const r=await fetch(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+          const r=await this.authFetch(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
           const d=await r.json()
           if(d.success||d.id){
             this.closeProductForm()
@@ -1599,9 +1717,10 @@
           const d=await r.json()
           this.detailForm={
             id:d.ID,name:d.Name||'',description:d.Description||'',ingredients:d.Ingredients||'',howToUse:d.HowToUse||'',
-            price:d.Price||0,stock:d.Stock||0,sku:d.SKU||'',brandName:d.Brand||d.BrandID||'',categoryId:d.CategoryID||'',
+            price:d.Price||0,costPrice:d.CostPrice||0,stock:d.Stock||0,sku:d.SKU||'',brandName:d.Brand||d.BrandID||'',categoryId:d.CategoryID||'',
             showIngredients:d.Sections?.includes('ingredients')||false,showHowToUse:d.Sections?.includes('how_to_use')||false,
-            comparePrice:d.CompareAtPrice||0,lowStock:d.LowStockThreshold||5,weight:d.WeightGrams||0,isActive:d.IsActive!==false
+            comparePrice:d.CompareAtPrice||0,lowStock:d.LowStockThreshold||5,weight:d.WeightGrams?d.WeightGrams/1000:'',
+            isActive:d.IsActive!==false,isFeatured:d.IsFeatured||false
           }
           this.detailEdit={}
           this.detailImg=(Array.isArray(d.Images)&&d.Images.length>0&&d.Images[0]?.url)?d.Images[0].url:''
@@ -1623,9 +1742,10 @@
               name:this.detailForm.name,description:this.detailForm.description,ingredients:this.detailForm.ingredients,
               how_to_use:this.detailForm.howToUse,sku:this.detailForm.sku,
               category_id:this.detailForm.categoryId,price:Number(this.detailForm.price)||0,
-              compare_at_price:Number(this.detailForm.comparePrice)||0,cost_price:0,stock:Number(this.detailForm.stock)||0,
-              low_stock_threshold:Number(this.detailForm.lowStock)||5,weight_grams:Number(this.detailForm.weight)||0,
-              is_active:this.detailForm.isActive,is_featured:false,
+              cost_price:Number(this.detailForm.costPrice)||0,
+              compare_at_price:Number(this.detailForm.comparePrice)||0,stock:Number(this.detailForm.stock)||0,
+              low_stock_threshold:Number(this.detailForm.lowStock)||5,weight_grams:Number(this.detailForm.weight)*1000||0,
+              is_active:this.detailForm.isActive,is_featured:this.detailForm.isFeatured,
               sections:sections.join(','),image_urls:this.detailImg?[this.detailImg]:[]
             })
           })
@@ -1646,12 +1766,103 @@
       },
       async changeDetailImage(e){
         const f=e.target.files[0];if(!f)return
+        if(f.size>10*1024*1024){alert('Image too large (max 10MB)');return}
         const fd=new FormData();fd.set('file',f)
+        this.imgUploading=true;this.savedMsg=''
         try{
           const r=await this.authFetch('/api/admin/upload',{method:'POST',body:fd})
           const d=await r.json()
-          if(d.success&&d.url)this.detailImg=d.url
+          if(d.success&&d.url){
+            this.detailImg=d.url
+            this.savedMsg='Image uploaded, saving...'
+            await this.saveProductDetail()
+          }else{alert(d.error||'Upload failed')}
+        }catch(e){alert('Upload error: '+e.message)}
+        finally{this.imgUploading=false}
+      },
+      async deleteProductDetail(){
+        if(!confirm('Delete this product? This cannot be undone.'))return
+        try{
+          const r=await this.authFetch('/api/admin/products/'+this.prodDetail,{method:'DELETE'})
+          const d=await r.json()
+          if(d.success){
+            this.prodDetail=null
+            this.loadProducts()
+          }else{alert(d.error||'Delete failed')}
+        }catch(e){alert('Delete error: '+e.message)}
+      },
+      async toggleStatus(){
+        const old=this.detailForm.isActive
+        this._toggling=true
+        this.detailForm.isActive=!old
+        try{
+          await this.authFetch('/api/admin/products/'+this.prodDetail+'/status',{
+            method:'PATCH',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({is_active:this.detailForm.isActive})
+          })
+          this.detailSnapshot=JSON.parse(JSON.stringify(this.detailForm))
+          this.hasUnsaved=false
+          this._toggling=false
+          this.loadProducts()
+        }catch(e){this.detailForm.isActive=old;this._toggling=false;console.error(e)}
+      },
+      async toggleProductCard(id,btn){
+        const isActive=btn.classList.contains('active');
+        const newVal=!isActive;
+        try{
+          const r=await this.authFetch('/api/admin/products/'+id+'/status',{
+            method:'PATCH',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({is_active:newVal})
+          });
+          const d=await r.json();
+          if(d.success){
+            if(newVal){btn.classList.remove('draft');btn.classList.add('active');btn.querySelector('.card-toggle-label').textContent='Published';btn.title='Published — click to unpublish'}
+            else{btn.classList.remove('active');btn.classList.add('draft');btn.querySelector('.card-toggle-label').textContent='Draft';btn.title='Draft — click to publish'}
+          }
         }catch(e){console.error(e)}
+      },
+      async toggleFeatured(){
+        const old=this.detailForm.isFeatured
+        this._toggling=true
+        this.detailForm.isFeatured=!old
+        try{
+          await this.authFetch('/api/admin/products/'+this.prodDetail+'/status',{
+            method:'PATCH',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({is_featured:this.detailForm.isFeatured})
+          })
+          this.detailSnapshot=JSON.parse(JSON.stringify(this.detailForm))
+          this.hasUnsaved=false
+          this._toggling=false
+        }catch(e){this.detailForm.isFeatured=old;this._toggling=false;console.error(e)}
+      },
+      async duplicateProduct(id){
+        try{
+          const r=await this.authFetch('/api/admin/products/detail/'+id)
+          const d=await r.json()
+          this.form={
+            name:(d.Name||'')+' (Copy)',description:d.Description||'',
+            price:d.Price||0,costPrice:d.CostPrice||0,comparePrice:d.CompareAtPrice||0,sku:'',barcode:'',
+            stock:0,lowStock:d.LowStockThreshold||5,weight:d.WeightGrams||0,
+            brandId:d.BrandID||'',categoryId:d.CategoryID||'',
+            ingredients:d.Ingredients||'',howToUse:d.HowToUse||'',
+            showIngredients:d.Sections?.includes('ingredients')||false,
+            showHowToUse:d.Sections?.includes('how_to_use')||false,
+            isFeatured:false,
+            images:(d.Images||[]).map(i=>i.url),isActive:true
+          }
+          this.editingProduct=null
+          this.showProductForm=true
+          this.loadBrands();this.loadCategories()
+        }catch(e){console.error(e)}
+      },
+      async deleteProduct(id){
+        if(!confirm('Delete this product? This cannot be undone.'))return
+        try{
+          const r=await this.authFetch('/api/admin/products/'+id,{method:'DELETE'})
+          const d=await r.json()
+          if(d.success)this.loadProducts()
+          else alert(d.error||'Delete failed')
+        }catch(e){alert('Delete error: '+e.message)}
       },
       async loadBrands(){
         try{const r=await this.authFetch('/api/admin/brands');const d=await r.json();this.brands=d.brands||[]}catch(e){}
@@ -1694,14 +1905,16 @@
 
       async handleFiles(files){
         for(const f of files){
-          if(!f.type.startsWith('image/'))continue
+          if(f.size>10*1024*1024){alert('Image too large (max 10MB): '+f.name);continue}
+          if(!['image/jpeg','image/png','image/webp'].includes(f.type)&&!f.name.match(/\.(jpg|jpeg|png|webp)$/i)){alert('Only JPG, PNG, WebP allowed: '+f.name);continue}
           this.uploading=true;this.uploadProgress=0
           const fd=new FormData();fd.set('file',f)
           try{
             const r=await this.authFetch('/api/admin/upload',{method:'POST',body:fd})
             const d=await r.json()
             if(d.success&&d.url){this.form.images.push(d.url)}
-          }catch(e){console.error(e)}
+            else{alert(d.error||'Upload failed')}
+          }catch(e){alert('Upload error: '+e.message)}
         }
         this.uploading=false;this.uploadProgress=100
       },

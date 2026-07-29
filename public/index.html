@@ -74,18 +74,15 @@
     .navbar-icon-btn:hover{background:rgba(255,255,255,0.12);transform:translateY(-1px)}
     .navbar.scrolled .navbar-icon-btn{color:var(--text)}.navbar.scrolled .navbar-icon-btn:hover{background:var(--paper-cool)}
     .cart-count{position:absolute;top:2px;right:2px;background:var(--accent);color:var(--white);font-size:9px;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--paper);}
-    .search-panel{position:absolute;top:52px;right:-8px;width:340px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-xl);padding:var(--space-4);z-index:50;opacity:0;transform:translateY(8px) scale(0.98);transition:opacity var(--duration-fast),transform var(--duration-fast);pointer-events:none;}
-    .search-panel.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
-    .search-input{width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:14px;background:var(--paper-warm);outline:none;transition:border-color var(--duration-fast),box-shadow var(--duration-fast);font-family:inherit;}
-    .search-input:focus{border-color:var(--accent-light);box-shadow:0 0 0 4px var(--accent-glow)}
-    .search-results{margin-top:var(--space-3);max-height:300px;overflow-y:auto}
+
 
     /* Hero */
     .hero-wrap{position:relative}
     .hero-card{overflow:hidden;position:relative;min-height:100vh;display:flex;align-items:center;background:var(--ink-soft);}
 
-    .hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:0.8}
-    .hero-bg-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,16,0.1) 0%,rgba(11,11,16,0.6) 50%,rgba(11,11,16,0.95) 100%),linear-gradient(135deg,rgba(91,33,182,0.15) 0%,transparent 70%);z-index:1;}
+    .hero-bg{position:absolute;inset:0;width:100%;height:110%;object-fit:cover;z-index:0;opacity:0.8;transform:scale(1.04);animation:heroZoom 15s ease-out forwards}
+    @keyframes heroZoom{from{transform:scale(1.08)}to{transform:scale(1.0)}}
+    .hero-bg-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,16,0.15) 0%,rgba(11,11,16,0.55) 50%,rgba(11,11,16,0.92) 100%),linear-gradient(135deg,rgba(91,33,182,0.15) 0%,transparent 70%);z-index:1;transition:opacity 0.3s;}
     .hero-noise{position:absolute;inset:0;z-index:2;opacity:0.04;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-repeat:repeat;}
     .main-content{background:var(--paper)}
 
@@ -102,7 +99,7 @@
     .trust-text{font-size:13px;color:rgba(255,255,255,0.5);font-weight:500}.trust-text strong{color:rgba(255,255,255,0.85);font-weight:700}
     
     /* Bundle */
-    .bundle-section{padding:var(--space-9) 0;background:var(--ink-soft);position:relative;z-index:1}
+    .bundle-section{padding:var(--space-10) 0 140px;background:var(--ink-soft);position:relative;z-index:1}
     .bundle-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:0;border-radius:var(--radius-xl);overflow:hidden;background:var(--ink-soft);min-height:420px;position:relative;}
     .bundle-content{padding:var(--space-8);display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
     .bundle-title{font-size:clamp(28px,3vw,42px);font-weight:900;margin-bottom:var(--space-3);line-height:1.08;color:var(--white);letter-spacing:-0.03em}
@@ -119,7 +116,7 @@
     .bundle-glow{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(91,33,182,0.2) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:1;}
 
     /* Products */
-    .product-section{padding:var(--space-9) 0;background:var(--white);position:relative;z-index:1;border-top:1px solid var(--border)}
+    .product-section{padding:var(--space-10) 0 140px;background:var(--white);position:relative;z-index:1}
     .product-inner{max-width:1600px;margin:0 auto;padding:0 var(--space-7)}
     .section-top{display:flex;align-items:center;justify-content:space-between;gap:var(--space-5);margin-bottom:var(--space-7);flex-wrap:wrap}
     .section-header{display:flex;align-items:center;gap:var(--space-5);flex-wrap:wrap}
@@ -143,7 +140,7 @@
     .cat-filter span{position:relative;z-index:1}
     
     /* Product Cards */
-    .products-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--space-4);}
+    .products-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--space-5);}
     @media(max-width:1200px){.products-grid{grid-template-columns:repeat(4,1fr)}}
     @media(max-width:900px){.products-grid{grid-template-columns:repeat(3,1fr)}}
     @media(max-width:600px){.products-grid{grid-template-columns:repeat(2,1fr);gap:var(--space-2)}}
@@ -154,21 +151,24 @@
       transition:all var(--duration-base) var(--ease-out-expo);will-change:transform;
       overflow:hidden;
     }
-    .product-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
+    .product-card:hover{transform:translateY(-8px);box-shadow:0 20px 60px rgba(11,11,16,0.12),0 8px 24px rgba(91,33,182,0.06)}
     
     .product-card .product-img-wrap{position:relative;aspect-ratio:320/400;overflow:hidden;background:var(--paper-warm);display:flex;align-items:center;justify-content:center;padding:var(--space-5)}
     .product-card .product-img-wrap img{width:100%;height:100%;object-fit:contain;transition:transform var(--duration-slow) var(--ease-out-expo)}
     .product-card:hover .product-img-wrap img{transform:scale(1.04)}
     
     .product-card .product-body{padding:var(--space-3) var(--space-3) var(--space-4);display:flex;flex-direction:column;gap:var(--space-1);flex:1}
-    .product-card .product-brand{font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.08em}
+    .product-card .product-brand{font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.08em;opacity:0.55;transition:opacity var(--duration-fast)}
+    .product-card:hover .product-brand{opacity:0.7}
     .product-card .product-name{font-size:13px;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
     .product-card .product-rating{display:flex;align-items:center;gap:var(--space-1);font-size:12px;color:#f59e0b;margin-top:auto}
     .product-card .product-rating .count{color:var(--text-tertiary);font-size:11px;margin-left:var(--space-1)}
     .product-card .product-footer{display:flex;align-items:center;justify-content:space-between;padding:var(--space-3);padding-top:0;gap:var(--space-2)}
-    .product-card .price{font-size:16px;font-weight:800;letter-spacing:-0.02em}
-    .product-card .add-to-cart-btn{width:36px;height:36px;border-radius:50%;border:none;background:var(--ink);color:var(--white);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:all var(--duration-fast) var(--ease-out-expo);flex-shrink:0;padding:0;line-height:0}
-    .product-card .add-to-cart-btn:hover{transform:scale(1.1);box-shadow:var(--shadow-md)}
+    .product-card .price{font-size:16px;font-weight:800;letter-spacing:-0.02em;transition:color var(--duration-fast)}
+    .product-card:hover .price{color:var(--ink)}
+    .product-card .add-to-cart-btn{width:36px;height:36px;border-radius:50%;border:none;background:var(--ink);color:var(--white);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:all var(--duration-fast) var(--ease-out-expo);flex-shrink:0;padding:0;line-height:0;opacity:0;transform:translateY(4px)}
+    .product-card:hover .add-to-cart-btn{opacity:1;transform:translateY(0)}
+    .product-card .add-to-cart-btn:hover{transform:scale(1.12)!important;box-shadow:var(--shadow-md)}
     .product-card .add-to-cart-btn.added{background:var(--success);transform:scale(1.1)}
     .product-card .add-to-cart-btn svg{width:14px;height:14px;display:block;flex-shrink:0}
     .product-card .add-to-cart-btn span{display:none}
@@ -224,7 +224,7 @@
     @keyframes skeleton{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
     /* Offers */
-    .offers-section{padding:var(--space-9) 0;background:var(--white);position:relative;z-index:1;border-top:1px solid var(--border)}
+    .offers-section{padding:var(--space-10) 0 140px;background:var(--paper-warm);position:relative;z-index:1}
     .offers-scroll{display:flex;gap:var(--space-4);overflow-x:auto;padding-bottom:var(--space-4);scroll-snap-type:x mandatory;scroll-padding-left:var(--space-4);margin:0 calc(-1 * var(--space-5));padding-left:var(--space-5);padding-right:var(--space-5);}
     @media(min-width:768px){.offers-scroll{margin:0 calc(-1 * var(--space-6));padding-left:var(--space-6);padding-right:var(--space-6)}}
     .offers-scroll::-webkit-scrollbar{height:3px}.offers-scroll::-webkit-scrollbar-track{background:transparent}.offers-scroll::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:var(--radius-pill)}
@@ -440,6 +440,42 @@
     .toast.show{transform:translateX(0)}
     .toast-icon{width:20px;height:20px;background:var(--success);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}.toast-icon svg{width:12px;height:12px;color:var(--white)}
 
+    /* Site Footer */
+    .site-footer{background:var(--ink-soft);padding:var(--space-10) 0 var(--space-7);position:relative;z-index:1}
+    .site-footer::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(91,33,182,0.08) 0%,transparent 60%);pointer-events:none}
+    .footer-inner{max-width:var(--container);margin:0 auto;padding:0 var(--space-7);position:relative;z-index:2}
+    .footer-brand{display:flex;flex-direction:column;line-height:1;margin-bottom:var(--space-4)}
+    .footer-brand .logo-main{font-size:22px;font-weight:900;letter-spacing:-0.04em;color:var(--white)}
+    .footer-brand .logo-sub{font-size:9px;font-weight:700;letter-spacing:0.32em;color:rgba(255,255,255,0.4);margin-top:3px}
+    .footer-tagline{font-size:14px;color:rgba(255,255,255,0.45);max-width:400px;line-height:1.7;margin-bottom:var(--space-7)}
+    .footer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-7);margin-bottom:var(--space-8)}
+    .footer-col{display:flex;flex-direction:column;gap:var(--space-3)}
+    .footer-col h4{font-size:11px;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:var(--space-1)}
+    .footer-col a{font-size:14px;color:rgba(255,255,255,0.55);transition:color var(--duration-fast);font-weight:500}
+    .footer-col a:hover{color:var(--white)}
+    .footer-bottom{border-top:1px solid rgba(255,255,255,0.06);padding-top:var(--space-6);text-align:center}
+    .footer-bottom span{font-size:12px;color:rgba(255,255,255,0.3);font-weight:500}
+    @media(max-width:640px){.footer-grid{grid-template-columns:1fr;gap:var(--space-6)}.footer-inner{padding:0 var(--space-5)}}
+
+    /* Quick View Modal */
+    .qv-overlay{position:fixed;inset:0;background:rgba(11,11,16,0.6);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s ease;padding:var(--space-5)}
+    .qv-overlay.open{opacity:1;pointer-events:auto}
+    .qv-modal{background:var(--white);border-radius:var(--radius-xl);max-width:800px;width:100%;max-height:90vh;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;box-shadow:0 32px 80px rgba(0,0,0,0.2);transform:translateY(20px) scale(0.96);transition:transform 0.35s cubic-bezier(0.16,1,0.3,1);position:relative}
+    .qv-overlay.open .qv-modal{transform:translateY(0) scale(1)}
+    .qv-close{position:absolute;top:var(--space-4);right:var(--space-4);width:36px;height:36px;border-radius:50%;border:none;background:var(--paper-warm);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;transition:background var(--duration-fast);color:var(--text)}
+    .qv-close:hover{background:var(--paper-cool)}
+    .qv-img{background:var(--paper-warm);border-radius:var(--radius-xl) 0 0 var(--radius-xl);display:flex;align-items:center;justify-content:center;padding:var(--space-6);overflow:hidden}
+    .qv-img img{max-width:100%;max-height:360px;object-fit:contain}
+    .qv-body{padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-4)}
+    .qv-brand{font-size:11px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em}
+    .qv-name{font-size:22px;font-weight:800;letter-spacing:-0.03em;line-height:1.2}
+    .qv-price{font-size:26px;font-weight:900;letter-spacing:-0.02em}
+    .qv-desc{font-size:14px;color:var(--text-secondary);line-height:1.7}
+    .qv-add-btn{flex:1;height:50px;border-radius:var(--radius-pill);border:none;background:var(--ink);color:var(--white);font-size:14px;font-weight:700;cursor:pointer;transition:all var(--duration-fast);display:flex;align-items:center;justify-content:center;gap:8px}
+    .qv-add-btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+    .qv-add-btn.added{background:var(--success)}
+    @media(max-width:700px){.qv-modal{grid-template-columns:1fr}.qv-img{border-radius:var(--radius-xl) var(--radius-xl) 0 0;min-height:200px}}
+
     /* Responsiveness */
     @media(max-width:1024px){
       .hero-card{min-height:600px}.hero-inner{padding:72px var(--space-5) var(--space-7)}
@@ -488,16 +524,7 @@
         <a href="/deals.html" class="navbar-link">Offers</a>
         <a href="/about.html" class="navbar-link">About Us</a>
       </nav>
-      <div class="navbar-actions" x-data="{ searchOpen: false }" @keydown.escape.window="searchOpen = false">
-        <div class="search-wrap">
-          <button class="navbar-icon-btn" @click="searchOpen = !searchOpen" aria-label="Search">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          </button>
-          <div class="search-panel" :class="{ open: searchOpen }" @click.outside="searchOpen = false">
-            <input type="search" placeholder="Search products..." class="search-input" hx-get="/api/search" hx-trigger="keyup changed delay:300ms" hx-target="#search-results" hx-swap="innerHTML"/>
-            <div id="search-results" class="search-results"></div>
-          </div>
-        </div>
+      <div class="navbar-actions">
         <a href="/cart" class="navbar-icon-btn" aria-label="Cart">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
           <span class="cart-count" x-text="$store.cart.count" x-show="$store.cart.count > 0" x-cloak>0</span>
@@ -507,16 +534,16 @@
   </header>
 
   <main class="main-content">
-    <div class="hero-wrap reveal">
+    <div class="hero-wrap">
       <div class="hero-card">
         <img src="/assets/images/hersection-image-16-9.png" alt="" class="hero-bg"/>
         <div class="hero-bg-overlay"></div>
         <div class="hero-noise"></div>
         <div class="hero-inner">
-          <p class="eyebrow light hero-eyebrow reveal reveal-delay-1">Fuel Your Strength</p>
-          <h1 class="hero-title reveal reveal-delay-2">Built Today.<br/><span>Strong Tomorrow.</span></h1>
-          <p class="hero-desc reveal reveal-delay-3">Premium supplements for serious athletes and everyday warriors. Lab-tested, authentic, and delivered across Algeria.</p>
-          <div class="hero-actions reveal reveal-delay-4">
+          <p class="eyebrow light hero-eyebrow">Fuel Your Strength</p>
+          <h1 class="hero-title">Built Today.<br/><span>Strong Tomorrow.</span></h1>
+          <p class="hero-desc">Premium supplements for serious athletes and everyday warriors. Lab-tested, authentic, and delivered across Algeria.</p>
+          <div class="hero-actions">
             <a href="/shop.html" class="btn-white">SHOP NOW</a>
           </div>
 
@@ -524,51 +551,53 @@
       </div>
     </div>
 
-    <div class="bundle-section" x-data="bundleData()" x-show="bundle || loading" x-cloak>
+    <div id="offers" class="offers-section" x-data="offerData()" x-show="!loading && list.length > 0" x-cloak>
       <div class="container">
-        <template x-if="bundle">
-          <div class="bundle-grid reveal">
-            <div class="bundle-content">
-              <p class="bundle-eyebrow">Featured Bundle</p>
-              <h2 class="bundle-title" x-text="bundle.name||'Performance Stack'"></h2>
-              <p class="bundle-desc" x-text="(bundle.description||'').substring(0,140)+'...'"></p>
-              <div class="bundle-meta">
-                <div class="bundle-meta-item">
-                  <span class="bundle-meta-label">Price</span>
-                  <span class="bundle-meta-value">
-                    <span x-text="Number(bundle.price||0).toLocaleString()+' DZD'"></span>
-                    <span class="original" x-show="(bundle.original_price||0)>0" x-text="Number(bundle.original_price).toLocaleString()+' DZD'"></span>
-                  </span>
-                </div>
-                <div class="bundle-meta-item">
-                  <span class="bundle-meta-label">You Save</span>
-                  <span class="bundle-meta-value" style="color:#a78bfa" x-text="(bundle.original_price&&bundle.price)?Number(bundle.original_price-bundle.price).toLocaleString()+' DZD':'0 DZD'"></span>
-                </div>
-              </div>
-              <div style="display:flex;gap:var(--space-3);flex-wrap:wrap">
-                <a :href="'/pack.html?id='+bundle.id" class="btn-premium">SHOP BUNDLE</a>
-                <button class="btn-ghost" style="border-color:rgba(255,255,255,0.2);color:#fff" @click.stop="$store.cart.add(bundle);showToast('Bundle added to cart')">ADD TO CART</button>
-              </div>
-            </div>
-            <div class="bundle-visual" x-show="bundle.image">
-              <div class="bundle-glow"></div>
-              <span class="bundle-badge">BEST VALUE</span>
-              <img :src="bundle.image" :alt="bundle.name" loading="lazy"/>
-            </div>
+        <div class="section-top reveal">
+          <div class="section-header">
+            <p class="eyebrow">Promotions</p>
+            <h2 class="section-title">Current Offers</h2>
+            <p class="section-desc">Limited-time deals on bundles and best-sellers. Do not miss out.</p>
           </div>
-        </template>
-        <template x-if="!bundle && loading">
-          <div class="bundle-grid reveal" style="background:var(--paper-warm);border:1px solid var(--border);min-height:200px;">
-            <div style="padding:var(--space-7);display:flex;flex-direction:column;justify-content:center;gap:var(--space-4)">
-              <div class="skeleton-line" style="width:120px;height:16px;"></div>
-              <div class="skeleton-line" style="width:70%;height:40px;"></div>
-              <div class="skeleton-line" style="width:90%;"></div>
-              <div class="skeleton-line" style="width:50%;"></div>
-              <div class="skeleton-line" style="width:160px;height:48px;border-radius:var(--radius-pill)"></div>
+          <a href="/offers" class="view-all-link">
+            <span>All Offers
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></span>
+          </a>
+        </div>
+        <div x-show="loading" class="skeleton-grid reveal" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:var(--space-4)">
+          <template x-for="i in 3" :key="i">
+            <div class="skeleton-card">
+              <div class="skeleton-img" style="aspect-ratio:16/9"></div>
+              <div class="skeleton-line short"></div>
+              <div class="skeleton-line"></div>
             </div>
-            <div style="background:var(--paper-cool);min-height:300px"></div>
+          </template>
+        </div>
+        <div x-show="!loading && list.length===0" class="offers-empty">
+          <div class="offers-empty-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
           </div>
-        </template>
+          <h3>Nothing right now</h3>
+          <p>New promotions coming soon. Check out our best sellers.</p>
+          <a href="/shop.html" class="btn-premium" style="margin-top:var(--space-3)">Browse Best Sellers</a>
+        </div>
+        <div class="offers-scroll" x-show="!loading && list.length>0">
+          <template x-for="pk in list" :key="pk.id">
+            <a :href="'/pack.html?id='+pk.id" class="offer-card reveal">
+              <div class="offer-card-img" x-show="pk.image"><img :src="pk.image" :alt="pk.name||''" loading="lazy"/></div>
+              <div class="offer-card-img" x-show="!pk.image" style="display:flex;align-items:center;justify-content:center;color:var(--text-tertiary);font-size:32px;background:var(--paper-cool)">&#9733;</div>
+              <div class="offer-card-body">
+                <span class="offer-card-badge">SAVE <span x-text="pk.original_price?Math.round((1-pk.price/pk.original_price)*100)+'%':''"></span></span>
+                <p class="offer-card-title" x-text="pk.name||'Bundle'"></p>
+                <p class="offer-card-desc" x-text="(pk.description||'').substring(0,60)+'...'"></p>
+                <p class="offer-card-price">
+                  <span x-text="Number(pk.price||0).toLocaleString()+' DZD'"></span>
+                  <span class="original" x-show="(pk.original_price||0)>0" x-text="Number(pk.original_price).toLocaleString()+' DZD'"></span>
+                </p>
+              </div>
+            </a>
+          </template>
+        </div>
       </div>
     </div>
 
@@ -610,8 +639,8 @@
           <template x-for="(p,i) in items" :key="p.id">
             <div class="product-card" x-data="{ added: false }" :class="'reveal reveal-delay-'+(i%5+1)">
               <span class="product-badge" x-show="i===0">New</span>
-              <button class="product-wishlist" @click.stop aria-label="Add to wishlist">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <button class="product-wishlist" :style="$store.wishlist.has(p.id) ? 'color:#dc2626;opacity:1' : ''" @click.stop="$store.wishlist.toggle(p.id);showToast($store.wishlist.has(p.id)?'Added to wishlist':'Removed from wishlist')" aria-label="Add to wishlist">
+                <svg width="14" height="14" viewBox="0 0 24 24" :fill="$store.wishlist.has(p.id)?'currentColor':'none'" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
               </button>
               <div class="product-img-wrap" @click="window.location.href='/product.html?slug='+p.slug">
                 <img :src="p.image||'https://placehold.co/400x400/f3f1ee/0b0b10?text='+encodeURIComponent(p.name||'')" :alt="p.name" loading="lazy" @error="$el.src='https://placehold.co/400x400/f3f1ee/0b0b10?text='+encodeURIComponent(p.name||'')"/>
@@ -631,56 +660,6 @@
                 </button>
               </div>
             </div>
-          </template>
-        </div>
-      </div>
-    </div>
-
-    <div id="offers" class="offers-section" x-data="offerData()">
-      <div class="container">
-        <div class="section-top reveal">
-          <div class="section-header">
-            <p class="eyebrow">Promotions</p>
-            <h2 class="section-title">Current Offers</h2>
-            <p class="section-desc">Limited-time deals on bundles and best-sellers. Do not miss out.</p>
-          </div>
-          <a href="/offers" class="view-all-link">
-            All Offers
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-          </a>
-        </div>
-        <div x-show="loading" class="skeleton-grid reveal" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:var(--space-4)">
-          <template x-for="i in 3" :key="i">
-            <div class="skeleton-card">
-              <div class="skeleton-img" style="aspect-ratio:16/9"></div>
-              <div class="skeleton-line short"></div>
-              <div class="skeleton-line"></div>
-            </div>
-          </template>
-        </div>
-        <div x-show="!loading && list.length===0" class="offers-empty">
-          <div class="offers-empty-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          </div>
-          <h3>Nothing right now</h3>
-          <p>New promotions coming soon. Check out our best sellers.</p>
-          <a href="/shop.html" class="btn-premium" style="margin-top:var(--space-3)">Browse Best Sellers</a>
-        </div>
-        <div class="offers-scroll" x-show="!loading && list.length>0">
-          <template x-for="pk in list" :key="pk.id">
-            <a :href="'/pack.html?id='+pk.id" class="offer-card reveal">
-              <div class="offer-card-img" x-show="pk.image"><img :src="pk.image" :alt="pk.name||''" loading="lazy"/></div>
-              <div class="offer-card-img" x-show="!pk.image" style="display:flex;align-items:center;justify-content:center;color:var(--text-tertiary);font-size:32px;background:var(--paper-cool)">&#9733;</div>
-              <div class="offer-card-body">
-                <span class="offer-card-badge">SAVE <span x-text="pk.original_price?Math.round((1-pk.price/pk.original_price)*100)+'%':''"></span></span>
-                <p class="offer-card-title" x-text="pk.name||'Bundle'"></p>
-                <p class="offer-card-desc" x-text="(pk.description||'').substring(0,60)+'...'"></p>
-                <p class="offer-card-price">
-                  <span x-text="Number(pk.price||0).toLocaleString()+' DZD'"></span>
-                  <span class="original" x-show="(pk.original_price||0)>0" x-text="Number(pk.original_price).toLocaleString()+' DZD'"></span>
-                </p>
-              </div>
-            </a>
           </template>
         </div>
       </div>
@@ -730,6 +709,30 @@
     </div>
   </main>
 
+  <!-- Quick View Modal -->
+  <div class="qv-overlay" id="qv-overlay" @click.self="this.classList.remove('open');document.body.style.overflow=''">
+    <div class="qv-modal" x-data="{ product: null, added: false }" @qv-open.window="product=$event.detail;added=false;document.getElementById('qv-overlay').classList.add('open');document.body.style.overflow='hidden'" @qv-close.window="document.getElementById('qv-overlay').classList.remove('open');document.body.style.overflow=''">
+      <button class="qv-close" @click="$dispatch('qv-close')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="qv-img">
+        <img :src="product?.image||'https://placehold.co/400x400/f3f1ee/0b0b10?text=Product'" :alt="product?.name||''" loading="lazy"/>
+      </div>
+      <div class="qv-body">
+        <p class="qv-brand" x-text="product?.brand||''"></p>
+        <h2 class="qv-name" x-text="product?.name||''"></h2>
+        <p class="qv-price" x-text="product?product.price.toLocaleString()+' DZD':''"></p>
+        <p class="qv-desc">Premium quality supplement lab-tested for purity and performance.</p>
+        <div style="display:flex;gap:var(--space-3)">
+          <button class="qv-add-btn" :class="{added}" @click="$store.cart.add(product);added=true;showToast(product.name+' added to cart');setTimeout(()=>added=false,1500)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            <span x-text="added?'ADDED':'ADD TO CART'"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <nav class="bottom-nav">
     <div class="bottom-nav-inner">
       <a href="/" class="bottom-nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 0 0 1 1h3m10-11l2 2m-2-2v10a1 1 0 0 1-1 1h-3m-6 0a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1m-6 0h6"/></svg><span>Home</span></a>
@@ -776,15 +779,27 @@
         save() { localStorage.setItem('ironfuel_cart', JSON.stringify(this.items)) }
       });
 
+      Alpine.store('wishlist', {
+        items: JSON.parse(localStorage.getItem('ironfuel_wishlist') || '[]'),
+        toggle(id) {
+          const idx = this.items.indexOf(id);
+          if (idx > -1) { this.items.splice(idx, 1) } else { this.items.push(id) }
+          this.save();
+        },
+        has(id) { return this.items.includes(id) },
+        save() { localStorage.setItem('ironfuel_wishlist', JSON.stringify(this.items)) }
+      });
+
       Alpine.data('productData', () => ({
         items: [], allItems: [], activeCat: '', loading: true,
         init() { this.load(); this.observeReveals(); },
         async load() {
           this.loading = true;
           try {
-            const r = await fetch('/api/products');
+            const r = await fetch('/api/products?limit=50');
             if (!r.ok) throw new Error('status ' + r.status);
-            this.allItems = await r.json();
+            const data = await r.json();
+            this.allItems = data.products || data;
             this.items = this.allItems;
           } catch (e) { console.error('products fetch:', e) }
           finally { this.loading = false; this.$nextTick(() => this.observeReveals()); }
@@ -850,6 +865,50 @@
         check();
       }
       document.querySelectorAll('.reveal').forEach(el => { revealObserver.observe(el); });
+
+      // Parallax hero background
+      const heroBg = document.querySelector('.hero-bg');
+      const heroOverlay = document.querySelector('.hero-bg-overlay');
+      if (heroBg) {
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+          if (!ticking) {
+            requestAnimationFrame(() => {
+              const scrollY = window.scrollY;
+              const heroH = window.innerHeight;
+              if (scrollY < heroH) {
+                const pct = scrollY / heroH;
+                heroBg.style.transform = 'scale(' + (1.04 - pct * 0.04) + ') translateY(' + (scrollY * 0.3) + 'px)';
+                if (heroOverlay) heroOverlay.style.opacity = 1 - pct * 0.3;
+              }
+              ticking = false;
+            });
+            ticking = true;
+          }
+        }, { passive: true });
+      }
+
+      // Staggered page load reveals
+      const staggerElements = [
+        { sel: '.navbar', delay: 0 },
+        { sel: '.hero-eyebrow', delay: 100 },
+        { sel: '.hero-title', delay: 200 },
+        { sel: '.hero-desc', delay: 300 },
+        { sel: '.hero-actions', delay: 400 },
+        { sel: '.hero-trust', delay: 500 }
+      ];
+      staggerElements.forEach(({ sel, delay }) => {
+        const el = document.querySelector(sel);
+        if (el) {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(24px)';
+          el.style.transition = 'opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1)';
+          setTimeout(() => {
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+          }, delay);
+        }
+      });
     });
   </script>
 </body>
