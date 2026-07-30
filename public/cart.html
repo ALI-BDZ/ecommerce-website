@@ -5,19 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>Cart — IronFuel Nutrition</title>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet"/>
+  <script>window.__i18n = window.__i18n || {};</script>
+  <script src="/locales/en.js?v=2"></script>
+  <script src="/locales/ar.js?v=2"></script>
+  <script src="/locales/fr.js?v=2"></script>
+  <script src="/js/i18n.js"></script>
+  <link id="font-link" href="/css/fonts.css" rel="stylesheet"/>
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     :root{
       --black:#0d0d0d;--white:#ffffff;--accent:#c8ff00;--border:#e5e5e5;--bg:#fafafa;
       --text:#1a1a1a;--text-muted:#888;
       --ink:#0b0b10;--ink-soft:#13131f;--paper:#f8f7f4;--paper-warm:#f0eeea;--paper-cool:#e8e6e3;
+      --ff:'Inter',system-ui,sans-serif;
       --accent-light:#7c3aed;--accent-glow:rgba(91,33,182,0.18);
       --text-secondary:#6b6b78;--text-tertiary:#9a9aa8;
       --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--s7:48px;--s8:64px;--s9:96px;--s10:128px;
       --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:24px;--space-6:32px;
       --r-sm:8px;--r-md:12px;--r-lg:16px;--r-pill:999px;
-      --radius-sm:8px;--radius-md:16px;--radius-lg:24px;--radius-xl:32px;
+      --radius-sm:8px;--radius-md:16px;--radius-lg:24px;--radius-xl:32px;--radius-pill:999px;
       --sh-sm:0 1px 3px rgba(0,0,0,.06);--sh-md:0 4px 12px rgba(0,0,0,.08);--sh-lg:0 8px 30px rgba(0,0,0,.12);
       --shadow-sm:0 1px 2px rgba(11,11,16,0.04);--shadow-lg:0 16px 48px rgba(11,11,16,0.10);--shadow-xl:0 24px 80px rgba(11,11,16,0.14);
       --fast:150ms ease;--base:250ms ease;
@@ -25,7 +31,9 @@
       --ease-out-expo:cubic-bezier(0.16,1,0.3,1);--ease-out-quart:cubic-bezier(0.25,1,0.5,1);
       --container:1520px;--nav-h:72px;
     }
-    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;padding:0 var(--s5)}
+    body{font-family:var(--ff);background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;padding:0 var(--s5);display:flex;flex-direction:column;min-height:100vh}
+    body>main{flex:1 0 auto}
+    .site-footer{flex-shrink:0}
     .container{max-width:960px;margin:0 auto}
     a{color:inherit;text-decoration:none}
     [x-cloak]{display:none!important}
@@ -43,21 +51,29 @@
     .navbar-link:hover{color:var(--text)}.navbar-link:hover::after{width:100%}
     .navbar-link.active{color:var(--text)}.navbar-link.active::after{width:100%}
     .navbar-actions{display:flex;align-items:center;gap:var(--space-2)}
+.lang-switcher{display:flex;align-items:center;gap:2px;background:rgba(255,255,255,0.9);backdrop-filter:blur(12px);border-radius:var(--radius-pill);padding:4px;box-shadow:0 2px 12px rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.06);position:fixed;bottom:24px;left:24px;z-index:998;transition:transform .3s cubic-bezier(0.16,1,0.3,1),opacity .3s}
+.lang-switcher:hover{transform:scale(1.05)}
+.lang-switcher button{border:none;background:none;padding:3px;border-radius:50%;cursor:pointer;transition:transform .2s;line-height:0;display:flex;align-items:center;justify-content:center}
+.lang-switcher button img{width:22px;height:22px;border-radius:50%;object-fit:cover;transition:transform .2s}
+.lang-switcher button.active img{transform:scale(1.15);box-shadow:0 0 0 2px var(--accent)}
+.lang-switcher button:hover img{transform:scale(1.08)}
     .navbar-icon-btn{position:relative;background:none;border:none;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;transition:background var(--duration-fast),transform var(--duration-fast);}
     .navbar-icon-btn:hover{background:var(--paper-cool);transform:translateY(-1px)}
     .cart-count{position:absolute;top:2px;right:2px;background:var(--accent);color:var(--white);font-size:9px;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--paper);}
 
 
     /* Page */
-    .page-header{margin-top:calc(var(--space-3) + var(--nav-h) + var(--space-5));margin-bottom:var(--s6)}
+    .page-header{margin-top:calc(var(--space-3) + var(--nav-h) + var(--space-5));margin-bottom:var(--s6);direction:ltr;text-align:left}
     .page-title{font-size:28px;font-weight:800;letter-spacing:-.02em}
     .back-link{display:inline-flex;align-items:center;gap:var(--s2);font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:var(--s4);transition:color var(--fast)}
     .back-link:hover{color:var(--text)}
 
     /* Cart */
-    .cart-empty{text-align:center;padding:var(--s10) 0}
-    .cart-empty-icon{font-size:48px;margin-bottom:var(--s4);opacity:.3}
-    .cart-empty h2{font-size:20px;font-weight:700;margin-bottom:var(--s2)}
+    .cart-empty{text-align:center;padding:var(--s10) 0;display:flex;flex-direction:column;align-items:center;gap:var(--s3)}
+    .cart-empty-icon{width:120px;height:120px;border-radius:50%;background:var(--paper-cool);display:flex;align-items:center;justify-content:center;margin-bottom:var(--s4);animation:emptyBounce 2s ease-in-out infinite}
+    .cart-empty-icon svg{width:56px;height:56px;color:var(--text-muted);opacity:.5}
+    @keyframes emptyBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    .cart-empty h2{font-size:22px;font-weight:700;margin-bottom:var(--s2)}
     .cart-empty p{color:var(--text-muted);font-size:14px;margin-bottom:var(--s5)}
     .cart-items{display:flex;flex-direction:column;gap:var(--s4);margin-bottom:var(--s6)}
     .cart-item{display:flex;gap:var(--s4);padding:var(--s4);background:var(--white);border-radius:var(--r-md);border:1px solid var(--border);transition:box-shadow var(--fast)}
@@ -132,6 +148,7 @@
       .navbar-burger{display:block}
       .navbar-links{display:none;position:absolute;top:calc(var(--nav-h) - 8px);left:0;right:0;background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);flex-direction:column;padding:var(--space-4);gap:var(--space-3);border:1px solid var(--border)}
       .navbar-links.is-open{display:flex;animation:slideDown .25s var(--ease-out-quart)}
+
     }
     @media(max-width:768px){
       .cart-layout{grid-template-columns:1fr}
@@ -146,18 +163,19 @@
 <body>
   <header class="navbar" id="navbar" x-data="{ mobileOpen: false }">
     <div class="navbar-inner">
-      <button class="navbar-burger" @click="mobileOpen = !mobileOpen" aria-label="Menu">
+      <button class="navbar-burger" @click="mobileOpen = !mobileOpen" :aria-label="$store.lang.t('nav.menu')">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <a href="/" class="navbar-logo"><span class="logo-main">IRONFUEL</span><span class="logo-sub">NUTRITION</span></a>
       <nav class="navbar-links" :class="{ 'is-open': mobileOpen }">
-        <a href="/" class="navbar-link">Home</a>
-        <a href="/shop.html" class="navbar-link">Shop</a>
-        <a href="/deals.html" class="navbar-link">Offers</a>
-        <a href="/about.html" class="navbar-link">About Us</a>
+        <a href="/" class="navbar-link" x-text="$store.lang.t('nav.home')"></a>
+        <a href="/shop.html" class="navbar-link" x-text="$store.lang.t('nav.shop')"></a>
+        <a href="/deals.html" class="navbar-link" x-text="$store.lang.t('nav.offers')"></a>
+        <a href="/about.html" class="navbar-link" x-text="$store.lang.t('nav.about')"></a>
+
       </nav>
       <div class="navbar-actions">
-        <a href="/cart" class="navbar-icon-btn" aria-label="Cart">
+        <a href="/cart" class="navbar-icon-btn" :aria-label="$store.lang.t('nav.cart')">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
           <span class="cart-count" x-text="$store.cart.count" x-show="$store.cart.count > 0" x-cloak>0</span>
         </a>
@@ -170,15 +188,19 @@
 
       <!-- Empty cart -->
       <template x-if="$store.cart.count === 0 && !orderDone">
-        <div class="page-header">
-          <a href="/" class="back-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> Continue Shopping</a>
-          <h1 class="page-title">Your Cart</h1>
-        </div>
-        <div class="cart-empty">
-          <div class="cart-empty-icon">&#128722;</div>
-          <h2>Your cart is empty</h2>
-          <p>Looks like you haven't added anything yet.</p>
-          <a href="/shop.html" class="order-btn" style="display:inline-block;width:auto;padding:14px 40px">Browse Products</a>
+        <div>
+          <div class="page-header">
+            <a href="/" class="back-link" dir="ltr"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> <span x-text="$store.lang.t('cart.continue')"></span></a>
+            <h1 class="page-title" x-text="$store.lang.t('cart.title')"></h1>
+          </div>
+          <div class="cart-empty">
+            <div class="cart-empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            </div>
+            <h2 x-text="$store.lang.t('cart.empty')"></h2>
+            <p x-text="$store.lang.t('cart.emptyDesc')"></p>
+            <a href="/shop.html" class="order-btn" style="display:inline-block;width:auto;padding:14px 40px" x-text="$store.lang.t('cart.browse')"></a>
+          </div>
         </div>
       </template>
 
@@ -188,10 +210,12 @@
           <div class="order-success-icon">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
-          <h2>Order Placed!</h2>
-          <p>Your order <span class="order-id" x-text="'#' + orderId"></span> has been placed successfully.</p>
-          <p>We'll contact you at <span x-text="form.phone"></span> to confirm delivery.</p>
-          <a href="/shop.html" class="order-btn" style="display:inline-block;width:auto;padding:14px 40px">Continue Shopping</a>
+          <h2 x-text="$store.lang.t('cart.orderPlaced')"></h2>
+          <p x-text="$store.lang.t('cart.orderDesc1')"></p>
+          <p><span class="order-id" x-text="'#' + orderId"></span></p>
+          <p x-text="$store.lang.t('cart.orderDesc2')"></p>
+          <p><span x-text="form.phone"></span></p>
+          <a href="/shop.html" class="order-btn" style="display:inline-block;width:auto;padding:14px 40px" x-text="$store.lang.t('cart.continue')"></a>
         </div>
       </template>
 
@@ -199,8 +223,8 @@
       <template x-if="$store.cart.count > 0 && !orderDone">
         <div>
           <div class="page-header">
-            <a href="/" class="back-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> Continue Shopping</a>
-            <h1 class="page-title">Checkout</h1>
+            <a href="/" class="back-link" dir="ltr"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> <span x-text="$store.lang.t('cart.continue')"></span></a>
+            <h1 class="page-title" x-text="$store.lang.t('checkout.title')"></h1>
           </div>
           <div class="cart-layout">
             <!-- Left: Cart items -->
@@ -213,12 +237,12 @@
                     <div class="cart-item-info">
                       <p class="cart-item-brand" x-text="item.brand"></p>
                       <p class="cart-item-name" x-text="item.name"></p>
-                      <p class="cart-item-price" x-text="item.price.toLocaleString() + ' DZD'"></p>
+                      <p class="cart-item-price" x-text="item.price.toLocaleString() + ' ' + $store.lang.t('currency')"></p>
                       <div class="cart-item-actions">
                         <button class="qty-btn" @click="$store.cart.updateQty(item.id, item.qty - 1)">&minus;</button>
                         <span class="cart-item-qty" x-text="item.qty"></span>
                         <button class="qty-btn" @click="$store.cart.updateQty(item.id, item.qty + 1)">+</button>
-                        <button class="cart-item-remove" @click="$store.cart.remove(item.id)">Remove</button>
+                        <button class="cart-item-remove" @click="$store.cart.remove(item.id)" x-text="$store.lang.t('cart.remove')"></button>
                       </div>
                     </div>
                   </div>
@@ -228,74 +252,74 @@
 
             <!-- Right: Order form -->
             <div class="cart-summary">
-              <h3>Delivery Details</h3>
+              <h3 x-text="$store.lang.t('checkout.delivery')"></h3>
 
               <div class="delivery-toggle">
                 <div class="delivery-opt" :class="{ active: deliveryMethod === 'home' }" @click="deliveryMethod='home'">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:block;margin:0 auto 4px"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                  Home Delivery
+                  <span x-text="$store.lang.t('checkout.homeDelivery')"></span>
                 </div>
                 <div class="delivery-opt" :class="{ active: deliveryMethod === 'desk' }" @click="deliveryMethod='desk'">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:block;margin:0 auto 4px"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                  Desk Pickup
+                  <span x-text="$store.lang.t('checkout.deskPickup')"></span>
                 </div>
               </div>
 
               <div class="form-row">
                 <div class="form-group">
-                  <label>First Name <span class="req">*</span></label>
+                  <label x-text="$store.lang.t('checkout.firstName')"></label> <span class="req">*</span>
                   <input type="text" class="form-control" :class="{ error: errors.firstName }" x-model="form.firstName" placeholder="Mohamed">
-                  <div class="form-error" :class="{ show: errors.firstName }">Required</div>
+                  <div class="form-error" :class="{ show: errors.firstName }" x-text="$store.lang.t('checkout.required')"></div>
                 </div>
                 <div class="form-group">
-                  <label>Last Name <span class="req">*</span></label>
+                  <label x-text="$store.lang.t('checkout.lastName')"></label> <span class="req">*</span>
                   <input type="text" class="form-control" :class="{ error: errors.lastName }" x-model="form.lastName" placeholder="Amine">
-                  <div class="form-error" :class="{ show: errors.lastName }">Required</div>
+                  <div class="form-error" :class="{ show: errors.lastName }" x-text="$store.lang.t('checkout.required')"></div>
                 </div>
               </div>
 
               <div class="form-group">
-                <label>Phone Number <span class="req">*</span></label>
+                <label x-text="$store.lang.t('checkout.phone')"></label> <span class="req">*</span>
                 <input type="tel" class="form-control" :class="{ error: errors.phone }" x-model="form.phone" placeholder="05XX XX XX XX">
-                <div class="form-error" :class="{ show: errors.phone }">Valid phone number required</div>
+                <div class="form-error" :class="{ show: errors.phone }" x-text="$store.lang.t('checkout.validPhone')"></div>
               </div>
 
               <div class="form-group" x-show="deliveryMethod === 'home'" x-transition>
-                <label>Address <span class="req">*</span></label>
+                <label x-text="$store.lang.t('checkout.address')"></label> <span class="req">*</span>
                 <input type="text" class="form-control" :class="{ error: errors.address }" x-model="form.address" placeholder="Street, building, apartment...">
-                <div class="form-error" :class="{ show: errors.address }">Required for home delivery</div>
+                <div class="form-error" :class="{ show: errors.address }" x-text="$store.lang.t('checkout.requiredAddress')"></div>
               </div>
 
               <div class="form-row-3">
                 <div class="form-group">
-                  <label>Wilaya <span class="req">*</span></label>
+                  <label x-text="$store.lang.t('checkout.wilaya')"></label> <span class="req">*</span>
                   <select class="form-control" :class="{ error: errors.wilaya }" x-model="form.wilaya">
                     <option value="">Select</option>
                     <template x-for="w in wilayas" :key="w.code">
                       <option :value="w.code" x-text="w.code + ' - ' + w.name"></option>
                     </template>
                   </select>
-                  <div class="form-error" :class="{ show: errors.wilaya }">Required</div>
+                  <div class="form-error" :class="{ show: errors.wilaya }" x-text="$store.lang.t('checkout.required')"></div>
                 </div>
                 <div class="form-group">
-                  <label>City <span class="req">*</span></label>
+                  <label x-text="$store.lang.t('checkout.city')"></label> <span class="req">*</span>
                   <input type="text" class="form-control" :class="{ error: errors.city }" x-model="form.city" placeholder="City">
-                  <div class="form-error" :class="{ show: errors.city }">Required</div>
+                  <div class="form-error" :class="{ show: errors.city }" x-text="$store.lang.t('checkout.required')"></div>
                 </div>
                 <div class="form-group">
-                  <label>Postal Code</label>
+                  <label x-text="$store.lang.t('checkout.postalCode')"></label>
                   <input type="text" class="form-control" x-model="form.postalCode" placeholder="Optional">
                 </div>
               </div>
 
-              <div class="summary-row"><span>Subtotal (<span x-text="$store.cart.count"></span> items)</span><span x-text="$store.cart.total.toLocaleString() + ' DZD'"></span></div>
-              <div class="summary-row"><span>Shipping</span><span x-text="shippingCost.toLocaleString() + ' DZD'"></span></div>
-              <div class="summary-row total"><span>Total</span><span x-text="total.toLocaleString() + ' DZD'"></span></div>
+              <div class="summary-row"><span x-text="$store.lang.t('checkout.subtotal').replace('{n}', $store.cart.count)"></span><span x-text="$store.cart.total.toLocaleString() + ' ' + $store.lang.t('currency')"></span></div>
+              <div class="summary-row"><span x-text="$store.lang.t('checkout.shipping')"></span><span x-text="shippingCost.toLocaleString() + ' ' + $store.lang.t('currency')"></span></div>
+              <div class="summary-row total"><span x-text="$store.lang.t('checkout.totalLabel')"></span><span x-text="total.toLocaleString() + ' ' + $store.lang.t('currency')"></span></div>
 
-              <div style="font-size:11px;color:var(--text-muted);margin-top:var(--s3);text-align:center">Payment: Cash on Delivery</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:var(--s3);text-align:center" x-text="$store.lang.t('checkout.paymentNote')"></div>
 
               <button class="order-btn" :class="{ loading: ordering }" :disabled="ordering" @click="placeOrder()">
-                <span class="label">Place Order</span>
+                <span class="label" x-text="$store.lang.t('checkout.placeOrder')"></span>
                 <span class="spinner"></span>
               </button>
 
@@ -310,12 +334,12 @@
   <footer class="site-footer" x-data="storeData()">
     <div class="container footer-inner">
       <div class="footer-logo"><span class="logo-main" x-text="info.store_name || 'IRONFUEL'"></span></div>
-      <p class="footer-tagline" x-text="info.store_description || 'Premium sports nutrition delivered across Algeria.'"></p>
+      <p class="footer-tagline" x-text="info.store_description || $store.lang.t('about.desc')"></p>
       <div class="footer-links">
-        <a href="/">Home</a><span>|</span>
-        <a href="/shop.html">Shop</a><span>|</span>
-        <a href="/deals.html">Offers</a><span>|</span>
-        <a href="/about.html">About</a>
+        <a href="/" x-text="$store.lang.t('footer.home')"></a><span>|</span>
+        <a href="/shop.html" x-text="$store.lang.t('footer.shop')"></a><span>|</span>
+        <a href="/deals.html" x-text="$store.lang.t('footer.offers')"></a><span>|</span>
+        <a href="/about.html" x-text="$store.lang.t('footer.about')"></a>
       </div>
       <div class="footer-bottom">
         <span x-text="'© ' + new Date().getFullYear() + ' ' + (info.store_name || 'IronFuel Nutrition')"></span>
@@ -470,7 +494,7 @@
   <a id="whatsapp-fab" class="whatsapp-fab" href="#" target="_blank" rel="noopener" style="display:none">
     <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
   </a>
-  <div id="whatsapp-tooltip" class="whatsapp-tooltip">Click me to send a WhatsApp message</div>
+  <div id="whatsapp-tooltip" class="whatsapp-tooltip" x-data x-text="$store.lang.t('whatsapp.tooltip')"></div>
   <script>
     fetch('/api/store-info').then(r=>r.json()).then(d=>{
       if(d.whatsapp){
@@ -480,5 +504,10 @@
       }
     }).catch(()=>{});
   </script>
+  <div class="lang-switcher" x-data dir="ltr">
+    <button @click="$store.lang.set('en')" :class="{ active: $store.lang.current === 'en' }"><img src="/assets/flags-icon/united-kingdom.svg" alt="EN"></button>
+    <button @click="$store.lang.set('ar')" :class="{ active: $store.lang.current === 'ar' }"><img src="/assets/flags-icon/Algeria.svg" alt="AR"></button>
+    <button @click="$store.lang.set('fr')" :class="{ active: $store.lang.current === 'fr' }"><img src="/assets/flags-icon/france.svg" alt="FR"></button>
+  </div>
 </body>
 </html>

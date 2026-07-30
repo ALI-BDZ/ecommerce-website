@@ -7,7 +7,12 @@
     <meta name="description" content="Shop premium supplements for serious athletes and everyday warriors." />
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js">
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <script>window.__i18n = window.__i18n || {};</script>
+    <script src="/locales/en.js?v=2"></script>
+    <script src="/locales/ar.js?v=2"></script>
+    <script src="/locales/fr.js?v=2"></script>
+    <script src="/js/i18n.js"></script>
+    <link id="font-link" href="/css/fonts.css" rel="stylesheet" />
     <style>
         /* ─── RESET ─── */
         *,
@@ -19,7 +24,7 @@
         }
         html,
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: var(--ff);
             color: #0d0d0d;
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
@@ -51,6 +56,7 @@
 
         /* ─── VARIABLES ─── */
         :root {
+            --ff:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
             --bg: #fff;
             --bg-alt: #fafafa;
             --bg-tert: #f3f3f5;
@@ -108,6 +114,7 @@
             --radius-md: 16px;
             --radius-lg: 24px;
             --radius-xl: 32px;
+            --radius-pill: 999px;
             --shadow-sm: 0 1px 2px rgba(11,11,16,0.04);
             --shadow-lg: 0 16px 48px rgba(11,11,16,0.10);
             --shadow-xl: 0 24px 80px rgba(11,11,16,0.14);
@@ -259,6 +266,12 @@
         .navbar-link:hover{color:var(--text)}.navbar-link:hover::after{width:100%}
         .navbar-link.active{color:var(--text)}.navbar-link.active::after{width:100%}
         .navbar-actions{display:flex;align-items:center;gap:var(--space-2)}
+.lang-switcher{display:flex;align-items:center;gap:2px;background:rgba(255,255,255,0.9);backdrop-filter:blur(12px);border-radius:var(--radius-pill);padding:4px;box-shadow:0 2px 12px rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.06);position:fixed;bottom:24px;left:24px;z-index:998;transition:transform .3s cubic-bezier(0.16,1,0.3,1),opacity .3s}
+.lang-switcher:hover{transform:scale(1.05)}
+.lang-switcher button{border:none;background:none;padding:3px;border-radius:50%;cursor:pointer;transition:transform .2s;line-height:0;display:flex;align-items:center;justify-content:center}
+.lang-switcher button img{width:22px;height:22px;border-radius:50%;object-fit:cover;transition:transform .2s}
+.lang-switcher button.active img{transform:scale(1.15);box-shadow:0 0 0 2px var(--accent)}
+.lang-switcher button:hover img{transform:scale(1.08)}
         .navbar-icon-btn{position:relative;background:none;border:none;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;transition:background var(--duration-fast),transform var(--duration-fast);}
         .navbar-icon-btn:hover{background:var(--paper-cool);transform:translateY(-1px)}
         .cart-count{position:absolute;top:2px;right:2px;background:var(--accent);color:var(--white);font-size:9px;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--paper);}
@@ -1043,6 +1056,7 @@
             .navbar-burger{display:block}
             .navbar-links{display:none;position:absolute;top:calc(var(--nav-h) - 8px);left:0;right:0;background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);flex-direction:column;padding:var(--space-4);gap:var(--space-3);border:1px solid var(--border)}
             .navbar-links.is-open{display:flex;animation:slideDown .25s var(--ease-out-quart)}
+
             .hero-shop {
                 padding-top: calc(var(--space-3) + var(--nav-h) + var(--space-4));
             }
@@ -1250,37 +1264,27 @@
 <body>
 
     <!-- ─── NAVBAR ─── -->
-    <header class="navbar" id="navbar" x-data="{ mobileOpen: false }">
-        <div class="navbar-inner">
-            <button class="navbar-burger" @click="mobileOpen = !mobileOpen" aria-label="Menu">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="3" y1="6" x2="21" y2="6" />
-                    <line x1="3" y1="12" x2="21" y2="12" />
-                    <line x1="3" y1="18" x2="21" y2="18" />
-                </svg>
-            </button>
-            <a href="/" class="navbar-logo">
-                <span class="logo-main">IRONFUEL</span>
-                <span class="logo-sub">NUTRITION</span>
-            </a>
-            <nav class="navbar-links" :class="{ 'is-open': mobileOpen }">
-                <a href="/" class="navbar-link">Home</a>
-                <a href="/shop.html" class="navbar-link active">Shop</a>
-                <a href="/deals.html" class="navbar-link">Offers</a>
-                <a href="/about.html" class="navbar-link">About Us</a>
-            </nav>
-            <div class="navbar-actions">
-                <a href="/cart" class="navbar-icon-btn" aria-label="Cart">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="9" cy="21" r="1" />
-                        <circle cx="20" cy="21" r="1" />
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                    </svg>
-                    <span class="cart-count" x-text="$store.cart.count" x-show="$store.cart.count > 0" x-cloak>0</span>
-                </a>
-            </div>
-        </div>
-    </header>
+  <header class="navbar" id="navbar" x-data="{ mobileOpen: false }">
+    <div class="navbar-inner">
+      <button class="navbar-burger" @click="mobileOpen = !mobileOpen" :aria-label="$store.lang.t('nav.menu')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <a href="/" class="navbar-logo"><span class="logo-main">IRONFUEL</span><span class="logo-sub">NUTRITION</span></a>
+      <nav class="navbar-links" :class="{ 'is-open': mobileOpen }">
+        <a href="/" class="navbar-link" x-text="$store.lang.t('nav.home')"></a>
+        <a href="/shop.html" class="navbar-link" x-text="$store.lang.t('nav.shop')"></a>
+        <a href="/deals.html" class="navbar-link" x-text="$store.lang.t('nav.offers')"></a>
+        <a href="/about.html" class="navbar-link" x-text="$store.lang.t('nav.about')"></a>
+
+      </nav>
+      <div class="navbar-actions">
+        <a href="/cart" class="navbar-icon-btn" :aria-label="$store.lang.t('nav.cart')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span class="cart-count" x-text="$store.cart.count" x-show="$store.cart.count > 0" x-cloak>0</span>
+        </a>
+      </div>
+    </div>
+  </header>
 
     <!-- ─── HERO BANNER ─── -->
     <section class="hero-shop">
@@ -1291,12 +1295,12 @@
                 <div class="hero-shop-inner">
                     <div class="hero-shop-content anim-fade-up">
                         <div class="hero-shop-breadcrumb">
-                            <a href="/">Home</a>
+                            <a href="/" x-text="$store.lang.t('nav.home')"></a>
                             <span>›</span>
-                            <span>Shop</span>
+                            <span x-text="$store.lang.t('nav.shop')"></span>
                         </div>
-                        <h1 class="hero-shop-title">SHOP ALL</h1>
-                        <p class="hero-shop-sub">Premium supplements for every goal.</p>
+                        <h1 class="hero-shop-title" x-text="$store.lang.t('shop.title')"></h1>
+                        <p class="hero-shop-sub" x-text="$store.lang.t('shop.subtitle')"></p>
                     </div>
                 </div>
             </div>
@@ -1310,14 +1314,14 @@
         <aside class="sidebar" :class="{ 'mobile-open': filterDrawerOpen }" id="sidebar">
             <div class="sidebar-card">
                 <div class="sidebar-header">
-                    <h3>Filter By</h3>
-                    <button class="clear-btn" @click="clearFilters()">Reset Filters</button>
+                    <h3 x-text="$store.lang.t('shop.filterBy')"></h3>
+                    <button class="clear-btn" @click="clearFilters()" x-text="$store.lang.t('shop.resetFilters')"></button>
                 </div>
 
                 <!-- Category -->
                 <div class="filter-group open" :class="{ open: openGroups.category }">
                     <button class="filter-trigger" @click="openGroups.category = !openGroups.category">
-                        <span>Categories</span>
+                        <span x-text="$store.lang.t('shop.categories')"></span>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                             <polyline points="6 9 12 15 18 9" />
                         </svg>
@@ -1338,7 +1342,7 @@
                 <!-- Brand -->
                 <div class="filter-group open" :class="{ open: openGroups.brand }">
                     <button class="filter-trigger" @click="openGroups.brand = !openGroups.brand">
-                        <span>Brands</span>
+                        <span x-text="$store.lang.t('shop.brands')"></span>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                             <polyline points="6 9 12 15 18 9" />
                         </svg>
@@ -1359,7 +1363,7 @@
                 <!-- Price -->
                 <div class="filter-group open" :class="{ open: openGroups.price }">
                     <button class="filter-trigger" @click="openGroups.price = !openGroups.price">
-                        <span>Price Range</span>
+                        <span x-text="$store.lang.t('shop.priceRange')"></span>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                             <polyline points="6 9 12 15 18 9" />
                         </svg>
@@ -1368,12 +1372,12 @@
                         <div class="price-range">
                             <input type="range" min="0" max="50000" step="500" x-model="filters.priceMax" @input="applyFilters()" />
                             <div class="range-values">
-                                <span x-text="'0 DZD'"></span>
-                                <span x-text="filters.priceMax.toLocaleString()+' DZD'"></span>
+                                <span x-text="'0 ' + $store.lang.t('currency')"></span>
+                                <span x-text="filters.priceMax.toLocaleString()+' ' + $store.lang.t('currency')"></span>
                             </div>
                             <div class="range-labels">
-                                <span>Min</span>
-                                <span>Max</span>
+                                <span x-text="$store.lang.t('shop.min')"></span>
+                                <span x-text="$store.lang.t('shop.max')"></span>
                             </div>
                         </div>
                     </div>
@@ -1382,7 +1386,7 @@
                 <!-- Rating -->
                 <div class="filter-group open" :class="{ open: openGroups.rating }">
                     <button class="filter-trigger" @click="openGroups.rating = !openGroups.rating">
-                        <span>Minimum Rating</span>
+                        <span x-text="$store.lang.t('shop.minimumRating')"></span>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                             <polyline points="6 9 12 15 18 9" />
                         </svg>
@@ -1399,7 +1403,7 @@
                             </template>
                         </div>
                         <span style="font-size:12px;color:var(--text-muted);cursor:pointer" x-show="minRatingFilter > 0" @click="minRatingFilter=0;applyFilters()" x-text="minRatingFilter + '+ stars \u2716'" title="Clear rating filter"></span>
-                        <span style="font-size:12px;color:var(--text-muted)" x-show="!minRatingFilter">Any rating</span>
+                        <span style="font-size:12px;color:var(--text-muted)" x-show="!minRatingFilter" x-text="$store.lang.t('shop.anyRating')"></span>
                     </div>
                 </div>
             </div>
@@ -1411,15 +1415,15 @@
             <!-- Toolbar -->
             <div class="toolbar">
                 <div class="toolbar-left">
-                    <span class="count-label">Showing <strong x-text="filteredProducts.length"></strong> Products</span>
+                    <span class="count-label"><span x-text="$store.lang.t('shop.showing')"></span> <strong x-text="filteredProducts.length"></strong> <span x-text="$store.lang.t('shop.products')"></span></span>
                 </div>
                 <div class="toolbar-right">
                     <select x-model="sortBy" @change="applyFilters()">
-                        <option value="featured">Sort: Featured</option>
-                        <option value="newest">Sort: Newest</option>
-                        <option value="price-low">Sort: Price Low</option>
-                        <option value="price-high">Sort: Price High</option>
-                        <option value="rating">Sort: Top Rated</option>
+                        <option value="featured" x-text="$store.lang.t('shop.sortFeatured')"></option>
+                        <option value="newest" x-text="$store.lang.t('shop.sortNewest')"></option>
+                        <option value="price-low" x-text="$store.lang.t('shop.sortPriceLow')"></option>
+                        <option value="price-high" x-text="$store.lang.t('shop.sortPriceHigh')"></option>
+                        <option value="rating" x-text="$store.lang.t('shop.sortTopRated')"></option>
                     </select>
                     <div class="view-toggle">
                         <button @click="viewMode='grid'" :class="{ active: viewMode==='grid' }" aria-label="Grid view">
@@ -1450,7 +1454,7 @@
                             <line x1="9" y1="8" x2="15" y2="8" />
                             <line x1="17" y1="16" x2="23" y2="16" />
                         </svg>
-                        Filter
+                        <span x-text="$store.lang.t('shop.filter')"></span>
                     </button>
                 </div>
             </div>
@@ -1459,7 +1463,8 @@
             <div class="products-grid" :class="{ 'list-view': viewMode==='list' }" id="product-grid">
                 <template x-for="(p, idx) in paginatedProducts" :key="p.id">
                     <div class="product-card anim-fade-up" :class="{ 'on-sale': (p.compareAtPrice||0)>0 }" :style="'animation-delay:'+(idx%4)*0.08+'s'">
-                        <span class="sale-badge" x-show="(p.compareAtPrice||0)>0">SALE</span>
+                        <span class="sale-badge" x-show="(p.compareAtPrice||0)>0" x-text="$store.lang.t('shop.sale')"></span>
+                        <span class="product-badge badge-new" x-show="(function(){ if(!p.createdAt) return false; var d=new Date(p.createdAt); var now=new Date(); return (now - d) < 7*24*60*60*1000; })() && !(p.compareAtPrice>0)" x-text="$store.lang.t('products.new')"></span>
                         <a :href="'/product.html?slug='+p.slug" style="text-decoration:none;color:inherit;display:flex;flex-direction:column;flex:1">
                         <div class="product-img-wrap">
                             <img :src="p.image || 'https://placehold.co/400x400/f5f5f6/0d0d0d?text=Product'" :alt="p.name" loading="lazy" @error="$el.src='https://placehold.co/400x400/f5f5f6/0d0d0d?text='+encodeURIComponent(p.name)" />
@@ -1469,8 +1474,8 @@
                             <p class="product-brand" x-text="p.brand"></p>
                             <p class="product-name" x-text="p.name"></p>
                             <p class="product-price">
-                                <span class="sale-price" x-show="(p.compareAtPrice||0)>0" x-text="p.price.toLocaleString()+' DZD'"></span>
-                                <span x-show="!(p.compareAtPrice>0)" x-text="p.price.toLocaleString()+' DZD'"></span>
+                                <span class="sale-price" x-show="(p.compareAtPrice||0)>0" x-text="p.price.toLocaleString()+' ' + $store.lang.t('currency')"></span>
+                                <span x-show="!(p.compareAtPrice>0)" x-text="p.price.toLocaleString()+' ' + $store.lang.t('currency')"></span>
                                 <span class="old-price" x-show="(p.compareAtPrice||0)>0" x-text="Number(p.compareAtPrice).toLocaleString()"></span>
                             </p>
                         </div>
@@ -1482,18 +1487,16 @@
                                     <circle cx="20" cy="21" r="1" />
                                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                                 </svg>
-                                <span x-text="cartAdded.includes(p.id) ? 'ADDED' : 'ADD'"></span>
+                                <span x-text="cartAdded.includes(p.id) ? $store.lang.t('shop.added') : $store.lang.t('shop.add')"></span>
                             </button>
-                            <button class="btn-icon" @click.stop="$dispatch('qv-open', p)" aria-label="Quick view" style="flex-shrink:0">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                            </button>
+
                         </div>
                     </div>
                 </template>
             </div>
 
             <!-- Loading state -->
-            <div x-show="loading" class="product-loading">Loading products...</div>
+            <div x-show="loading" class="product-loading" x-text="$store.lang.t('shop.loadingProducts')"></div>
 
             <!-- Pagination -->
             <div class="pagination-wrap" x-show="totalPages > 1">
@@ -1501,14 +1504,14 @@
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <polyline points="15 18 9 12 15 6" />
                     </svg>
-                    Prev
+                    <span x-text="$store.lang.t('shop.prev')"></span>
                 </button>
                 <template x-for="page in visiblePages" :key="page">
                     <button v-if="page === '…'" class="pagination-ellipsis" disabled>…</button>
                     <button v-else :class="{ active: page === currentPage }" @click="goToPage(page)" x-text="page"></button>
                 </template>
                 <button class="pagination-next" @click="goToPage(currentPage+1)" :disabled="currentPage >= totalPages">
-                    Next
+                    <span x-text="$store.lang.t('shop.next')"></span>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <polyline points="9 18 15 12 9 6" />
                     </svg>
@@ -1527,12 +1530,12 @@
             <div class="footer-logo">
                 <span class="logo-main" x-text="info.store_name || 'IRONFUEL'"></span>
             </div>
-            <p class="footer-tagline" x-text="info.store_description || 'Premium sports nutrition delivered across Algeria.'"></p>
+            <p class="footer-tagline" x-text="info.store_description || $store.lang.t('about.desc')"></p>
             <div class="footer-links">
-                <a href="/">Home</a><span>|</span>
-                <a href="/shop.html">Shop</a><span>|</span>
-                <a href="/deals.html">Offers</a><span>|</span>
-                <a href="/about.html">About</a>
+                <a href="/" x-text="$store.lang.t('footer.home')"></a><span>|</span>
+                <a href="/shop.html" x-text="$store.lang.t('footer.shop')"></a><span>|</span>
+                <a href="/deals.html" x-text="$store.lang.t('footer.offers')"></a><span>|</span>
+                <a href="/about.html" x-text="$store.lang.t('footer.about')"></a>
             </div>
             <div class="footer-bottom">
                 <span x-text="'© ' + new Date().getFullYear() + ' ' + (info.store_name || 'IronFuel Nutrition')"></span>
@@ -1570,12 +1573,12 @@
                     <span x-html="renderStars(product?.rating || 0)"></span>
                     <span class="count" x-text="'(' + (product?.reviews || 0) + ')'"></span>
                 </div>
-                <p class="qv-price" x-text="product ? product.price.toLocaleString() + ' DZD' : ''"></p>
+                <p class="qv-price" x-text="product ? product.price.toLocaleString() + ' ' + $store.lang.t('currency') : ''"></p>
                 <p class="qv-desc" x-text="product?.description || 'Premium quality supplement lab-tested for purity and performance.'"></p>
                 <div class="qv-actions">
                     <button class="qv-add-btn" :class="{ added: added }" @click="addToCart()">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                        <span x-text="added ? 'ADDED' : 'ADD TO CART'"></span>
+                        <span x-text="added ? $store.lang.t('shop.added') : $store.lang.t('shop.addToCart')"></span>
                     </button>
                 </div>
             </div>
@@ -1625,16 +1628,28 @@
                 hoverMinRating: 0,
                 categoryFilters: [],
                 brandFilters: [],
+                allCategories: [],
+                allBrands: [],
 
                 async init() {
                     try {
-                        const res = await fetch('/api/products?limit=50');
-                        if (!res.ok) throw new Error(res.statusText);
-                        const data = await res.json();
-                        this.products = data.products || data;
+                        const [prodRes, catRes, brandRes] = await Promise.all([
+                            fetch('/api/products?limit=50'),
+                            fetch('/api/categories'),
+                            fetch('/api/brands')
+                        ]);
+                        if (!prodRes.ok) throw new Error(prodRes.statusText);
+                        const prodData = await prodRes.json();
+                        this.products = prodData.products || [];
+                        const catData = await catRes.json();
+                        this.allCategories = catData.categories || [];
+                        const brandData = await brandRes.json();
+                        this.allBrands = brandData.brands || [];
                     } catch (e) {
-                        console.error('Failed to load products', e);
+                        console.error('Failed to load shop data', e);
                         this.products = [];
+                        this.allCategories = [];
+                        this.allBrands = [];
                     }
                     this.buildFilterOptions();
                     this.applyFilters();
@@ -1645,30 +1660,30 @@
                 },
 
                 buildFilterOptions() {
-                    const catMap = {}, brandMap = {};
                     let maxPrice = 0;
                     this.products.forEach(p => {
-                        if (!catMap[p.categorySlug]) catMap[p.categorySlug] = { label: p.category, count: 0 };
-                        catMap[p.categorySlug].count++;
-                        brandMap[p.brand] = (brandMap[p.brand] || 0) + 1;
                         if (p.price > maxPrice) maxPrice = p.price;
                     });
                     this.filters.priceMax = maxPrice || 50000;
-                    this.categoryFilters = Object.entries(catMap).map(([id, v]) => ({ id, label: v.label, count: v.count }));
-                    const slugify = s => s.toLowerCase().replace(/\s+/g, '-');
-                    this.brandFilters = Object.entries(brandMap).map(([name, count]) => ({ id: slugify(name), label: name, count }));
+                    this.categoryFilters = this.allCategories
+                        .filter(c => c.count > 0)
+                        .map(c => ({ id: c.slug, label: c.name, count: c.count }));
+                    this.brandFilters = this.allBrands
+                        .filter(b => b.count > 0)
+                        .map(b => ({ id: b.slug, label: b.name, count: b.count }));
                 },
 
                 applyFilters() {
                     let result = [...this.products];
                     if (this.filters.categories.length > 0) {
-                        result = result.filter(p => this.filters.categories.includes(p.categorySlug));
+                        result = result.filter(p => p.categorySlug && this.filters.categories.includes(p.categorySlug));
                     }
                     if (this.filters.brands.length > 0) {
-                        const brandLookup = {};
-                        this.brandFilters.forEach(b => { brandLookup[b.id] = b.label });
-                        const selectedBrands = this.filters.brands.map(b => brandLookup[b] || b);
-                        result = result.filter(p => selectedBrands.includes(p.brand));
+                        result = result.filter(p => {
+                            if (!p.brand) return false;
+                            const brandSlug = p.brand.toLowerCase().replace(/\s+/g, '-');
+                            return this.filters.brands.includes(brandSlug);
+                        });
                     }
                     result = result.filter(p => p.price <= this.filters.priceMax);
                     if (this.minRatingFilter > 0) {
@@ -1678,6 +1693,7 @@
                         case 'price-low': result.sort((a, b) => a.price - b.price); break;
                         case 'price-high': result.sort((a, b) => b.price - a.price); break;
                         case 'rating': result.sort((a, b) => b.rating - a.rating); break;
+                        case 'newest': break; /* already sorted by newest from API */
                         default: result.sort((a, b) => a.name.localeCompare(b.name)); break;
                     }
                     this.filteredProducts = result;
@@ -1792,7 +1808,7 @@
     <a id="whatsapp-fab" class="whatsapp-fab" href="#" target="_blank" rel="noopener" style="display:none">
       <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
     </a>
-    <div id="whatsapp-tooltip" class="whatsapp-tooltip">Click me to send a WhatsApp message</div>
+    <div id="whatsapp-tooltip" class="whatsapp-tooltip" x-data x-text="$store.lang.t('whatsapp.tooltip')"></div>
     <script>
       fetch('/api/store-info').then(r=>r.json()).then(d=>{
         if(d.whatsapp){
@@ -1803,5 +1819,10 @@
       }).catch(()=>{});
     </script>
 
+  <div class="lang-switcher" x-data dir="ltr">
+    <button @click="$store.lang.set('en')" :class="{ active: $store.lang.current === 'en' }"><img src="/assets/flags-icon/united-kingdom.svg" alt="EN"></button>
+    <button @click="$store.lang.set('ar')" :class="{ active: $store.lang.current === 'ar' }"><img src="/assets/flags-icon/Algeria.svg" alt="AR"></button>
+    <button @click="$store.lang.set('fr')" :class="{ active: $store.lang.current === 'fr' }"><img src="/assets/flags-icon/france.svg" alt="FR"></button>
+  </div>
 </body>
 </html>

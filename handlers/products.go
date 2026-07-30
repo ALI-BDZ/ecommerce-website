@@ -416,7 +416,7 @@ func GetProducts(c fiber.Ctx) error {
 	aidx++
 	offsetArg := aidx
 	args = append(args, limit, offset)
-	q := `SELECT p.id,p.name,p.slug,p.price,COALESCE(p.compare_at_price,0),COALESCE(ROUND(AVG(r.rating),1),0),COUNT(r.id),COALESCE(c.name,''),COALESCE(c.slug,''),COALESCE(b.name,''),COALESCE((SELECT url FROM product_images WHERE product_id=p.id ORDER BY sort_order LIMIT 1),'') FROM products p LEFT JOIN categories c ON c.id=p.category_id LEFT JOIN brands b ON b.id=p.brand_id LEFT JOIN reviews r ON r.product_id=p.id ` + where + ` GROUP BY p.id,c.name,c.slug,b.name ORDER BY p.created_at DESC LIMIT $` + strconv.Itoa(limitArg) + ` OFFSET $` + strconv.Itoa(offsetArg)
+	q := `SELECT p.id,p.name,p.slug,p.price,COALESCE(p.compare_at_price,0),COALESCE(ROUND(AVG(r.rating),1),0),COUNT(r.id),COALESCE(c.name,''),COALESCE(c.slug,''),COALESCE(b.name,''),COALESCE((SELECT url FROM product_images WHERE product_id=p.id ORDER BY sort_order LIMIT 1),''),p.created_at FROM products p LEFT JOIN categories c ON c.id=p.category_id LEFT JOIN brands b ON b.id=p.brand_id LEFT JOIN reviews r ON r.product_id=p.id ` + where + ` GROUP BY p.id,c.name,c.slug,b.name ORDER BY p.created_at DESC LIMIT $` + strconv.Itoa(limitArg) + ` OFFSET $` + strconv.Itoa(offsetArg)
 	rows, err := database.DB.Query(ctx, q, args...)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
@@ -434,11 +434,12 @@ func GetProducts(c fiber.Ctx) error {
 		CompareAtPrice int64   `json:"compareAtPrice"`
 		Rating         float64 `json:"rating"`
 		Reviews        int     `json:"reviews"`
+		CreatedAt      string  `json:"createdAt"`
 	}
 	prods := []LP{}
 	for rows.Next() {
 		var p LP
-		rows.Scan(&p.ID, &p.Name, &p.Slug, &p.Price, &p.CompareAtPrice, &p.Rating, &p.Reviews, &p.Category, &p.CategorySlug, &p.Brand, &p.Image)
+		rows.Scan(&p.ID, &p.Name, &p.Slug, &p.Price, &p.CompareAtPrice, &p.Rating, &p.Reviews, &p.Category, &p.CategorySlug, &p.Brand, &p.Image, &p.CreatedAt)
 		prods = append(prods, p)
 	}
 	return c.JSON(fiber.Map{
@@ -573,6 +574,56 @@ func GetProduct(c fiber.Ctx) error {
 	}
 
 	return c.JSON(p)
+}
+
+func PublicCategories(c fiber.Ctx) error {
+	if database.DB == nil {
+		return c.Status(503).JSON(fiber.Map{"error": "db not connected"})
+	}
+	rows, err := database.DB.Query(context.Background(),
+		`SELECT c.id, c.name, c.slug, COUNT(p.id)::int
+		 FROM categories c
+		 LEFT JOIN products p ON p.category_id = c.id AND p.is_active = true
+		 WHERE c.is_active = true
+		 GROUP BY c.id, c.name, c.slug
+		 ORDER BY c.name`)
+	if err != nil {
+		return c.JSON(fiber.Map{"categories": []fiber.Map{}})
+	}
+	defer rows.Close()
+	cats := []fiber.Map{}
+	for rows.Next() {
+		var id, name, slug string
+		var count int
+		rows.Scan(&id, &name, &slug, &count)
+		cats = append(cats, fiber.Map{"id": id, "name": name, "slug": slug, "count": count})
+	}
+	return c.JSON(fiber.Map{"categories": cats})
+}
+
+func PublicBrands(c fiber.Ctx) error {
+	if database.DB == nil {
+		return c.Status(503).JSON(fiber.Map{"error": "db not connected"})
+	}
+	rows, err := database.DB.Query(context.Background(),
+		`SELECT b.id, b.name, b.slug, COUNT(p.id)::int
+		 FROM brands b
+		 LEFT JOIN products p ON p.brand_id = b.id AND p.is_active = true
+		 WHERE b.is_active = true
+		 GROUP BY b.id, b.name, b.slug
+		 ORDER BY b.name`)
+	if err != nil {
+		return c.JSON(fiber.Map{"brands": []fiber.Map{}})
+	}
+	defer rows.Close()
+	brands := []fiber.Map{}
+	for rows.Next() {
+		var id, name, slug string
+		var count int
+		rows.Scan(&id, &name, &slug, &count)
+		brands = append(brands, fiber.Map{"id": id, "name": name, "slug": slug, "count": count})
+	}
+	return c.JSON(fiber.Map{"brands": brands})
 }
 
 func AddToCart(c fiber.Ctx) error {
