@@ -17,4 +17,12 @@ func RegisterPublic(api fiber.Router) {
 	api.Post("/cart/add", handlers.AddToCart)
 	api.Post("/orders", handlers.RateLimit(10, 1*time.Minute), handlers.CreateOrder)
 	api.Get("/orders/:id", handlers.GetOrder)
+
+	api.Get("/products/:id/reviews", handlers.GetProductReviews)
+	api.Post("/reviews", handlers.SubmitReview)
+
+	api.Get("/content", handlers.GetContentPages)
+	api.Get("/content/:slug", handlers.GetContentBySlug)
+
+	api.Get("/products/:id/variants", handlers.GetProductVariants)
 }

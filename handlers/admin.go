@@ -296,7 +296,7 @@ func AdminOrders(c fiber.Ctx) error {
 	q := "SELECT id,order_number,status,first_name,last_name,phone,total,payment_method,created_at,(SELECT COUNT(*) FROM order_items WHERE order_id=orders.id) FROM orders o " + where + " ORDER BY created_at DESC LIMIT $" + strconv.Itoa(aidx) + " OFFSET $" + strconv.Itoa(aidx+1)
 	rows, err := database.DB.Query(ctx, q, args...)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(500).JSON(fiber.Map{"error": "database query failed"})
 	}
 	defer rows.Close()
 	type O struct {
@@ -365,7 +365,7 @@ func AdminProducts(c fiber.Ctx) error {
 	q := "SELECT p.id,p.name,p.price,p.stock,p.is_active,p.orders_count,p.revenue,p.created_at,COALESCE(b.name,''),COALESCE(c.name,''),COALESCE(ROUND(AVG(r.rating),1),0),COALESCE((SELECT url FROM product_images WHERE product_id=p.id ORDER BY sort_order LIMIT 1),'') FROM products p LEFT JOIN brands b ON b.id=p.brand_id LEFT JOIN categories c ON c.id=p.category_id LEFT JOIN reviews r ON r.product_id=p.id " + where + " GROUP BY p.id,b.name,c.name ORDER BY " + orderClause + " LIMIT $" + strconv.Itoa(aidx) + " OFFSET $" + strconv.Itoa(aidx+1)
 	rows, err := database.DB.Query(ctx, q, args...)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(500).JSON(fiber.Map{"error": "database query failed"})
 	}
 	defer rows.Close()
 	type P struct {
@@ -402,7 +402,7 @@ func AdminCustomers(c fiber.Ctx) error {
 	q := "SELECT id,first_name,last_name,phone,email,total_orders,lifetime_value,last_order_at,risk_score,is_blacklisted,created_at FROM customers c " + where + " ORDER BY created_at DESC LIMIT $" + strconv.Itoa(aidx) + " OFFSET $" + strconv.Itoa(aidx+1)
 	rows, err := database.DB.Query(ctx, q, args...)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(500).JSON(fiber.Map{"error": "database query failed"})
 	}
 	defer rows.Close()
 	type C struct {
@@ -441,7 +441,7 @@ func AdminNotifications(c fiber.Ctx) error {
 	database.DB.QueryRow(ctx, "SELECT COUNT(*) FROM notifications WHERE is_read=false").Scan(&unread)
 	rows, err := database.DB.Query(ctx, "SELECT id,type,title,body,is_read,created_at FROM notifications ORDER BY created_at DESC LIMIT 50")
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(500).JSON(fiber.Map{"error": "database query failed"})
 	}
 	defer rows.Close()
 	type N struct {

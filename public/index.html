@@ -11,7 +11,6 @@
   <script src="/locales/ar.js?v=2"></script>
   <script src="/locales/fr.js?v=2"></script>
   <script src="/js/i18n.js"></script>
-  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link id="font-link" href="/css/fonts.css" rel="stylesheet"/>
@@ -263,8 +262,10 @@
     .skeleton-btn{height:42px;border-radius:var(--radius-pill);background:linear-gradient(90deg,var(--paper-warm) 25%,var(--paper-cool) 50%,var(--paper-warm) 75%);background-size:200% 100%;animation:skeleton 1.5s infinite;margin-top:auto;width:100px;align-self:flex-end}
     @keyframes skeleton{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-     /* Offers */
-      .offers-section{padding:var(--space-10) 0 120px;background:var(--white);position:relative;z-index:1;overflow:visible}
+     /* Offers / Products shared background */
+     .offers-section{padding:var(--space-10) 0 120px;background:var(--white);position:relative;z-index:1;overflow:visible}
+     .product-section{padding:var(--space-10) 0 140px;background:var(--white);position:relative;z-index:1}
+     .product-inner{position:relative;z-index:2}
      .offers-scroll{display:flex;gap:var(--space-6);overflow-x:auto;overflow-y:visible;padding-bottom:var(--space-6);padding-top:var(--space-4);scroll-snap-type:x mandatory;scroll-padding-left:var(--space-5);margin:0 calc(-1 * var(--space-5));padding-left:var(--space-5);padding-right:var(--space-5);}
      @media(min-width:768px){.offers-scroll{margin:0 calc(-1 * var(--space-6));padding-left:var(--space-6);padding-right:var(--space-6)}}
      .offers-scroll::-webkit-scrollbar{height:0}
@@ -636,7 +637,7 @@
       </div>
     </div>
 
-    <div id="offers" class="offers-section" x-data="offerData()" x-show="!loading && list.length > 0" x-cloak>
+     <div id="offers" class="offers-section" x-data="offerData()" x-show="!loading && list.length > 0" x-cloak>
       <div class="container">
         <div class="section-top reveal">
           <div class="section-header">
@@ -644,7 +645,7 @@
             <h2 class="section-title" x-text="$store.lang.t('offers.title')"></h2>
             <p class="section-desc" x-text="$store.lang.t('offers.desc')"></p>
           </div>
-          <a href="/offers" class="view-all-link">
+          <a href="/deals.html" class="view-all-link">
             <span><span x-text="$store.lang.t('offers.viewAll')"></span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></span>
           </a>
@@ -860,9 +861,9 @@
   <nav class="bottom-nav">
     <div class="bottom-nav-inner">
       <a href="/" class="bottom-nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 0 0 1 1h3m10-11l2 2m-2-2v10a1 1 0 0 1-1 1h-3m-6 0a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1m-6 0h6"/></svg><span>Home</span></a>
-      <a href="/search" class="bottom-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Search</span></a>
+      <a href="/shop.html" class="bottom-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Shop</span></a>
       <a href="/cart" class="bottom-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><span>Cart</span></a>
-      <a href="/wishlist" class="bottom-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>Wishlist</span></a>
+      <a href="/deals.html" class="bottom-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>Deals</span></a>
     </div>
   </nav>
 

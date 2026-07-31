@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v3"
-	"github.com/gofiber/fiber/v3/middleware/cors"
 	"github.com/gofiber/fiber/v3/middleware/static"
 	"github.com/joho/godotenv"
 	"github.com/yourorg/ecommerce/cmd/web/routes"
@@ -25,13 +24,13 @@ func main() {
 		defer database.Close()
 		handlers.CleanupStoreInfo()
 		handlers.FixProductData()
+		handlers.StartBackgroundCleanup()
 	}
 
 	app := fiber.New(fiber.Config{
 		BodyLimit: 15 * 1024 * 1024,
 	})
 
-	app.Use(cors.New())
 	app.Use(handlers.SecurityHeaders)
 
 	app.Get("/*", static.New("./public", static.Config{

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v3"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type adminSession struct {
@@ -70,9 +71,21 @@ func AdminAuthMiddleware(c fiber.Ctx) error {
 func Login(c fiber.Ctx) error {
 	email := c.FormValue("email")
 	pass := c.FormValue("password")
-	if email == os.Getenv("ADMIN_USER") && pass == os.Getenv("ADMIN_PASS") {
-		token := createAdminSession(email)
-		return c.JSON(fiber.Map{"success": true, "message": "Login successful", "token": token})
+	if email == "" || pass == "" {
+		return c.Status(401).JSON(fiber.Map{"success": false, "message": "Invalid credentials"})
 	}
-	return c.Status(401).JSON(fiber.Map{"success": false, "message": "Invalid credentials"})
+	if email != os.Getenv("ADMIN_USER") {
+		return c.Status(401).JSON(fiber.Map{"success": false, "message": "Invalid credentials"})
+	}
+	hash := os.Getenv("ADMIN_PASS_HASH")
+	plain := os.Getenv("ADMIN_PASS")
+	if hash != "" {
+		if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(pass)); err != nil {
+			return c.Status(401).JSON(fiber.Map{"success": false, "message": "Invalid credentials"})
+		}
+	} else if pass != plain {
+		return c.Status(401).JSON(fiber.Map{"success": false, "message": "Invalid credentials"})
+	}
+	token := createAdminSession(email)
+	return c.JSON(fiber.Map{"success": true, "message": "Login successful", "token": token})
 }

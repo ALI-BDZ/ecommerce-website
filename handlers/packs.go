@@ -27,10 +27,9 @@ func AdminGetPacks(c fiber.Ctx) error {
 		return c.Status(503).JSON(fiber.Map{"error": "db not connected"})
 	}
 	ctx := context.Background()
-	database.DB.Exec(ctx, `DELETE FROM packs WHERE expires_at < now()`)
 	rows, err := database.DB.Query(ctx, `SELECT id,name,description,price,original_price,COALESCE(image,''),product_ids::text,days_valid,expires_at,is_active FROM packs ORDER BY created_at DESC`)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(500).JSON(fiber.Map{"error": "database query failed"})
 	}
 	defer rows.Close()
 	out := []packJSON{}
@@ -76,8 +75,11 @@ func CreatePack(c fiber.Ctx) error {
 		body.Name, body.Description, body.Price, body.Image, string(pidJSON), body.DaysValid,
 	).Scan(&id)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(500).JSON(fiber.Map{"error": "failed to create pack"})
 	}
+
+	LogActivity("pack_created", "pack", id, body.Name)
+
 	return c.JSON(fiber.Map{"success": true, "id": id})
 }
 
@@ -106,7 +108,7 @@ func UpdatePack(c fiber.Ctx) error {
 		body.Name, body.Description, body.Price, body.Image, string(pidJSON), body.DaysValid, id,
 	)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(500).JSON(fiber.Map{"error": "failed to update pack"})
 	}
 	return c.JSON(fiber.Map{"success": true})
 }
@@ -117,8 +119,11 @@ func DeletePack(c fiber.Ctx) error {
 	}
 	_, err := database.DB.Exec(context.Background(), `DELETE FROM packs WHERE id=$1`, c.Params("id"))
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(500).JSON(fiber.Map{"error": "failed to delete pack"})
 	}
+
+	LogActivity("pack_deleted", "pack", c.Params("id"), "")
+
 	return c.JSON(fiber.Map{"success": true})
 }
 
@@ -130,7 +135,7 @@ func GetPacks(c fiber.Ctx) error {
 	database.DB.Exec(ctx, `DELETE FROM packs WHERE expires_at < now()`)
 	rows, err := database.DB.Query(ctx, `SELECT id,name,description,price,original_price,COALESCE(image,''),product_ids::text,days_valid,expires_at FROM packs WHERE is_active=true ORDER BY created_at DESC`)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(500).JSON(fiber.Map{"error": "database query failed"})
 	}
 	defer rows.Close()
 	out := []packJSON{}

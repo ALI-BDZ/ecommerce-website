@@ -136,6 +136,15 @@ func CreateOrder(c fiber.Ctx) error {
 		return c.Status(500).JSON(fiber.Map{"success": false, "message": "Failed to create order"})
 	}
 
+	paymentStatus := "unpaid"
+	if req.PaymentMethod != "cod" {
+		paymentStatus = "unpaid"
+	}
+	_, err = tx.Exec(ctx, `UPDATE orders SET payment_status=$1 WHERE id=$2::uuid`, paymentStatus, orderID)
+	if err != nil {
+		log.Printf("warning: failed to set payment status: %v", err)
+	}
+
 	for _, item := range validated {
 		_, err := tx.Exec(ctx,
 			`INSERT INTO order_items (order_id, product_id, product_name, product_brand, variant, image_url, price, quantity)
@@ -188,11 +197,19 @@ func CreateOrder(c fiber.Ctx) error {
 		return c.Status(500).JSON(fiber.Map{"success": false, "message": "Failed to commit order"})
 	}
 
+	CreateNotification("order_created", "New Order", req.FirstName+" "+req.LastName+" placed an order", map[string]interface{}{
+		"order_id": orderID, "phone": req.Phone, "total": serverTotal,
+	})
+
 	return c.JSON(fiber.Map{"success": true, "orderId": orderID, "message": "Order placed successfully"})
 }
 
 func GetOrder(c fiber.Ctx) error {
 	orderID := c.Params("id")
+	phone := c.Query("phone")
+	if phone == "" {
+		return c.Status(400).JSON(fiber.Map{"success": false, "message": "phone query parameter required"})
+	}
 	if database.DB == nil {
 		return c.Status(503).JSON(fiber.Map{"success": false, "message": "Database not connected"})
 	}
@@ -215,7 +232,7 @@ func GetOrder(c fiber.Ctx) error {
 
 	err := database.DB.QueryRow(ctx,
 		`SELECT id, order_number, status, payment_method, first_name, last_name, phone, address, wilaya, city, total, created_at
-		 FROM orders WHERE id = $1`, orderID,
+		 FROM orders WHERE id = $1 AND phone = $2`, orderID, phone,
 	).Scan(&order.ID, &order.OrderNumber, &order.Status, &order.PaymentMethod,
 		&order.FirstName, &order.LastName, &order.Phone,
 		&order.Address, &order.Wilaya, &order.City, &order.Total, &order.CreatedAt)
@@ -359,6 +376,10 @@ func UpdateOrderStatus(c fiber.Ctx) error {
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"success": false, "message": "Failed to update customer stats"})
 		}
+		_, err = tx.Exec(ctx, `UPDATE orders SET payment_status='paid' WHERE id=$1::uuid`, orderID)
+		if err != nil {
+			log.Printf("warning: failed to update payment status: %v", err)
+		}
 	}
 
 	_, err = tx.Exec(ctx,
@@ -374,5 +395,25 @@ func UpdateOrderStatus(c fiber.Ctx) error {
 	}
 
 	log.Printf("Order %s status updated: %s -> %s", orderID, currentStatus, body.Status)
+
+	var customerID string
+	database.DB.QueryRow(context.Background(), `SELECT id FROM customers WHERE phone=$1`, phone).Scan(&customerID)
+
+	eventMap := map[string]string{
+		"confirmed": "order_confirmed",
+		"shipped":   "order_shipped",
+		"delivered": "order_delivered",
+		"cancelled": "order_cancelled",
+		"returned":  "order_returned",
+		"refunded":  "order_refunded",
+	}
+	if ev, ok := eventMap[body.Status]; ok {
+		RecordDeliveryHistory(customerID, orderID, ev, "Status: "+body.Status)
+	}
+
+	CreateNotification("order_"+body.Status, "Order "+body.Status, "Order status updated to "+body.Status, map[string]interface{}{
+		"order_id": orderID, "status": body.Status, "phone": phone,
+	})
+
 	return c.JSON(fiber.Map{"success": true, "message": "Order status updated to " + body.Status})
 }

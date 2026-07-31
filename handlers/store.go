@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 
 	"github.com/gofiber/fiber/v3"
@@ -148,7 +147,7 @@ func UpdateStoreInfo(c fiber.Ctx) error {
 		body.StoreName, body.OwnerName, body.Phone, body.Location, body.LocationLink, body.StoreDescription, body.Instagram, body.TikTok, body.WhatsApp, imgStr, promoStr)
 	if err != nil {
 		log.Printf("store-info update error: %v", err)
-		return c.Status(500).JSON(fiber.Map{"error": fmt.Sprintf("database write failed: %v", err)})
+		return c.Status(500).JSON(fiber.Map{"error": "database write failed"})
 	}
 	if tag.RowsAffected() == 0 {
 		_, err = database.DB.Exec(context.Background(),
@@ -157,7 +156,7 @@ func UpdateStoreInfo(c fiber.Ctx) error {
 			body.StoreName, body.OwnerName, body.Phone, body.Location, body.LocationLink, body.StoreDescription, body.Instagram, body.TikTok, body.WhatsApp, imgStr, promoStr)
 		if err != nil {
 			log.Printf("store-info insert error: %v", err)
-			return c.Status(500).JSON(fiber.Map{"error": fmt.Sprintf("database write failed: %v", err)})
+			return c.Status(500).JSON(fiber.Map{"error": "database write failed"})
 		}
 	}
 	return c.JSON(fiber.Map{"success": true})

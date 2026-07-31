@@ -84,7 +84,7 @@ func CreateBrand(c fiber.Ctx) error {
 	var id string
 	err := database.DB.QueryRow(context.Background(), "INSERT INTO brands (name,slug) VALUES ($1,$2) RETURNING id", body.Name, slug).Scan(&id)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": fmt.Sprintf("brand exists or failed: %v", err)})
+		return c.Status(500).JSON(fiber.Map{"error": "brand already exists or database error"})
 	}
 	return c.JSON(fiber.Map{"success": true, "id": id})
 }
@@ -102,9 +102,89 @@ func CreateCategory(c fiber.Ctx) error {
 	var id string
 	err := database.DB.QueryRow(context.Background(), "INSERT INTO categories (name,slug) VALUES ($1,$2) RETURNING id", body.Name, slug).Scan(&id)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": fmt.Sprintf("category exists or failed: %v", err)})
+		return c.Status(500).JSON(fiber.Map{"error": "category already exists or database error"})
 	}
 	return c.JSON(fiber.Map{"success": true, "id": id})
+}
+
+func UpdateBrand(c fiber.Ctx) error {
+	if database.DB == nil {
+		return c.Status(503).JSON(fiber.Map{"error": "db not connected"})
+	}
+	id := c.Params("id")
+	body := struct{ Name string }{}
+	if err := c.Bind().JSON(&body); err != nil || body.Name == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "name required"})
+	}
+	tag, err := database.DB.Exec(context.Background(), `UPDATE brands SET name=$1, updated_at=now() WHERE id=$2`, body.Name, id)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "failed to update brand"})
+	}
+	if tag.RowsAffected() == 0 {
+		return c.Status(404).JSON(fiber.Map{"error": "not found"})
+	}
+	return c.JSON(fiber.Map{"success": true})
+}
+
+func DeleteBrand(c fiber.Ctx) error {
+	if database.DB == nil {
+		return c.Status(503).JSON(fiber.Map{"error": "db not connected"})
+	}
+	id := c.Params("id")
+	var productCount int
+	database.DB.QueryRow(context.Background(), `SELECT COUNT(*) FROM products WHERE brand_id=$1`, id).Scan(&productCount)
+	if productCount > 0 {
+		database.DB.Exec(context.Background(), `UPDATE brands SET is_active=false WHERE id=$1`, id)
+		return c.JSON(fiber.Map{"success": true, "archived": true, "message": "Brand has products — archived instead of deleted"})
+	}
+	tag, err := database.DB.Exec(context.Background(), `DELETE FROM brands WHERE id=$1`, id)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "failed to delete brand"})
+	}
+	if tag.RowsAffected() == 0 {
+		return c.Status(404).JSON(fiber.Map{"error": "not found"})
+	}
+	return c.JSON(fiber.Map{"success": true})
+}
+
+func UpdateCategory(c fiber.Ctx) error {
+	if database.DB == nil {
+		return c.Status(503).JSON(fiber.Map{"error": "db not connected"})
+	}
+	id := c.Params("id")
+	body := struct{ Name string }{}
+	if err := c.Bind().JSON(&body); err != nil || body.Name == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "name required"})
+	}
+	tag, err := database.DB.Exec(context.Background(), `UPDATE categories SET name=$1, updated_at=now() WHERE id=$2`, body.Name, id)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "failed to update category"})
+	}
+	if tag.RowsAffected() == 0 {
+		return c.Status(404).JSON(fiber.Map{"error": "not found"})
+	}
+	return c.JSON(fiber.Map{"success": true})
+}
+
+func DeleteCategory(c fiber.Ctx) error {
+	if database.DB == nil {
+		return c.Status(503).JSON(fiber.Map{"error": "db not connected"})
+	}
+	id := c.Params("id")
+	var productCount int
+	database.DB.QueryRow(context.Background(), `SELECT COUNT(*) FROM products WHERE category_id=$1`, id).Scan(&productCount)
+	if productCount > 0 {
+		database.DB.Exec(context.Background(), `UPDATE categories SET is_active=false WHERE id=$1`, id)
+		return c.JSON(fiber.Map{"success": true, "archived": true, "message": "Category has products — archived instead of deleted"})
+	}
+	tag, err := database.DB.Exec(context.Background(), `DELETE FROM categories WHERE id=$1`, id)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "failed to delete category"})
+	}
+	if tag.RowsAffected() == 0 {
+		return c.Status(404).JSON(fiber.Map{"error": "not found"})
+	}
+	return c.JSON(fiber.Map{"success": true})
 }
 
 func AdminProductDetail(c fiber.Ctx) error {
@@ -233,12 +313,14 @@ func CreateProduct(c fiber.Ctx) error {
 		body.Name, slug, body.Description, body.ShortDescription, body.Ingredients, body.HowToUse, body.Barcode, bid, cid,
 		body.Price, body.CompareAtPrice, body.Stock, body.LowStockThreshold, body.WeightGrams, body.IsActive, body.IsFeatured).Scan(&prodID)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": fmt.Sprintf("failed to create: %v", err)})
+		return c.Status(500).JSON(fiber.Map{"error": "failed to create product"})
 	}
 
 	for i, url := range body.ImageURLs {
 		database.DB.Exec(ctx, "INSERT INTO product_images (product_id,url,alt,sort_order) VALUES ($1,$2,$3,$4)", prodID, url, body.Name, i)
 	}
+
+	LogActivity("product_created", "product", prodID, body.Name)
 
 	return c.JSON(fiber.Map{"success": true, "id": prodID, "slug": slug})
 }
@@ -290,7 +372,7 @@ func UpdateProduct(c fiber.Ctx) error {
 		body.Name, slug, body.Description, body.ShortDescription, body.Ingredients, body.HowToUse, body.Barcode, bid, cid,
 		body.Price, body.CompareAtPrice, body.Stock, body.LowStockThreshold, body.WeightGrams, body.IsActive, body.IsFeatured, c.Params("id"))
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(500).JSON(fiber.Map{"error": "failed to update product"})
 	}
 	log.Printf("UPDATE product %s: rows_affected=%d", c.Params("id"), tag.RowsAffected())
 
@@ -321,6 +403,8 @@ func UpdateProduct(c fiber.Ctx) error {
 			DeleteSupabaseObject(old)
 		}
 	}
+
+	LogActivity("product_updated", "product", c.Params("id"), body.Name)
 
 	return c.JSON(fiber.Map{"success": true, "slug": slug})
 }
@@ -371,11 +455,14 @@ func DeleteProduct(c fiber.Ctx) error {
 	database.DB.Exec(ctx, `DELETE FROM product_variants WHERE product_id=$1`, pid)
 	tag, err := database.DB.Exec(ctx, `DELETE FROM products WHERE id=$1::uuid`, pid)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(500).JSON(fiber.Map{"error": "failed to delete product"})
 	}
 	if tag.RowsAffected() == 0 {
 		return c.Status(404).JSON(fiber.Map{"error": "not found"})
 	}
+
+	LogActivity("product_deleted", "product", pid, "")
+
 	return c.JSON(fiber.Map{"success": true, "message": "Product deleted"})
 }
 
@@ -419,7 +506,7 @@ func GetProducts(c fiber.Ctx) error {
 	q := `SELECT p.id,p.name,p.slug,p.price,COALESCE(p.compare_at_price,0),COALESCE(ROUND(AVG(r.rating),1),0),COUNT(r.id),COALESCE(c.name,''),COALESCE(c.slug,''),COALESCE(b.name,''),COALESCE((SELECT url FROM product_images WHERE product_id=p.id ORDER BY sort_order LIMIT 1),''),p.created_at FROM products p LEFT JOIN categories c ON c.id=p.category_id LEFT JOIN brands b ON b.id=p.brand_id LEFT JOIN reviews r ON r.product_id=p.id ` + where + ` GROUP BY p.id,c.name,c.slug,b.name ORDER BY p.created_at DESC LIMIT $` + strconv.Itoa(limitArg) + ` OFFSET $` + strconv.Itoa(offsetArg)
 	rows, err := database.DB.Query(ctx, q, args...)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(500).JSON(fiber.Map{"error": "database query failed"})
 	}
 	defer rows.Close()
 	type LP struct {
@@ -627,5 +714,33 @@ func PublicBrands(c fiber.Ctx) error {
 }
 
 func AddToCart(c fiber.Ctx) error {
-	return c.JSON(fiber.Map{"success": true, "message": "Added to cart"})
+	body := struct {
+		ProductID string `json:"productId"`
+		Quantity  int    `json:"quantity"`
+	}{}
+	if err := c.Bind().JSON(&body); err != nil || body.ProductID == "" {
+		return c.Status(400).JSON(fiber.Map{"success": false, "message": "productId required"})
+	}
+	if body.Quantity < 1 {
+		body.Quantity = 1
+	}
+	if database.DB == nil {
+		return c.JSON(fiber.Map{"success": true, "message": "Added to cart (demo)"})
+	}
+	ctx := context.Background()
+	var price int64
+	var stock int
+	var isActive bool
+	var name string
+	err := database.DB.QueryRow(ctx, `SELECT price, stock, is_active, name FROM products WHERE id=$1::uuid`, body.ProductID).Scan(&price, &stock, &isActive, &name)
+	if err != nil {
+		return c.Status(404).JSON(fiber.Map{"success": false, "message": "Product not found"})
+	}
+	if !isActive {
+		return c.Status(400).JSON(fiber.Map{"success": false, "message": "Product not available"})
+	}
+	if stock < body.Quantity {
+		return c.Status(400).JSON(fiber.Map{"success": false, "message": "Insufficient stock"})
+	}
+	return c.JSON(fiber.Map{"success": true, "message": "Added to cart", "product": fiber.Map{"id": body.ProductID, "name": name, "price": price, "qty": body.Quantity}})
 }
